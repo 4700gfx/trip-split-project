@@ -5,6 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>TripSplit — Design Mockup</title>
 		<script src="https://cdn.tailwindcss.com"></script>
+		<script src="script.js"></script>
 		<style>
 			.screen {
 				display: none;
@@ -28,30 +29,35 @@
 				</div>
 				<nav class="hidden md:flex items-center gap-8 text-sm text-slate-300">
 					<button
+						id="navLinkSetup"
 						class="nav-link pb-1 border-b-2 border-transparent hover:text-white"
 						data-target="screen-01"
 					>
 						Setup
 					</button>
 					<button
+						id="navLinkExpenses"
 						class="nav-link pb-1 border-b-2 border-transparent hover:text-white"
 						data-target="screen-03"
 					>
 						Expenses
 					</button>
 					<button
+						id="navLinkBalances"
 						class="nav-link pb-1 border-b-2 border-transparent hover:text-white"
 						data-target="screen-04"
 					>
 						Balances
 					</button>
 					<button
+						id="navLinkSettleUp"
 						class="nav-link pb-1 border-b-2 border-transparent hover:text-white"
 						data-target="screen-05"
 					>
 						Settle up
 					</button>
 					<button
+						id="navLinkSummary"
 						class="nav-link pb-1 border-b-2 border-transparent hover:text-white"
 						data-target="screen-06"
 					>
@@ -60,12 +66,16 @@
 				</nav>
 				<div class="flex items-center gap-3">
 					<button
+						id="headerAddExpenseBtn"
 						class="tab-btn px-4 py-2 rounded-full bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-500"
 						data-target="screen-02"
 					>
 						Add expense
 					</button>
-					<span class="w-9 h-9 rounded-full bg-emerald-500"></span>
+					<span
+						id="headerAvatar"
+						class="w-9 h-9 rounded-full bg-emerald-500"
+					></span>
 				</div>
 			</div>
 		</header>
@@ -76,14 +86,28 @@
 				class="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between gap-4 flex-wrap text-sm"
 			>
 				<div class="flex items-center gap-3">
-					<span class="text-white font-semibold text-base">Lisbon, March</span>
-					<span class="px-3 py-1 rounded-full bg-white/10">4 people</span>
-					<span class="px-3 py-1 rounded-full bg-white/10">USD</span>
+					<span id="tripNameBadge" class="text-white font-semibold text-base"
+						>Lisbon, March</span
+					>
+					<span id="memberCountBadge" class="px-3 py-1 rounded-full bg-white/10"
+						>4 people</span
+					>
+					<span id="currencyBadge" class="px-3 py-1 rounded-full bg-white/10"
+						>USD</span
+					>
 				</div>
 				<div class="flex items-center gap-6">
-					<span>11 expenses</span>
-					<span>Total <strong class="text-white">$2,104.60</strong></span>
-					<span>Per head <strong class="text-white">$526.15</strong></span>
+					<span id="expenseCountBadge">11 expenses</span>
+					<span
+						>Total
+						<strong id="totalSpentBadge" class="text-white"
+							>$2,104.60</strong
+						></span
+					>
+					<span
+						>Per head
+						<strong id="perHeadBadge" class="text-white">$526.15</strong></span
+					>
 				</div>
 			</div>
 		</div>
@@ -171,6 +195,7 @@
 									>Trip name</label
 								>
 								<div
+									id="setupTripNameField"
 									class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50"
 								>
 									Lisbon, March
@@ -181,6 +206,7 @@
 									>Currency</label
 								>
 								<div
+									id="setupCurrencyField"
 									class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-50 flex justify-between"
 								>
 									USD — $ <span class="text-slate-400">▾</span>
@@ -195,21 +221,26 @@
 								class="text-xs font-semibold tracking-widest text-slate-400 uppercase"
 								>People</span
 							>
-							<span class="text-sm text-slate-500">4 added</span>
+							<span id="setupMemberCountLabel" class="text-sm text-slate-500"
+								>4 added</span
+							>
 						</div>
 						<div class="flex gap-2 mb-4">
 							<input
+								id="setupPersonNameInput"
 								placeholder="Add a name"
 								class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm"
 							/>
 							<button
+								id="setupAddPersonBtn"
 								class="px-6 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-500"
 							>
 								Add
 							</button>
 						</div>
-						<div class="flex flex-wrap gap-2 mb-4">
+						<div id="setupMembersList" class="flex flex-wrap gap-2 mb-4">
 							<span
+								data-person="priya"
 								class="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full bg-indigo-50"
 								><span
 									class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-semibold"
@@ -217,6 +248,7 @@
 								>Priya <span class="text-slate-400">×</span></span
 							>
 							<span
+								data-person="alex"
 								class="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full bg-indigo-50"
 								><span
 									class="w-6 h-6 rounded-full bg-violet-500 text-white text-xs flex items-center justify-center font-semibold"
@@ -224,6 +256,7 @@
 								>Alex <span class="text-slate-400">×</span></span
 							>
 							<span
+								data-person="sam"
 								class="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full bg-indigo-50"
 								><span
 									class="w-6 h-6 rounded-full bg-teal-600 text-white text-xs flex items-center justify-center font-semibold"
@@ -231,6 +264,7 @@
 								>Sam <span class="text-slate-400">×</span></span
 							>
 							<span
+								data-person="mia"
 								class="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full bg-indigo-50"
 								><span
 									class="w-6 h-6 rounded-full bg-orange-400 text-white text-xs flex items-center justify-center font-semibold"
@@ -239,6 +273,7 @@
 							>
 						</div>
 						<p
+							id="setupMemberWarning"
 							class="text-sm text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-lg px-4 py-3 mb-6"
 						>
 							Sam appears in 3 expenses and can't be removed yet. Delete or
@@ -247,6 +282,7 @@
 
 						<div class="flex items-center gap-4">
 							<button
+								id="setupContinueBtn"
 								class="px-5 py-2.5 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-500 tab-btn"
 								data-target="screen-02"
 							>
@@ -268,6 +304,7 @@
 								Trip at a glance
 							</p>
 							<div
+								id="setupGlanceBox"
 								class="border border-dashed border-slate-300 rounded-xl h-32 flex items-center justify-center text-center text-sm text-slate-400 px-4"
 							>
 								No expenses yet.<br />Totals and balances appear here.
@@ -308,6 +345,7 @@
 									>Description</label
 								>
 								<div
+									id="addExpenseDescriptionField"
 									class="border border-slate-300 rounded-lg px-3 py-2 text-sm"
 								>
 									Airbnb — 3 nights
@@ -319,11 +357,12 @@
 							<div>
 								<label class="block text-sm text-slate-600 mb-1">Amount</label>
 								<div
+									id="addExpenseAmountField"
 									class="border border-red-400 bg-red-50 rounded-lg px-3 py-2 text-sm"
 								>
 									54o
 								</div>
-								<p class="text-xs text-red-600 mt-1">
+								<p id="addExpenseAmountError" class="text-xs text-red-600 mt-1">
 									Enter a number — letters and blanks are rejected.
 								</p>
 							</div>
@@ -333,6 +372,7 @@
 							<div>
 								<label class="block text-sm text-slate-600 mb-1">Paid by</label>
 								<div
+									id="addExpensePayerField"
 									class="border border-slate-300 rounded-lg px-3 py-2 text-sm flex justify-between"
 								>
 									Priya <span class="text-slate-400">▾</span>
@@ -343,6 +383,7 @@
 									>Category</label
 								>
 								<div
+									id="addExpenseCategoryField"
 									class="border border-slate-300 rounded-lg px-3 py-2 text-sm flex justify-between"
 								>
 									Lodging <span class="text-slate-400">▾</span>
@@ -356,10 +397,13 @@
 								>Split between</span
 							>
 							<div class="flex gap-1 p-1 rounded-full bg-slate-100">
-								<span class="px-4 py-1.5 rounded-full text-sm text-slate-600"
+								<span
+									id="addExpenseSplitEqualBtn"
+									class="px-4 py-1.5 rounded-full text-sm text-slate-600"
 									>Equal</span
 								>
 								<span
+									id="addExpenseSplitCustomBtn"
 									class="px-4 py-1.5 rounded-full text-sm font-semibold bg-indigo-600 text-white"
 									>Custom</span
 								>
@@ -367,6 +411,7 @@
 						</div>
 
 						<div
+							id="addExpenseSplitTable"
 							class="border border-slate-200 rounded-xl overflow-hidden mb-2"
 						>
 							<div
@@ -376,6 +421,7 @@
 								><span class="text-right">Share</span>
 							</div>
 							<div
+								data-person="priya"
 								class="grid grid-cols-[1fr_120px_80px] gap-3 px-4 py-3 border-t border-slate-100 items-center text-sm"
 							>
 								<span class="flex items-center gap-2"
@@ -391,6 +437,7 @@
 								<span class="text-right text-slate-500">37%</span>
 							</div>
 							<div
+								data-person="alex"
 								class="grid grid-cols-[1fr_120px_80px] gap-3 px-4 py-3 border-t border-slate-100 items-center text-sm"
 							>
 								<span class="flex items-center gap-2"
@@ -406,6 +453,7 @@
 								<span class="text-right text-slate-500">37%</span>
 							</div>
 							<div
+								data-person="sam"
 								class="grid grid-cols-[1fr_120px_80px] gap-3 px-4 py-3 border-t border-slate-100 items-center text-sm"
 							>
 								<span class="flex items-center gap-2"
@@ -421,6 +469,7 @@
 								<span class="text-right text-slate-500">22%</span>
 							</div>
 							<div
+								data-person="mia"
 								class="grid grid-cols-[1fr_120px_80px] gap-3 px-4 py-3 border-t border-slate-100 items-center text-sm text-slate-400"
 							>
 								<span class="flex items-center gap-2"
@@ -432,6 +481,7 @@
 								<span>—</span><span class="text-right">—</span>
 							</div>
 							<div
+								id="addExpenseShortfallRow"
 								class="flex justify-between px-4 py-3 bg-red-50 border-t border-red-200 text-sm"
 							>
 								<span class="text-red-600"
@@ -445,17 +495,21 @@
 
 						<div class="flex items-center gap-3 mt-4">
 							<button
+								id="addExpenseSaveBtn"
 								class="px-6 py-2.5 rounded-lg bg-indigo-600 text-white text-sm font-semibold opacity-40 cursor-not-allowed"
 							>
 								Save expense
 							</button>
 							<button
+								id="addExpenseCancelBtn"
 								class="px-5 py-2.5 rounded-lg border border-slate-300 text-sm tab-btn"
 								data-target="screen-03"
 							>
 								Cancel
 							</button>
-							<span class="text-sm text-red-600">2 problems to fix</span>
+							<span id="addExpenseProblemsLabel" class="text-sm text-red-600"
+								>2 problems to fix</span
+							>
 						</div>
 					</div>
 
@@ -467,8 +521,11 @@
 						>
 							Effect of this expense
 						</p>
-						<div class="flex flex-col gap-3 text-sm">
-							<div class="flex justify-between items-center">
+						<div id="addExpenseEffectList" class="flex flex-col gap-3 text-sm">
+							<div
+								data-person="priya"
+								class="flex justify-between items-center"
+							>
 								<span class="flex items-center gap-2"
 									><span
 										class="w-5 h-5 rounded-full bg-indigo-600 text-white text-[10px] flex items-center justify-center font-semibold"
@@ -476,7 +533,7 @@
 									>Priya</span
 								><span class="font-semibold text-emerald-700">+340.00</span>
 							</div>
-							<div class="flex justify-between items-center">
+							<div data-person="alex" class="flex justify-between items-center">
 								<span class="flex items-center gap-2"
 									><span
 										class="w-5 h-5 rounded-full bg-violet-500 text-white text-[10px] flex items-center justify-center font-semibold"
@@ -484,7 +541,7 @@
 									>Alex</span
 								><span class="font-semibold text-red-600">−200.00</span>
 							</div>
-							<div class="flex justify-between items-center">
+							<div data-person="sam" class="flex justify-between items-center">
 								<span class="flex items-center gap-2"
 									><span
 										class="w-5 h-5 rounded-full bg-teal-600 text-white text-[10px] flex items-center justify-center font-semibold"
@@ -492,7 +549,10 @@
 									>Sam</span
 								><span class="font-semibold text-red-600">−120.00</span>
 							</div>
-							<div class="flex justify-between items-center text-slate-400">
+							<div
+								data-person="mia"
+								class="flex justify-between items-center text-slate-400"
+							>
 								<span class="flex items-center gap-2"
 									><span
 										class="w-5 h-5 rounded-full bg-slate-200 text-slate-400 text-[10px] flex items-center justify-center font-semibold"
@@ -523,21 +583,25 @@
 						>
 							<div class="grid grid-cols-4 gap-3 mb-3">
 								<div
+									id="expensesSearchField"
 									class="border border-slate-300 rounded-full px-4 py-2 text-sm text-slate-400"
 								>
 									Search descriptions
 								</div>
 								<div
+									id="expensesPersonFilterField"
 									class="border border-slate-300 rounded-full px-4 py-2 text-sm flex justify-between"
 								>
 									Person: Sam <span class="text-slate-400">▾</span>
 								</div>
 								<div
+									id="expensesCategoryFilterField"
 									class="border border-slate-300 rounded-full px-4 py-2 text-sm flex justify-between"
 								>
 									Category: All <span class="text-slate-400">▾</span>
 								</div>
 								<div
+									id="expensesSortField"
 									class="border border-slate-300 rounded-full px-4 py-2 text-sm flex justify-between"
 								>
 									Amount ↓ <span class="text-slate-400">▾</span>
@@ -545,17 +609,22 @@
 							</div>
 							<div class="flex items-center gap-3 text-sm text-slate-500">
 								<span
+									id="expensesActiveFilterChip"
 									class="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 font-medium"
 									>Sam ×</span
 								>
 								<span>5 of 11 expenses · $1,240.00 shown</span>
-								<a href="#" class="ml-auto text-indigo-600 font-medium"
+								<a
+									id="expensesClearAllLink"
+									href="#"
+									class="ml-auto text-indigo-600 font-medium"
 									>Clear all</a
 								>
 							</div>
 						</div>
 
 						<div
+							id="expensesList"
 							class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
 						>
 							<div
@@ -565,7 +634,10 @@
 								><span class="text-right">Amount</span>
 							</div>
 
-							<div class="border-t border-slate-100 bg-indigo-50/60">
+							<div
+								data-expense="airbnb"
+								class="border-t border-slate-100 bg-indigo-50/60"
+							>
 								<div
 									class="grid grid-cols-[1fr_120px_120px_110px] gap-3 px-5 py-3 items-center text-sm"
 								>
@@ -584,7 +656,7 @@
 									>
 									<span class="text-right font-semibold">$540.00</span>
 								</div>
-								<div class="px-5 pb-4 pl-14">
+								<div id="expensesExpandedDetail" class="px-5 pb-4 pl-14">
 									<div class="flex gap-4 text-xs text-slate-500 mb-2">
 										<span>Custom split · 3 of 4 people</span
 										><span>Added 12 Mar</span>
@@ -603,6 +675,7 @@
 											><span class="text-right">Paid</span><span></span>
 										</div>
 										<div
+											data-person="priya"
 											class="grid grid-cols-[1fr_100px_100px_1.2fr] gap-3 px-4 py-2 border-t border-slate-100"
 										>
 											<span>Priya</span><span class="text-right">200.00</span
@@ -610,6 +683,7 @@
 											><span class="text-emerald-700">is owed 340.00 here</span>
 										</div>
 										<div
+											data-person="alex"
 											class="grid grid-cols-[1fr_100px_100px_1.2fr] gap-3 px-4 py-2 border-t border-slate-100"
 										>
 											<span>Alex</span><span class="text-right">200.00</span
@@ -617,6 +691,7 @@
 											><span class="text-slate-500">owes Priya 200.00</span>
 										</div>
 										<div
+											data-person="sam"
 											class="grid grid-cols-[1fr_100px_100px_1.2fr] gap-3 px-4 py-2 border-t border-slate-100"
 										>
 											<span>Sam</span><span class="text-right">140.00</span
@@ -628,6 +703,7 @@
 							</div>
 
 							<div
+								data-expense="dinner"
 								class="grid grid-cols-[1fr_120px_120px_110px] gap-3 px-5 py-3 border-t border-slate-100 items-center text-sm"
 							>
 								<span class="font-medium">Group dinner — Bairro Alto</span>
@@ -646,6 +722,7 @@
 								<span class="text-right font-semibold">$312.40</span>
 							</div>
 							<div
+								data-expense="tram"
 								class="grid grid-cols-[1fr_120px_120px_110px] gap-3 px-5 py-3 border-t border-slate-100 items-center text-sm"
 							>
 								<span class="font-medium">Tram passes ×4</span>
@@ -664,6 +741,7 @@
 								<span class="text-right font-semibold">$148.00</span>
 							</div>
 							<div
+								data-expense="untitled"
 								class="grid grid-cols-[1fr_120px_120px_110px] gap-3 px-5 py-3 border-t border-slate-100 items-center text-sm"
 							>
 								<span class="font-medium text-slate-400">Untitled expense</span>
@@ -682,6 +760,7 @@
 								<span class="text-right font-semibold">$64.00</span>
 							</div>
 							<div
+								data-expense="pasteis"
 								class="grid grid-cols-[1fr_120px_120px_110px] gap-3 px-5 py-3 border-t border-slate-100 items-center text-sm"
 							>
 								<span class="font-medium">Pastéis de Belém</span>
@@ -709,7 +788,12 @@
 							>
 								Total spent
 							</p>
-							<p class="text-4xl font-bold text-white">$2,104.60</p>
+							<p
+								id="expensesSidebarTotal"
+								class="text-4xl font-bold text-white"
+							>
+								$2,104.60
+							</p>
 							<p class="text-sm mt-1">11 expenses · 4 people</p>
 						</div>
 						<div
@@ -722,8 +806,11 @@
 								>
 								<span class="text-xs text-slate-400">sums to 0.00</span>
 							</div>
-							<div class="flex flex-col gap-4 text-sm">
-								<div>
+							<div
+								id="expensesSidebarBalanceList"
+								class="flex flex-col gap-4 text-sm"
+							>
+								<div data-person="priya">
 									<div class="flex justify-between mb-1">
 										<span>Priya</span
 										><span class="font-semibold text-emerald-700">+412.10</span>
@@ -735,7 +822,7 @@
 										></div>
 									</div>
 								</div>
-								<div>
+								<div data-person="sam">
 									<div class="flex justify-between mb-1">
 										<span>Sam</span
 										><span class="font-semibold text-emerald-700">+96.40</span>
@@ -747,7 +834,7 @@
 										></div>
 									</div>
 								</div>
-								<div>
+								<div data-person="mia">
 									<div class="flex justify-between mb-1">
 										<span>Mia</span
 										><span class="font-semibold text-red-600">−162.00</span>
@@ -759,7 +846,7 @@
 										></div>
 									</div>
 								</div>
-								<div>
+								<div data-person="alex">
 									<div class="flex justify-between mb-1">
 										<span>Alex</span
 										><span class="font-semibold text-red-600">−346.50</span>
@@ -773,6 +860,7 @@
 								</div>
 							</div>
 							<button
+								id="expensesSidebarSettleUpBtn"
 								class="tab-btn w-full mt-5 py-2.5 rounded-lg border border-slate-300 text-indigo-600 font-semibold text-sm"
 								data-target="screen-05"
 							>
@@ -795,13 +883,15 @@
 						</p>
 					</div>
 					<span
+						id="balancesSumBadge"
 						class="px-3 py-1.5 rounded-full bg-indigo-50 text-indigo-700 text-sm font-medium"
 						>All balances sum to 0.00</span
 					>
 				</div>
 
-				<div class="grid grid-cols-4 gap-4 mb-6">
+				<div id="balancesCardsGrid" class="grid grid-cols-4 gap-4 mb-6">
 					<div
+						data-person="priya"
 						class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5"
 					>
 						<div class="flex items-center gap-2 mb-3">
@@ -827,6 +917,7 @@
 						</div>
 					</div>
 					<div
+						data-person="sam"
 						class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5"
 					>
 						<div class="flex items-center gap-2 mb-3">
@@ -852,6 +943,7 @@
 						</div>
 					</div>
 					<div
+						data-person="mia"
 						class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5"
 					>
 						<div class="flex items-center gap-2 mb-3">
@@ -877,6 +969,7 @@
 						</div>
 					</div>
 					<div
+						data-person="alex"
 						class="bg-white rounded-2xl shadow-sm border-2 border-indigo-500 p-5"
 					>
 						<div class="flex items-center gap-2 mb-3">
@@ -908,11 +1001,12 @@
 						class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6"
 					>
 						<div class="flex justify-between items-center mb-3">
-							<span class="font-bold text-lg"
+							<span id="balancesDetailHeading" class="font-bold text-lg"
 								>Alex — every expense they touch</span
 							><span class="text-xs text-slate-400">Selected above</span>
 						</div>
 						<div
+							id="balancesDetailTable"
 							class="grid grid-cols-[1fr_110px_110px_110px] gap-3 text-xs font-semibold uppercase text-slate-500 pb-2 border-b border-slate-100"
 						>
 							<span>Expense</span><span class="text-right">Their share</span
@@ -920,6 +1014,7 @@
 							><span class="text-right">Net</span>
 						</div>
 						<div
+							data-expense="airbnb"
 							class="grid grid-cols-[1fr_110px_110px_110px] gap-3 py-3 border-b border-slate-100 text-sm"
 						>
 							<span>Airbnb — 3 nights</span
@@ -928,6 +1023,7 @@
 							><span class="text-right text-red-600">−200.00</span>
 						</div>
 						<div
+							data-expense="dinner"
 							class="grid grid-cols-[1fr_110px_110px_110px] gap-3 py-3 border-b border-slate-100 text-sm"
 						>
 							<span>Group dinner — Bairro Alto</span
@@ -936,6 +1032,7 @@
 							><span class="text-right text-red-600">−78.10</span>
 						</div>
 						<div
+							data-expense="tram"
 							class="grid grid-cols-[1fr_110px_110px_110px] gap-3 py-3 border-b border-slate-100 text-sm"
 						>
 							<span>Tram passes ×4</span><span class="text-right">37.00</span
@@ -943,6 +1040,7 @@
 							><span class="text-right text-red-600">−37.00</span>
 						</div>
 						<div
+							data-expense="untitled"
 							class="grid grid-cols-[1fr_110px_110px_110px] gap-3 py-3 text-sm"
 						>
 							<span class="text-slate-500">Untitled expense</span
@@ -952,25 +1050,29 @@
 						</div>
 					</div>
 					<div
+						id="balancesBeforePanel"
 						class="bg-[#111a35] text-slate-300 rounded-2xl p-6 flex flex-col gap-3"
 					>
 						<p class="text-white font-bold text-lg">Before simplifying</p>
 						<div
+							data-pair="alex-priya"
 							class="flex justify-between border-b border-white/10 pb-2 text-sm"
 						>
 							<span>Alex → Priya</span><span class="text-white">268.40</span>
 						</div>
 						<div
+							data-pair="alex-sam"
 							class="flex justify-between border-b border-white/10 pb-2 text-sm"
 						>
 							<span>Alex → Sam</span><span class="text-white">78.10</span>
 						</div>
 						<div
+							data-pair="mia-priya"
 							class="flex justify-between border-b border-white/10 pb-2 text-sm"
 						>
 							<span>Mia → Priya</span><span class="text-white">143.70</span>
 						</div>
-						<div class="flex justify-between text-sm">
+						<div data-pair="mia-sam" class="flex justify-between text-sm">
 							<span>Mia → Sam</span><span class="text-white">18.30</span>
 						</div>
 						<p class="text-sm mt-1">
@@ -978,6 +1080,7 @@
 							money in three payments.
 						</p>
 						<button
+							id="balancesSeePlanBtn"
 							class="tab-btn mt-1 py-2.5 rounded-lg bg-indigo-600 text-white font-semibold text-sm"
 							data-target="screen-05"
 						>
@@ -1004,9 +1107,11 @@
 						</div>
 
 						<div
+							id="settleUpList"
 							class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
 						>
 							<div
+								data-payment="alex-priya"
 								class="grid grid-cols-[1fr_40px_1fr_130px_120px] gap-3 items-center px-5 py-4"
 							>
 								<span class="flex items-center gap-2"
@@ -1024,12 +1129,13 @@
 								>
 								<span class="text-right font-bold text-xl">$346.50</span>
 								<button
-									class="py-2 rounded-full bg-indigo-600 text-white text-sm font-semibold"
+									class="settle-mark-paid-btn py-2 rounded-full bg-indigo-600 text-white text-sm font-semibold"
 								>
 									Mark paid
 								</button>
 							</div>
 							<div
+								data-payment="mia-priya"
 								class="grid grid-cols-[1fr_40px_1fr_130px_120px] gap-3 items-center px-5 py-4 border-t border-slate-100"
 							>
 								<span class="flex items-center gap-2"
@@ -1047,12 +1153,13 @@
 								>
 								<span class="text-right font-bold text-xl">$65.60</span>
 								<button
-									class="py-2 rounded-full bg-indigo-600 text-white text-sm font-semibold"
+									class="settle-mark-paid-btn py-2 rounded-full bg-indigo-600 text-white text-sm font-semibold"
 								>
 									Mark paid
 								</button>
 							</div>
 							<div
+								data-payment="mia-sam"
 								class="grid grid-cols-[1fr_40px_1fr_130px_120px] gap-3 items-center px-5 py-4 border-t border-slate-100 bg-slate-50 opacity-60"
 							>
 								<span class="flex items-center gap-2 line-through"
@@ -1077,12 +1184,14 @@
 
 						<div class="flex items-center gap-4 flex-wrap">
 							<button
+								id="settleUpCopyBtn"
 								class="tab-btn px-6 py-2.5 rounded-lg bg-indigo-600 text-white font-semibold text-sm"
 								data-target="screen-07"
 							>
 								Copy plan to clipboard
 							</button>
 							<button
+								id="settleUpRecalculateBtn"
 								class="px-5 py-2.5 rounded-lg border border-slate-300 text-sm"
 							>
 								Recalculate
@@ -1095,6 +1204,7 @@
 
 					<div class="flex flex-col gap-5">
 						<div
+							id="settleUpPlanQualityPanel"
 							class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6"
 						>
 							<p
@@ -1140,10 +1250,13 @@
 					<h2 class="text-2xl font-bold">Trip summary</h2>
 					<div class="flex gap-1 p-1 rounded-full bg-slate-200">
 						<span
+							id="summaryToggleWholeTripBtn"
 							class="px-4 py-1.5 rounded-full text-sm font-semibold bg-indigo-600 text-white"
 							>Whole trip</span
 						>
-						<span class="px-4 py-1.5 rounded-full text-sm text-slate-600"
+						<span
+							id="summaryTogglePerPersonBtn"
+							class="px-4 py-1.5 rounded-full text-sm text-slate-600"
 							>Per person</span
 						>
 					</div>
@@ -1156,7 +1269,9 @@
 						>
 							Total spent
 						</p>
-						<p class="text-3xl font-bold text-white">$2,104.60</p>
+						<p id="summaryTotalSpent" class="text-3xl font-bold text-white">
+							$2,104.60
+						</p>
 					</div>
 					<div
 						class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5"
@@ -1166,7 +1281,7 @@
 						>
 							Average expense
 						</p>
-						<p class="text-3xl font-bold">$191.33</p>
+						<p id="summaryAverageExpense" class="text-3xl font-bold">$191.33</p>
 					</div>
 					<div
 						class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5"
@@ -1176,7 +1291,7 @@
 						>
 							Top spender
 						</p>
-						<p class="text-3xl font-bold">Priya</p>
+						<p id="summaryTopSpender" class="text-3xl font-bold">Priya</p>
 						<p class="text-sm text-slate-500">$928.00 across 4</p>
 					</div>
 					<div
@@ -1187,7 +1302,7 @@
 						>
 							Per head
 						</p>
-						<p class="text-3xl font-bold">$526.15</p>
+						<p id="summaryPerHead" class="text-3xl font-bold">$526.15</p>
 					</div>
 				</div>
 
@@ -1196,52 +1311,54 @@
 						class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6"
 					>
 						<p class="font-bold text-lg mb-4">By category</p>
-						<div class="mb-4">
-							<div class="flex justify-between text-sm mb-1">
-								<span>Lodging</span
-								><span class="text-slate-500">$1,080.00 · 51%</span>
+						<div id="summaryCategoryBreakdown">
+							<div data-category="lodging" class="mb-4">
+								<div class="flex justify-between text-sm mb-1">
+									<span>Lodging</span
+									><span class="text-slate-500">$1,080.00 · 51%</span>
+								</div>
+								<div class="h-3.5 rounded-full bg-slate-100">
+									<div
+										class="h-3.5 rounded-full bg-slate-900"
+										style="width: 51%"
+									></div>
+								</div>
 							</div>
-							<div class="h-3.5 rounded-full bg-slate-100">
-								<div
-									class="h-3.5 rounded-full bg-slate-900"
-									style="width: 51%"
-								></div>
+							<div data-category="food" class="mb-4">
+								<div class="flex justify-between text-sm mb-1">
+									<span>Food</span
+									><span class="text-slate-500">$611.00 · 29%</span>
+								</div>
+								<div class="h-3.5 rounded-full bg-slate-100">
+									<div
+										class="h-3.5 rounded-full bg-orange-400"
+										style="width: 29%"
+									></div>
+								</div>
 							</div>
-						</div>
-						<div class="mb-4">
-							<div class="flex justify-between text-sm mb-1">
-								<span>Food</span
-								><span class="text-slate-500">$611.00 · 29%</span>
+							<div data-category="transport" class="mb-4">
+								<div class="flex justify-between text-sm mb-1">
+									<span>Transport</span
+									><span class="text-slate-500">$275.60 · 13%</span>
+								</div>
+								<div class="h-3.5 rounded-full bg-slate-100">
+									<div
+										class="h-3.5 rounded-full bg-teal-500"
+										style="width: 13%"
+									></div>
+								</div>
 							</div>
-							<div class="h-3.5 rounded-full bg-slate-100">
-								<div
-									class="h-3.5 rounded-full bg-orange-400"
-									style="width: 29%"
-								></div>
-							</div>
-						</div>
-						<div class="mb-4">
-							<div class="flex justify-between text-sm mb-1">
-								<span>Transport</span
-								><span class="text-slate-500">$275.60 · 13%</span>
-							</div>
-							<div class="h-3.5 rounded-full bg-slate-100">
-								<div
-									class="h-3.5 rounded-full bg-teal-500"
-									style="width: 13%"
-								></div>
-							</div>
-						</div>
-						<div>
-							<div class="flex justify-between text-sm mb-1">
-								<span>General</span
-								><span class="text-slate-500">$138.00 · 7%</span>
-							</div>
-							<div class="h-3.5 rounded-full bg-slate-100">
-								<div
-									class="h-3.5 rounded-full bg-violet-500"
-									style="width: 7%"
-								></div>
+							<div data-category="general">
+								<div class="flex justify-between text-sm mb-1">
+									<span>General</span
+									><span class="text-slate-500">$138.00 · 7%</span>
+								</div>
+								<div class="h-3.5 rounded-full bg-slate-100">
+									<div
+										class="h-3.5 rounded-full bg-violet-500"
+										style="width: 7%"
+									></div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -1249,49 +1366,57 @@
 						class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6"
 					>
 						<p class="font-bold text-lg mb-4">Spend vs. share</p>
-						<div
-							class="grid grid-cols-[1fr_80px_80px_70px] gap-2 text-xs font-semibold uppercase text-slate-500 pb-2 border-b border-slate-100"
-						>
-							<span>Person</span><span class="text-right">Paid</span
-							><span class="text-right">Share</span
-							><span class="text-right">Net</span>
-						</div>
-						<div
-							class="grid grid-cols-[1fr_80px_80px_70px] gap-2 py-2 border-b border-slate-100 text-sm"
-						>
-							<span>Priya</span><span class="text-right">928.00</span
-							><span class="text-right">515.90</span
-							><span class="text-right text-emerald-700 font-semibold"
-								>+412</span
+						<div id="summarySpendVsShareTable">
+							<div
+								class="grid grid-cols-[1fr_80px_80px_70px] gap-2 text-xs font-semibold uppercase text-slate-500 pb-2 border-b border-slate-100"
 							>
-						</div>
-						<div
-							class="grid grid-cols-[1fr_80px_80px_70px] gap-2 py-2 border-b border-slate-100 text-sm"
-						>
-							<span>Sam</span><span class="text-right">631.00</span
-							><span class="text-right">534.60</span
-							><span class="text-right text-emerald-700 font-semibold"
-								>+96</span
+								<span>Person</span><span class="text-right">Paid</span
+								><span class="text-right">Share</span
+								><span class="text-right">Net</span>
+							</div>
+							<div
+								data-person="priya"
+								class="grid grid-cols-[1fr_80px_80px_70px] gap-2 py-2 border-b border-slate-100 text-sm"
 							>
-						</div>
-						<div
-							class="grid grid-cols-[1fr_80px_80px_70px] gap-2 py-2 border-b border-slate-100 text-sm"
-						>
-							<span>Mia</span><span class="text-right">148.00</span
-							><span class="text-right">310.00</span
-							><span class="text-right text-red-600 font-semibold">−162</span>
-						</div>
-						<div class="grid grid-cols-[1fr_80px_80px_70px] gap-2 py-2 text-sm">
-							<span>Alex</span><span class="text-right">397.60</span
-							><span class="text-right">744.10</span
-							><span class="text-right text-red-600 font-semibold">−347</span>
+								<span>Priya</span><span class="text-right">928.00</span
+								><span class="text-right">515.90</span
+								><span class="text-right text-emerald-700 font-semibold"
+									>+412</span
+								>
+							</div>
+							<div
+								data-person="sam"
+								class="grid grid-cols-[1fr_80px_80px_70px] gap-2 py-2 border-b border-slate-100 text-sm"
+							>
+								<span>Sam</span><span class="text-right">631.00</span
+								><span class="text-right">534.60</span
+								><span class="text-right text-emerald-700 font-semibold"
+									>+96</span
+								>
+							</div>
+							<div
+								data-person="mia"
+								class="grid grid-cols-[1fr_80px_80px_70px] gap-2 py-2 border-b border-slate-100 text-sm"
+							>
+								<span>Mia</span><span class="text-right">148.00</span
+								><span class="text-right">310.00</span
+								><span class="text-right text-red-600 font-semibold">−162</span>
+							</div>
+							<div
+								data-person="alex"
+								class="grid grid-cols-[1fr_80px_80px_70px] gap-2 py-2 text-sm"
+							>
+								<span>Alex</span><span class="text-right">397.60</span
+								><span class="text-right">744.10</span
+								><span class="text-right text-red-600 font-semibold">−347</span>
+							</div>
 						</div>
 					</div>
 				</div>
 			</section>
 
 			<!-- ============================================================ -->
-			<!-- SCREEN 07 — SHARE (completed from the original design bundle) -->
+			<!-- SCREEN 07 — SHARE -->
 			<!-- ============================================================ -->
 			<section id="screen-07" class="screen">
 				<div
@@ -1305,6 +1430,7 @@
 							Plain text, ready to paste into the group chat.
 						</p>
 						<pre
+							id="shareSummaryText"
 							class="bg-[#111a35] text-slate-200 rounded-xl p-5 text-sm leading-relaxed whitespace-pre-wrap mb-5"
 						>
 LISBON, MARCH — 11 expenses, 4 people
@@ -1323,21 +1449,25 @@ SETTLE UP
 						>
 						<div class="flex items-center gap-3 flex-wrap mb-4">
 							<button
+								id="shareCopyBtn"
 								class="px-6 py-2.5 rounded-lg bg-indigo-600 text-white font-semibold text-sm"
 							>
 								Copy summary
 							</button>
 							<span
+								id="shareCopiedBadge"
 								class="px-4 py-2.5 rounded-lg bg-indigo-50 text-indigo-700 font-semibold text-sm"
 								>Copied ✓</span
 							>
 							<button
+								id="sharePrintBtn"
 								class="px-5 py-2.5 rounded-lg border border-slate-300 text-sm"
 							>
 								Print view
 							</button>
 						</div>
 						<p
+							id="shareFallbackWarning"
 							class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3"
 						>
 							Fallback: clipboard unavailable in this browser — select the text
@@ -1353,24 +1483,31 @@ SETTLE UP
 						>
 							Include
 						</p>
-						<div class="flex flex-col gap-3 text-sm mb-4">
-							<span class="flex items-center gap-3"
+						<div
+							id="shareIncludeChecklist"
+							class="flex flex-col gap-3 text-sm mb-4"
+						>
+							<span data-field="totals" class="flex items-center gap-3"
 								><span class="w-4 h-4 rounded bg-indigo-600"></span>Trip
 								totals</span
 							>
-							<span class="flex items-center gap-3"
+							<span data-field="paid" class="flex items-center gap-3"
 								><span class="w-4 h-4 rounded bg-indigo-600"></span>Who paid
 								what</span
 							>
-							<span class="flex items-center gap-3"
+							<span data-field="settleup" class="flex items-center gap-3"
 								><span class="w-4 h-4 rounded bg-indigo-600"></span>Settle-up
 								plan</span
 							>
-							<span class="flex items-center gap-3 text-slate-400"
+							<span
+								data-field="fullList"
+								class="flex items-center gap-3 text-slate-400"
 								><span class="w-4 h-4 rounded border border-slate-300"></span
 								>Full expense list</span
 							>
-							<span class="flex items-center gap-3 text-slate-400"
+							<span
+								data-field="categoryBreakdown"
+								class="flex items-center gap-3 text-slate-400"
 								><span class="w-4 h-4 rounded border border-slate-300"></span
 								>Category breakdown</span
 							>
@@ -1385,7 +1522,7 @@ SETTLE UP
 			</section>
 
 			<!-- ============================================================ -->
-			<!-- SCREEN 08 — EMPTY STATES (completed from the original design bundle) -->
+			<!-- SCREEN 08 — EMPTY STATES -->
 			<!-- ============================================================ -->
 			<section id="screen-08" class="screen">
 				<h2 class="text-2xl font-bold mb-1">Empty and edge states</h2>
@@ -1395,6 +1532,7 @@ SETTLE UP
 
 				<div class="grid grid-cols-2 gap-5">
 					<div
+						id="emptyStateNoExpenses"
 						class="bg-white rounded-2xl shadow-sm border border-slate-200 p-9 flex flex-col items-center text-center gap-3 min-h-[230px] justify-center"
 					>
 						<span
@@ -1406,6 +1544,7 @@ SETTLE UP
 							in.
 						</p>
 						<button
+							id="emptyNoExpensesAddBtn"
 							class="tab-btn mt-1 px-5 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold"
 							data-target="screen-02"
 						>
@@ -1413,6 +1552,7 @@ SETTLE UP
 						</button>
 					</div>
 					<div
+						id="emptyStateNoFilterMatch"
 						class="bg-white rounded-2xl shadow-sm border border-slate-200 p-9 flex flex-col items-center text-center gap-3 min-h-[230px] justify-center"
 					>
 						<span
@@ -1423,12 +1563,14 @@ SETTLE UP
 							Person: Mia · Category: Lodging — 0 of 11 expenses.
 						</p>
 						<button
+							id="emptyNoFilterClearBtn"
 							class="mt-1 px-5 py-2 rounded-lg border border-slate-300 text-sm font-semibold"
 						>
 							Clear filters
 						</button>
 					</div>
 					<div
+						id="emptyStateAllSettled"
 						class="bg-[#111a35] rounded-2xl p-9 flex flex-col items-center text-center gap-3 min-h-[230px] justify-center"
 					>
 						<span
@@ -1439,6 +1581,7 @@ SETTLE UP
 							All balances are 0.00. Nothing left to settle for this trip.
 						</p>
 						<button
+							id="emptyAllSettledCopyBtn"
 							class="tab-btn mt-1 px-5 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold"
 							data-target="screen-07"
 						>
@@ -1446,6 +1589,7 @@ SETTLE UP
 						</button>
 					</div>
 					<div
+						id="emptyStateNoPeople"
 						class="bg-white rounded-2xl shadow-sm border border-slate-200 p-9 flex flex-col items-center text-center gap-3 min-h-[230px] justify-center"
 					>
 						<span
@@ -1456,6 +1600,7 @@ SETTLE UP
 							Expenses need at least one person. Add names to unlock the form.
 						</p>
 						<button
+							id="emptyNoPeopleAddBtn"
 							class="tab-btn mt-1 px-5 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold"
 							data-target="screen-01"
 						>
@@ -1480,8 +1625,6 @@ SETTLE UP
 		</footer>
 
 		<script>
-			// Pure UI chrome — swaps which pre-built screen is visible. No project
-			// logic lives here; every screen's data is hard-coded for the mockup.
 			document.querySelectorAll('.tab-btn').forEach((btn) => {
 				btn.addEventListener('click', () => {
 					const targetId = btn.dataset.target;

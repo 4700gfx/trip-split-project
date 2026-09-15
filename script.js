@@ -12,12 +12,35 @@ let activeFilters = {
 
 /* -------------------- DOM REFERENCES -------------------- */
 // TODO: cache every element you'll reuse in a `dom` object
+const personInput = document.querySelector('#personNameInput');
+const tripName = document.querySelector('#tripNameInput');
+const addPersonButton = document.querySelector('#addPersonBtn');
+const memberCount = document.querySelector('#memberCountBadge');
+const expenseCount = document.querySelector('#expenseCountBadge');
+const totalSpent = document.querySelector('#totalSpentBadge');
+// const currensyType = document.querySelector('');
+
+function initalCapString(name) {
+	if (!name) return;
+	return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+}
 
 /* ==================== TRIP-2: MEMBERS ==================== */
 
 function addPerson(rawName) {
 	// TODO: normalize + de-dupe case-insensitively, keep original casing, push, renderAll()
+	const person = {};
+
+	if (rawName == !String) return;
+
+	person.id = crypto.randomUUID();
+	person.name = initalCapString(rawName);
+	people.push(person);
+	console.log(`Added ${person.name} to the array`);
+	console.log(people);
 }
+
+addPerson('shek');
 
 function removePerson(personId) {
 	// TODO: block removal if referenced in any expense (paidBy or splitBetween); else filter out + renderAll()
