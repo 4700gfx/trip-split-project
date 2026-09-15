@@ -1,7 +1,13 @@
 /* TripSplit — script.js skeleton. Fill in every TODO. Sections map to TRIP-1..TRIP-12. */
 
 /* -------------------- STATE -------------------- */
-let people = []; // { id, name }
+let people = [
+	{ id: 'p1', name: 'Black' },
+	{ id: 'p2', name: 'Lou' },
+	{ id: 'p3', name: 'Kidd' },
+	{ id: 'p4', name: 'Slick' }
+];
+
 let expenses = []; // { id, description, amount, paidBy, category, splitType, splitBetween, customAmounts }
 
 let activeFilters = {
@@ -12,18 +18,25 @@ let activeFilters = {
 
 /* -------------------- DOM REFERENCES -------------------- */
 // TODO: cache every element you'll reuse in a `dom` object
-const personInput = document.querySelector('#personNameInput');
 const tripName = document.querySelector('#tripNameInput');
-const addPersonButton = document.querySelector('#addPersonBtn');
+const setupMemberName = document.querySelector('#setupPersonNameInput');
+const addPersonButton = document.querySelector('#setupAddPersonBtn');
 const memberCount = document.querySelector('#memberCountBadge');
 const expenseCount = document.querySelector('#expenseCountBadge');
 const totalSpent = document.querySelector('#totalSpentBadge');
-// const currensyType = document.querySelector('');
 
-function initalCapString(name) {
-	if (!name) return;
-	return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-}
+addPersonButton.addEventListener('click', () => {
+	const memberName = initalCapString(setupMemberName.value);
+	console.log(memberName);
+
+	if (!memberName) {
+		alert('Please Type in a Name');
+	} else {
+		addPerson(memberName);
+		renderMemberChips();
+		setupMemberName.value = '';
+	}
+});
 
 /* ==================== TRIP-2: MEMBERS ==================== */
 
@@ -40,7 +53,11 @@ function addPerson(rawName) {
 	console.log(people);
 }
 
-addPerson('shek');
+// addPersonButton.addEventListener('click', () => {
+// 	console.log('Added Member');
+// });
+
+function renderMemberPills() {}
 
 function removePerson(personId) {
 	// TODO: block removal if referenced in any expense (paidBy or splitBetween); else filter out + renderAll()
@@ -166,6 +183,26 @@ function handleCopySummary() {
 
 function renderAll() {
 	// TODO: call every render*()/populate*() function in an order where nothing reads stale data
+}
+
+function renderMemberChips() {
+	const memberListContainer = document.querySelector('#setupMembersList');
+	const memberPillRow = people
+		.map((person) => {
+			return `<span data-person="${person.name}" class="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full bg-indigo-50"><span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-semibold">P</span>${person.name} <span class="text-slate-400">×</span></span>`;
+		})
+		.join('');
+
+	memberListContainer.innerHTML = memberPillRow;
+}
+
+renderMemberChips();
+
+/* ==================== HELPER FUNCTIONS ==================== */
+
+function initalCapString(name) {
+	if (!name) return;
+	return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
 }
 
 /* ==================== EVENT WIRING ==================== */
