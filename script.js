@@ -13,10 +13,10 @@ const testExpenses = [
 		id: 'e1',
 		description: 'Groceries',
 		amount: 60,
-		paidBy: 'p1',
+		paidBy: 'p2',
 		category: 'food',
 		splitType: 'equal',
-		splitBetween: ['p2', 'p3', 'p4'],
+		splitBetween: ['p2', 'p4'],
 		customAmounts: null
 		// 60 / 4 = 15.00 exactly — sanity-check baseline, no remainder to worry about
 	},
@@ -27,7 +27,7 @@ const testExpenses = [
 		paidBy: 'p2',
 		category: 'transport',
 		splitType: 'equal',
-		splitBetween: ['p2', 'p3'], // Mia deliberately left out
+		splitBetween: ['p2', 'p4'], // Mia deliberately left out
 		customAmounts: null
 		// 37 / 3 = 12.3333... — forces your remainder-to-payer logic to fire
 	},
@@ -35,10 +35,10 @@ const testExpenses = [
 		id: 'e3',
 		description: 'Museum tickets',
 		amount: 42.5,
-		paidBy: 'p3',
+		paidBy: 'p2',
 		category: 'activities',
 		splitType: 'custom',
-		splitBetween: ['p2', 'p3', 'p4'], // Priya not in this one at all
+		splitBetween: ['p2', 'p4'], // Priya not in this one at all
 		customAmounts: { p2: 15.0, p3: 12.5, p4: 15.0 }
 		// sums exactly to 42.50 — should pass customSplitIsValid
 	},
@@ -49,7 +49,7 @@ const testExpenses = [
 		paidBy: 'p4',
 		category: 'general',
 		splitType: 'equal',
-		splitBetween: ['p4'],
+		splitBetween: ['p2', 'p4'],
 		customAmounts: null
 		// blank description -> should render/save as "Untitled expense"
 		// 18.75 / 2 = 9.375 -> another rounding case, only 2 people this time
@@ -61,7 +61,7 @@ const testExpenses = [
 		paidBy: 'p2',
 		category: 'food',
 		splitType: 'custom',
-		splitBetween: ['p2', 'p3', 'p4'],
+		splitBetween: ['p2', 'p4'],
 		customAmounts: { p1: 20, p2: 40, p3: 20, p4: 20 }
 		// payer (Alex) is ALSO in the split and owes his own $40 share of it —
 		// good check that your balance engine doesn't just zero out the payer
@@ -128,6 +128,7 @@ function addPerson(rawName) {
 }
 
 function renderMemberChips() {
+	//Setting the DOM Elements
 	const memberListContainer = document.querySelector('#setupMembersList');
 	const memberPillRow = people
 		.map((person) => {
@@ -135,6 +136,7 @@ function renderMemberChips() {
 		})
 		.join('');
 
+	//Adding Elements to Inner HTML
 	memberListContainer.innerHTML = memberPillRow;
 }
 
@@ -142,26 +144,39 @@ renderMemberChips();
 
 function removePerson(personId) {
 	// TODO: block removal if referenced in any expense (paidBy or splitBetween); else filter out + renderAll()
-	const owesBalance = testExpenses.some((expense) =>
-		expense.splitBetween.includes(personId)
+
+	//Checcking if the Person has a Balance
+	const owesBalance = testExpenses.some(
+		(expense) =>
+			expense.splitBetween.includes(personId) ||
+			expense.paidBy.includes(personId)
 	);
 
 	console.log(owesBalance);
 
 	if (owesBalance) {
+		//Returns if there is no Balance
 		alert(`You owe an Amount`);
 	} else {
-		console.log(`Person removed`);
+		//Filter the Person and Rerender
 		const updatedMembers = people.filter((person) => person.id !== personId);
 		people = updatedMembers;
 		console.log(people);
+		console.log(`Person removed`);
 		renderMemberChips();
 	}
 }
 
-function renderMembers() {
-	// TODO: rebuild #membersList from `people`; toggle empty state; refresh anything else that lists people
-}
+//DOM Element for Expense Form Input
+const expenseDescription = document.querySelector(
+	`#addExpenseDescriptionField`
+);
+const expenseAmount = document.querySelector('#addExpenseAmountField');
+const expensePayer = document.querySelector('#addExpensePayerField');
+const expenseCategory = document.querySelector('#addExpenseCategoryField');
+const expenseSplitTableContainer = document.querySelector(
+	'#addExpenseSplitTable'
+);
 
 /* ==================== TRIP-3: EXPENSE FORM ==================== */
 
