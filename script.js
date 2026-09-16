@@ -8,6 +8,66 @@ let people = [
 	{ id: 'p4', name: 'Slick' }
 ];
 
+const testExpenses = [
+	{
+		id: 'e1',
+		description: 'Groceries',
+		amount: 60,
+		paidBy: 'p1',
+		category: 'food',
+		splitType: 'equal',
+		splitBetween: ['p2', 'p3', 'p4'],
+		customAmounts: null
+		// 60 / 4 = 15.00 exactly — sanity-check baseline, no remainder to worry about
+	},
+	{
+		id: 'e2',
+		description: 'Taxi to airport',
+		amount: 37,
+		paidBy: 'p2',
+		category: 'transport',
+		splitType: 'equal',
+		splitBetween: ['p2', 'p3'], // Mia deliberately left out
+		customAmounts: null
+		// 37 / 3 = 12.3333... — forces your remainder-to-payer logic to fire
+	},
+	{
+		id: 'e3',
+		description: 'Museum tickets',
+		amount: 42.5,
+		paidBy: 'p3',
+		category: 'activities',
+		splitType: 'custom',
+		splitBetween: ['p2', 'p3', 'p4'], // Priya not in this one at all
+		customAmounts: { p2: 15.0, p3: 12.5, p4: 15.0 }
+		// sums exactly to 42.50 — should pass customSplitIsValid
+	},
+	{
+		id: 'e4',
+		description: '',
+		amount: 18.75,
+		paidBy: 'p4',
+		category: 'general',
+		splitType: 'equal',
+		splitBetween: ['p4'],
+		customAmounts: null
+		// blank description -> should render/save as "Untitled expense"
+		// 18.75 / 2 = 9.375 -> another rounding case, only 2 people this time
+	},
+	{
+		id: 'e5',
+		description: "Dinner — Alex's treat",
+		amount: 100,
+		paidBy: 'p2',
+		category: 'food',
+		splitType: 'custom',
+		splitBetween: ['p2', 'p3', 'p4'],
+		customAmounts: { p1: 20, p2: 40, p3: 20, p4: 20 }
+		// payer (Alex) is ALSO in the split and owes his own $40 share of it —
+		// good check that your balance engine doesn't just zero out the payer
+	}
+];
+
 let expenses = []; // { id, description, amount, paidBy, category, splitType, splitBetween, customAmounts }
 
 let activeFilters = {
@@ -24,18 +84,31 @@ const addPersonButton = document.querySelector('#setupAddPersonBtn');
 const memberCount = document.querySelector('#memberCountBadge');
 const expenseCount = document.querySelector('#expenseCountBadge');
 const totalSpent = document.querySelector('#totalSpentBadge');
+const memberListContainer = document.querySelector('#setupMembersList');
 
+//Adding a Person to Set Up Trip
 addPersonButton.addEventListener('click', () => {
 	const memberName = initalCapString(setupMemberName.value);
-	console.log(memberName);
 
 	if (!memberName) {
 		alert('Please Type in a Name');
 	} else {
+		console.log(memberName);
 		addPerson(memberName);
-		renderMemberChips();
 		setupMemberName.value = '';
 	}
+});
+
+memberListContainer.addEventListener('click', (event) => {
+	const deleteButton = event.target.closest('[data-person]');
+
+	if (!deleteButton) {
+		return;
+	}
+
+	const personId = deleteButton.dataset.person;
+	removePerson(personId);
+	renderMemberChips();
 });
 
 /* ==================== TRIP-2: MEMBERS ==================== */
@@ -44,23 +117,46 @@ function addPerson(rawName) {
 	// TODO: normalize + de-dupe case-insensitively, keep original casing, push, renderAll()
 	const person = {};
 
-	if (rawName == !String) return;
+	if (!rawName) return;
 
 	person.id = crypto.randomUUID();
 	person.name = initalCapString(rawName);
 	people.push(person);
+	renderMemberChips();
 	console.log(`Added ${person.name} to the array`);
 	console.log(people);
 }
 
-// addPersonButton.addEventListener('click', () => {
-// 	console.log('Added Member');
-// });
+function renderMemberChips() {
+	const memberListContainer = document.querySelector('#setupMembersList');
+	const memberPillRow = people
+		.map((person) => {
+			return `<span data-person="${person.id}" class="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full bg-indigo-50"><span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-semibold">${person.name.charAt(0).toUpperCase()}</span>${person.name} <span class="text-slate-400 remove-person-button">×</span></span>`;
+		})
+		.join('');
 
-function renderMemberPills() {}
+	memberListContainer.innerHTML = memberPillRow;
+}
+
+renderMemberChips();
 
 function removePerson(personId) {
 	// TODO: block removal if referenced in any expense (paidBy or splitBetween); else filter out + renderAll()
+	const owesBalance = testExpenses.some((expense) =>
+		expense.splitBetween.includes(personId)
+	);
+
+	console.log(owesBalance);
+
+	if (owesBalance) {
+		alert(`You owe an Amount`);
+	} else {
+		console.log(`Person removed`);
+		const updatedMembers = people.filter((person) => person.id !== personId);
+		people = updatedMembers;
+		console.log(people);
+		renderMemberChips();
+	}
 }
 
 function renderMembers() {
@@ -184,19 +280,6 @@ function handleCopySummary() {
 function renderAll() {
 	// TODO: call every render*()/populate*() function in an order where nothing reads stale data
 }
-
-function renderMemberChips() {
-	const memberListContainer = document.querySelector('#setupMembersList');
-	const memberPillRow = people
-		.map((person) => {
-			return `<span data-person="${person.name}" class="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full bg-indigo-50"><span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-semibold">P</span>${person.name} <span class="text-slate-400">×</span></span>`;
-		})
-		.join('');
-
-	memberListContainer.innerHTML = memberPillRow;
-}
-
-renderMemberChips();
 
 /* ==================== HELPER FUNCTIONS ==================== */
 
