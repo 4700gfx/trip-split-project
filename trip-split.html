@@ -344,24 +344,25 @@
 								<label class="block text-sm text-slate-600 mb-1"
 									>Description</label
 								>
-								<div
-									id="addExpenseDescriptionField"
-									class="border border-slate-300 rounded-lg px-3 py-2 text-sm"
-								>
-									Airbnb — 3 nights
-								</div>
+								<input
+									id="addExpenseDescriptionInput"
+									type="text"
+									placeholder="e.g. Airbnb — 3 nights"
+									class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
+								/>
 								<p class="text-xs text-slate-400 mt-1">
 									Leave blank and it saves as "Untitled expense"
 								</p>
 							</div>
 							<div>
 								<label class="block text-sm text-slate-600 mb-1">Amount</label>
-								<div
-									id="addExpenseAmountField"
-									class="border border-red-400 bg-red-50 rounded-lg px-3 py-2 text-sm"
-								>
-									0
-								</div>
+								<input
+									id="addExpenseAmountInput"
+									type="text"
+									inputmode="decimal"
+									placeholder="0.00"
+									class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
+								/>
 								<p id="addExpenseAmountError" class="text-xs text-red-600 mt-1">
 									Enter a number — letters and blanks are rejected.
 								</p>
@@ -371,23 +372,32 @@
 						<div class="grid grid-cols-2 gap-4 mb-6">
 							<div>
 								<label class="block text-sm text-slate-600 mb-1">Paid by</label>
-								<div
-									id="addExpensePayerField"
-									class="border border-slate-300 rounded-lg px-3 py-2 text-sm flex justify-between"
+								<select
+									id="addExpensePayerSelect"
+									class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white"
 								>
-									Priya <span class="text-slate-400">▾</span>
-								</div>
+									<option value="priya">Priya</option>
+									<option value="alex">Alex</option>
+									<option value="sam">Sam</option>
+									<option value="mia">Mia</option>
+								</select>
 							</div>
 							<div>
 								<label class="block text-sm text-slate-600 mb-1"
 									>Category</label
 								>
-								<div
-									id="addExpenseCategoryField"
-									class="border border-slate-300 rounded-lg px-3 py-2 text-sm flex justify-between"
+								<select
+									id="addExpenseCategorySelect"
+									class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white"
 								>
-									Lodging <span class="text-slate-400">▾</span>
-								</div>
+									<option value="general" selected>General</option>
+									<option value="lodging">Lodging</option>
+									<option value="food">Food</option>
+									<option value="transport">Transport</option>
+									<option value="activities">Activities</option>
+									<option value="shopping">Shopping</option>
+									<option value="other">Other</option>
+								</select>
 							</div>
 						</div>
 

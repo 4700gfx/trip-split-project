@@ -86,31 +86,6 @@ const expenseCount = document.querySelector('#expenseCountBadge');
 const totalSpent = document.querySelector('#totalSpentBadge');
 const memberListContainer = document.querySelector('#setupMembersList');
 
-//Adding a Person to Set Up Trip
-addPersonButton.addEventListener('click', () => {
-	const memberName = initalCapString(setupMemberName.value);
-
-	if (!memberName) {
-		alert('Please Type in a Name');
-	} else {
-		console.log(memberName);
-		addPerson(memberName);
-		setupMemberName.value = '';
-	}
-});
-
-memberListContainer.addEventListener('click', (event) => {
-	const deleteButton = event.target.closest('[data-person]');
-
-	if (!deleteButton) {
-		return;
-	}
-
-	const personId = deleteButton.dataset.person;
-	removePerson(personId);
-	renderMemberChips();
-});
-
 /* ==================== TRIP-2: MEMBERS ==================== */
 
 function addPerson(rawName) {
@@ -166,17 +141,6 @@ function removePerson(personId) {
 		renderMemberChips();
 	}
 }
-
-//DOM Element for Expense Form Input
-const expenseDescription = document.querySelector(
-	`#addExpenseDescriptionField`
-);
-const expenseAmount = document.querySelector('#addExpenseAmountField');
-const expensePayer = document.querySelector('#addExpensePayerField');
-const expenseCategory = document.querySelector('#addExpenseCategoryField');
-const expenseSplitTableContainer = document.querySelector(
-	'#addExpenseSplitTable'
-);
 
 /* ==================== TRIP-3: EXPENSE FORM ==================== */
 
@@ -309,3 +273,60 @@ document.addEventListener('DOMContentLoaded', () => {
 	// TODO: cache dom refs, wire all forms/buttons, use event delegation for #membersList and #expenseList
 	renderAll();
 });
+
+//Adding a Person to Set Up Trip
+addPersonButton.addEventListener('click', () => {
+	const memberName = initalCapString(setupMemberName.value);
+
+	if (!memberName) {
+		alert('Please Type in a Name');
+	} else {
+		console.log(memberName);
+		addPerson(memberName);
+		setupMemberName.value = '';
+	}
+});
+
+memberListContainer.addEventListener('click', (event) => {
+	const deleteButton = event.target.closest('[data-person]');
+
+	if (!deleteButton) {
+		return;
+	}
+
+	const personId = deleteButton.dataset.person;
+	removePerson(personId);
+	renderMemberChips();
+});
+
+//DOM Element for Expense Form Input
+const expenseDescription = document.querySelector(
+	`#addExpenseDescriptionInput`
+);
+const expenseAmount = document.querySelector('#addExpenseAmountInput');
+const expensePayer = document.querySelector('#addExpensePayerSelect');
+const expenseCategory = document.querySelector('#addExpenseCategorySelect');
+const expenseSplitTableContainer = document.querySelector(
+	'#addExpenseSplitTable'
+);
+const addExpenseButton = document.querySelector('#addExpenseSaveBtn');
+
+addExpenseButton.addEventListener('click', (event) => {
+	const newExpense = {};
+	const expenseId = crypto.randomUUID;
+	const expenseName = expenseDescription.value;
+	const expenseValue = expenseAmount.value;
+	const category = expenseCategory.value;
+});
+
+// {
+// 	id: 'e1',
+// 	description: 'Groceries',
+// 	amount: 60,
+// 	paidBy: 'p2',
+// 	category: 'food',
+// 	splitType: 'equal',
+// 	splitBetween: ['p2', 'p4'],
+// 	customAmounts: null
+// 	// 60 / 4 = 15.00 exactly — sanity-check baseline, no remainder to worry about
+// }
