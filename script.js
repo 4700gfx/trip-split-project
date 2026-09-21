@@ -207,7 +207,19 @@ function populateSplitCheckboxes() {
 
 function getCheckedSplitPersonIds() {
 	// TODO: return array of checked person ids
+	const peopleCheckbox = document.querySelectorAll('.split-person-checkbox');
+	const peopleCheckboxArr = [...peopleCheckbox];
+	console.log(peopleCheckboxArr);
+
+	//Filtered Checked Boxes
+	const checkedPeople = peopleCheckboxArr.filter(
+		(checkbox) => checkbox.checked
+	);
+
+	return checkedPeople.map((person) => person.dataset.personId);
 }
+
+function getCustomAmounts(checkedPersonId) {}
 
 function validateExpenseForm(values) {
 	// TODO: check amount is a valid number, splitBetween isn't empty, custom split sums correctly
@@ -315,6 +327,7 @@ function renderAll() {
 	renderMemberChips();
 	populatePayerDropdown();
 	populateSplitCheckboxes();
+	getCheckedSplitPersonIds();
 }
 
 /* ==================== HELPER FUNCTIONS ==================== */
@@ -353,7 +366,7 @@ memberListContainer.addEventListener('click', (event) => {
 
 	const personId = deleteButton.dataset.person;
 	removePerson(personId);
-	renderMemberChips();
+	renderAll();
 });
 
 addExpenseButton.addEventListener('click', (event) => {
