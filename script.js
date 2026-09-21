@@ -75,7 +75,7 @@ let activeFilters = {
 };
 
 /* -------------------- DOM REFERENCES -------------------- */
-// TODO: cache every element you'll reuse in a `dom` object
+//DOM Elements for Initial Setup
 const tripName = document.querySelector('#tripNameInput');
 const setupMemberName = document.querySelector('#setupPersonNameInput');
 const addPersonButton = document.querySelector('#setupAddPersonBtn');
@@ -83,6 +83,9 @@ const memberCount = document.querySelector('#memberCountBadge');
 const expenseCount = document.querySelector('#expenseCountBadge');
 const totalSpent = document.querySelector('#totalSpentBadge');
 const memberListContainer = document.querySelector('#setupMembersList');
+
+//DOM Elements for Adding Expenses
+const addExpenseSplitRows = document.querySelector('#addExpenseSplitRows');
 
 //DOM Element for Expense Form Input
 const expenseDescription = document.querySelector(
@@ -112,7 +115,7 @@ function addPerson(rawName) {
 	person.id = crypto.randomUUID();
 	person.name = initalCapString(rawName);
 	people.push(person);
-	renderMemberChips();
+	renderAll();
 	console.log(`Added ${person.name} to the array`);
 	console.log(people);
 }
@@ -137,7 +140,7 @@ function removePerson(personId) {
 		people = updatedMembers;
 		console.log(people);
 		console.log(`Person removed`);
-		renderMemberChips();
+		renderAll();
 	}
 }
 
@@ -154,8 +157,6 @@ function renderMemberChips() {
 	memberListContainer.innerHTML = memberPillRow;
 }
 
-renderMemberChips();
-
 /* ==================== TRIP-3: EXPENSE FORM ==================== */
 
 function populatePayerDropdown() {
@@ -171,10 +172,37 @@ function populatePayerDropdown() {
 	payerSelect.innerHTML = expensePayers;
 }
 
-populatePayerDropdown();
-
 function populateSplitCheckboxes() {
 	// TODO: rebuild #splitBetweenCheckboxes, one checkbox per person
+
+	const splitRowsHTML = people
+		.map((person) => {
+			return `<div data-person-id="${person.id}" 
+		class="grid grid-cols-[28px_1fr_120px_80px] gap-3 px-4 py-3 border-t border-slate-100 items-center text-sm">
+			<input
+				type="checkbox"
+				class="split-person-checkbox w-4 h-4"
+				data-person-id="${person.id}"
+			/>
+			<span class="flex items-center gap-2">
+				<span
+					class="w-5 h-5 rounded-full bg-slate-400 text-white text-[10px] flex items-center justify-center font-semibold"
+					>${person.name.charAt(0).toUpperCase()}</span
+				>${person.name}</span
+			>
+			<input
+				type="text"
+				inputmode="decimal"
+				class="split-person-amount border border-slate-300 rounded-md px-2 py-1 bg-white w-full"
+				data-person-id="${person.id}"
+				value=""
+			/>
+			<span class="text-right text-slate-500 split-person-share">—</span>
+		</div>`;
+		})
+		.join('');
+
+	addExpenseSplitRows.innerHTML = splitRowsHTML;
 }
 
 function getCheckedSplitPersonIds() {
@@ -282,7 +310,11 @@ function handleCopySummary() {
 /* ==================== RENDER ORCHESTRATION ==================== */
 
 function renderAll() {
-	// TODO: call every render*()/populate*() function in an order where nothing reads stale data
+	// TODO: call every render*()/populate*() function in an order where nothing reads stale 	data
+
+	renderMemberChips();
+	populatePayerDropdown();
+	populateSplitCheckboxes();
 }
 
 /* ==================== HELPER FUNCTIONS ==================== */
