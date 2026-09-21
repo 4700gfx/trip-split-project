@@ -406,17 +406,38 @@
 								class="text-xs font-semibold tracking-widest text-slate-400 uppercase"
 								>Split between</span
 							>
-							<div class="flex gap-1 p-1 rounded-full bg-slate-100">
-								<span
-									id="addExpenseSplitEqualBtn"
-									class="px-4 py-1.5 rounded-full text-sm text-slate-600"
-									>Equal</span
-								>
-								<span
-									id="addExpenseSplitCustomBtn"
-									class="px-4 py-1.5 rounded-full text-sm font-semibold bg-indigo-600 text-white"
-									>Custom</span
-								>
+							<div
+								class="flex gap-1 p-1 rounded-full bg-slate-100"
+								role="radiogroup"
+								aria-label="Split type"
+							>
+								<label class="cursor-pointer">
+									<input
+										type="radio"
+										name="splitType"
+										id="addExpenseSplitEqualRadio"
+										value="equal"
+										class="sr-only peer"
+										checked
+									/>
+									<span
+										class="block px-4 py-1.5 rounded-full text-sm text-slate-600 peer-checked:font-semibold peer-checked:bg-indigo-600 peer-checked:text-white"
+										>Equal</span
+									>
+								</label>
+								<label class="cursor-pointer">
+									<input
+										type="radio"
+										name="splitType"
+										id="addExpenseSplitCustomRadio"
+										value="custom"
+										class="sr-only peer"
+									/>
+									<span
+										class="block px-4 py-1.5 rounded-full text-sm text-slate-600 peer-checked:font-semibold peer-checked:bg-indigo-600 peer-checked:text-white"
+										>Custom</span
+									>
+								</label>
 							</div>
 						</div>
 
@@ -425,70 +446,14 @@
 							class="border border-slate-200 rounded-xl overflow-hidden mb-2"
 						>
 							<div
-								class="grid grid-cols-[1fr_120px_80px] gap-3 px-4 py-2 bg-slate-50 text-xs font-semibold tracking-wide text-slate-500 uppercase"
+								class="grid grid-cols-[28px_1fr_120px_80px] gap-3 px-4 py-2 bg-slate-50 text-xs font-semibold tracking-wide text-slate-500 uppercase"
 							>
-								<span>Person</span><span>Amount</span
+								<span></span><span>Person</span><span>Amount</span
 								><span class="text-right">Share</span>
 							</div>
-							<div
-								data-person="priya"
-								class="grid grid-cols-[1fr_120px_80px] gap-3 px-4 py-3 border-t border-slate-100 items-center text-sm"
-							>
-								<span class="flex items-center gap-2"
-									><span
-										class="w-5 h-5 rounded-full bg-indigo-600 text-white text-[10px] flex items-center justify-center font-semibold"
-										>P</span
-									>Priya</span
-								>
-								<span
-									class="border border-slate-300 rounded-md px-2 py-1 bg-white"
-									>200.00</span
-								>
-								<span class="text-right text-slate-500">37%</span>
-							</div>
-							<div
-								data-person="alex"
-								class="grid grid-cols-[1fr_120px_80px] gap-3 px-4 py-3 border-t border-slate-100 items-center text-sm"
-							>
-								<span class="flex items-center gap-2"
-									><span
-										class="w-5 h-5 rounded-full bg-violet-500 text-white text-[10px] flex items-center justify-center font-semibold"
-										>A</span
-									>Alex</span
-								>
-								<span
-									class="border border-slate-300 rounded-md px-2 py-1 bg-white"
-									>200.00</span
-								>
-								<span class="text-right text-slate-500">37%</span>
-							</div>
-							<div
-								data-person="sam"
-								class="grid grid-cols-[1fr_120px_80px] gap-3 px-4 py-3 border-t border-slate-100 items-center text-sm"
-							>
-								<span class="flex items-center gap-2"
-									><span
-										class="w-5 h-5 rounded-full bg-teal-600 text-white text-[10px] flex items-center justify-center font-semibold"
-										>S</span
-									>Sam</span
-								>
-								<span
-									class="border border-slate-300 rounded-md px-2 py-1 bg-white"
-									>120.00</span
-								>
-								<span class="text-right text-slate-500">22%</span>
-							</div>
-							<div
-								data-person="mia"
-								class="grid grid-cols-[1fr_120px_80px] gap-3 px-4 py-3 border-t border-slate-100 items-center text-sm text-slate-400"
-							>
-								<span class="flex items-center gap-2"
-									><span
-										class="w-5 h-5 rounded-full bg-slate-200 text-slate-400 text-[10px] flex items-center justify-center font-semibold"
-										>M</span
-									>Mia — not in this split</span
-								>
-								<span>—</span><span class="text-right">—</span>
+							<div id="addExpenseSplitRows">
+								<!-- populateSplitCheckboxes() rebuilds this container only —
+								     the header above and the shortfall row below stay put -->
 							</div>
 							<div
 								id="addExpenseShortfallRow"

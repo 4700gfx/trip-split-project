@@ -8,7 +8,7 @@ let people = [
 	{ id: 'p4', name: 'Slick' }
 ];
 
-const testExpenses = [
+let expenses = [
 	{
 		id: 'e1',
 		description: 'Groceries',
@@ -68,8 +68,6 @@ const testExpenses = [
 	}
 ];
 
-let expenses = []; // { id, description, amount, paidBy, category, splitType, splitBetween, customAmounts }
-
 let activeFilters = {
 	personId: 'all',
 	category: 'all',
@@ -86,13 +84,30 @@ const expenseCount = document.querySelector('#expenseCountBadge');
 const totalSpent = document.querySelector('#totalSpentBadge');
 const memberListContainer = document.querySelector('#setupMembersList');
 
+//DOM Element for Expense Form Input
+const expenseDescription = document.querySelector(
+	`#addExpenseDescriptionInput`
+);
+const expenseAmount = document.querySelector('#addExpenseAmountInput');
+const expensePayer = document.querySelector('#addExpensePayerSelect');
+const expenseCategory = document.querySelector('#addExpenseCategorySelect');
+const expenseSplitTableContainer = document.querySelector(
+	'#addExpenseSplitTable'
+);
+const addExpenseButton = document.querySelector('#addExpenseSaveBtn');
+
 /* ==================== TRIP-2: MEMBERS ==================== */
 
 function addPerson(rawName) {
 	// TODO: normalize + de-dupe case-insensitively, keep original casing, push, renderAll()
+	const alreadyEntered = people.some(
+		(person) => person.name === initalCapString(rawName.trim())
+	);
+
+	console.log(alreadyEntered ? 'This has been Entered' : 'This is a New User');
 	const person = {};
 
-	if (!rawName) return;
+	if (!rawName || alreadyEntered) return;
 
 	person.id = crypto.randomUUID();
 	person.name = initalCapString(rawName);
@@ -102,29 +117,13 @@ function addPerson(rawName) {
 	console.log(people);
 }
 
-function renderMemberChips() {
-	//Setting the DOM Elements
-	const memberListContainer = document.querySelector('#setupMembersList');
-	const memberPillRow = people
-		.map((person) => {
-			return `<span data-person="${person.id}" class="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full bg-indigo-50"><span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-semibold">${person.name.charAt(0).toUpperCase()}</span>${person.name} <span class="text-slate-400 remove-person-button">×</span></span>`;
-		})
-		.join('');
-
-	//Adding Elements to Inner HTML
-	memberListContainer.innerHTML = memberPillRow;
-}
-
-renderMemberChips();
-
 function removePerson(personId) {
 	// TODO: block removal if referenced in any expense (paidBy or splitBetween); else filter out + renderAll()
 
 	//Checcking if the Person has a Balance
-	const owesBalance = testExpenses.some(
+	const owesBalance = expenses.some(
 		(expense) =>
-			expense.splitBetween.includes(personId) ||
-			expense.paidBy.includes(personId)
+			expense.splitBetween.includes(personId) || expense.paidBy === personId
 	);
 
 	console.log(owesBalance);
@@ -142,11 +141,37 @@ function removePerson(personId) {
 	}
 }
 
+function renderMemberChips() {
+	//Setting the DOM Elements
+	const memberListContainer = document.querySelector('#setupMembersList');
+	const memberPillRow = people
+		.map((person) => {
+			return `<span data-person="${person.id}" class="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full bg-indigo-50"><span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-semibold">${person.name.charAt(0).toUpperCase()}</span>${person.name} <span class="text-slate-400 remove-person-button">×</span></span>`;
+		})
+		.join('');
+
+	//Adding Elements to Inner HTML
+	memberListContainer.innerHTML = memberPillRow;
+}
+
+renderMemberChips();
+
 /* ==================== TRIP-3: EXPENSE FORM ==================== */
 
 function populatePayerDropdown() {
-	// TODO: rebuild #expensePayer options from `people`
+	// TODO: rebuild #expensePayer options from people
+	const payerSelect = document.querySelector('#addExpensePayerSelect');
+
+	const expensePayers = people
+		.map((person) => {
+			return `<option value='${person.id}'>${person.name}</option>`;
+		})
+		.join('');
+
+	payerSelect.innerHTML = expensePayers;
 }
+
+populatePayerDropdown();
 
 function populateSplitCheckboxes() {
 	// TODO: rebuild #splitBetweenCheckboxes, one checkbox per person
@@ -299,21 +324,9 @@ memberListContainer.addEventListener('click', (event) => {
 	renderMemberChips();
 });
 
-//DOM Element for Expense Form Input
-const expenseDescription = document.querySelector(
-	`#addExpenseDescriptionInput`
-);
-const expenseAmount = document.querySelector('#addExpenseAmountInput');
-const expensePayer = document.querySelector('#addExpensePayerSelect');
-const expenseCategory = document.querySelector('#addExpenseCategorySelect');
-const expenseSplitTableContainer = document.querySelector(
-	'#addExpenseSplitTable'
-);
-const addExpenseButton = document.querySelector('#addExpenseSaveBtn');
-
 addExpenseButton.addEventListener('click', (event) => {
 	const newExpense = {};
-	const expenseId = crypto.randomUUID;
+	const expenseId = crypto.randomUUID();
 	const expenseName = expenseDescription.value;
 	const expenseValue = expenseAmount.value;
 	const category = expenseCategory.value;
