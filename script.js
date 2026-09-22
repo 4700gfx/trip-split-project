@@ -219,7 +219,16 @@ function getCheckedSplitPersonIds() {
 	return checkedPeople.map((person) => person.dataset.personId);
 }
 
-function getCustomAmounts(checkedPersonId) {}
+function getCustomAmounts(checkedPersonId) {
+	const checkedPeople = [
+		...document.querySelectorAll('.split-person-checkbox')
+	].filter((checkbox) => checkbox.checked);
+	console.log(checkedPeople);
+
+	checkedPeople.reduce((accumulator, currentItem) => {
+		return accumulator;
+	}, {});
+}
 
 function validateExpenseForm(values) {
 	// TODO: check amount is a valid number, splitBetween isn't empty, custom split sums correctly
@@ -328,6 +337,7 @@ function renderAll() {
 	populatePayerDropdown();
 	populateSplitCheckboxes();
 	getCheckedSplitPersonIds();
+	getCustomAmounts();
 }
 
 /* ==================== HELPER FUNCTIONS ==================== */
