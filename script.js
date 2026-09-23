@@ -220,11 +220,6 @@ function getCheckedSplitPersonIds() {
 }
 
 function getCustomAmounts(checkedPersonId) {
-	const checkedPeople = [
-		...document.querySelectorAll('.split-person-checkbox')
-	].filter((checkbox) => checkbox.checked);
-	console.log(checkedPeople);
-
 	checkedPeople.reduce((accumulator, currentItem) => {
 		return accumulator;
 	}, {});
