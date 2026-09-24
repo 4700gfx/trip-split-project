@@ -219,11 +219,17 @@ function getCheckedSplitPersonIds() {
 	return checkedPeople.map((person) => person.dataset.personId);
 }
 
-function getCustomAmounts(checkedPersonId) {
-	checkedPeople.reduce((accumulator, currentItem) => {
-		return accumulator;
-	}, {});
-}
+// function getCustomAmounts(checkedPersonId) {
+// 	checkedPersonId.reduce((accumulator, currentItem) => {
+// 		const splitAmount = document.querySelector(
+// 			`.split-person-amount[data-person-id="${currentItem}"]`
+// 		);
+
+// 		accumulator[currentItem] = splitAmount;
+// 		console.log(splitAmount);
+// 		return accumulator;
+// 	}, {});
+// }
 
 function validateExpenseForm(values) {
 	// TODO: check amount is a valid number, splitBetween isn't empty, custom split sums correctly
