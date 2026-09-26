@@ -219,17 +219,20 @@ function getCheckedSplitPersonIds() {
 	return checkedPeople.map((person) => person.dataset.personId);
 }
 
-// function getCustomAmounts(checkedPersonId) {
-// 	checkedPersonId.reduce((accumulator, currentItem) => {
-// 		const splitAmount = document.querySelector(
-// 			`.split-person-amount[data-person-id="${currentItem}"]`
-// 		);
+function getCustomAmounts(checkedPersonId) {
+	const customAmountObj = checkedPersonId.reduce((accumulator, currentItem) => {
+		const splitAmount = document.querySelector(
+			`.split-person-amount[data-person-id="${currentItem}"]`
+		);
 
-// 		accumulator[currentItem] = splitAmount;
-// 		console.log(splitAmount);
-// 		return accumulator;
-// 	}, {});
-// }
+		accumulator[currentItem] = Number(splitAmount.value);
+
+		console.log(Number(splitAmount.value));
+		return accumulator;
+	}, {});
+
+	return customAmountObj;
+}
 
 function validateExpenseForm(values) {
 	// TODO: check amount is a valid number, splitBetween isn't empty, custom split sums correctly
@@ -337,8 +340,6 @@ function renderAll() {
 	renderMemberChips();
 	populatePayerDropdown();
 	populateSplitCheckboxes();
-	getCheckedSplitPersonIds();
-	getCustomAmounts();
 }
 
 /* ==================== HELPER FUNCTIONS ==================== */
@@ -368,6 +369,7 @@ addPersonButton.addEventListener('click', () => {
 	}
 });
 
+//Deleting a Member from Expense
 memberListContainer.addEventListener('click', (event) => {
 	const deleteButton = event.target.closest('[data-person]');
 
@@ -380,12 +382,48 @@ memberListContainer.addEventListener('click', (event) => {
 	renderAll();
 });
 
+//Adding Expenses
 addExpenseButton.addEventListener('click', (event) => {
+	//Initalizing New Expense Object
 	const newExpense = {};
-	const expenseId = crypto.randomUUID();
-	const expenseName = expenseDescription.value;
-	const expenseValue = expenseAmount.value;
+
+	//Reading the Value of DOM Elements
+	const payer = expensePayer.value;
+	const expenseName = !expenseDescription.value
+		? 'Untitled Expense'
+		: expenseDescription.value;
+
 	const category = expenseCategory.value;
+	const expenseId = crypto.randomUUID();
+
+	//Gaurd Clause for If the Expense is not a Number
+	if (typeof Number(expenseAmount.value) !== 'number') {
+		return `Please add a Valid Number for This Expense`;
+	}
+
+	const amountValue = Number(expenseAmount.value);
+	const splitType = document.querySelector(
+		'input[name="splitType"]:checked'
+	).value;
+	const splitBetween = getCheckedSplitPersonIds();
+	const customAmounts =
+		splitType === 'custom' ? getCustomAmounts(splitBetween) : null;
+
+	//New Expense Object Properties
+	newExpense.id = expenseId;
+	newExpense.description = expenseName;
+	newExpense.amount = amountValue;
+	newExpense.paidBy = payer;
+	newExpense.category = category;
+	newExpense.splitType = splitType;
+	newExpense.splitBetween = splitBetween;
+	newExpense.customAmount = customAmounts;
+
+	//Pushing New Expense and Clearing Form Fields
+	expenses.push(newExpense);
+	expenseDescription.value = '';
+	expenseCategory.value = '';
+	expenseAmount.value = 0;
 });
 
 // {
