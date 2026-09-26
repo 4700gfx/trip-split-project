@@ -134,6 +134,7 @@ function removePerson(personId) {
 	if (owesBalance) {
 		//Returns if there is no Balance
 		alert(`You owe an Amount`);
+		return;
 	} else {
 		//Filter the Person and Rerender
 		const updatedMembers = people.filter((person) => person.id !== personId);
@@ -395,17 +396,27 @@ addExpenseButton.addEventListener('click', (event) => {
 
 	const category = expenseCategory.value;
 	const expenseId = crypto.randomUUID();
+	const amountValue = Number(expenseAmount.value);
 
 	//Gaurd Clause for If the Expense is not a Number
-	if (typeof Number(expenseAmount.value) !== 'number') {
-		return `Please add a Valid Number for This Expense`;
+	if (Number.isNaN(amountValue)) {
+		alert(`Please add a Valid Number for This Expense`);
+		return;
 	}
 
-	const amountValue = Number(expenseAmount.value);
 	const splitType = document.querySelector(
 		'input[name="splitType"]:checked'
 	).value;
-	const splitBetween = getCheckedSplitPersonIds();
+	// const splitBetween =
+	// 	getCheckedSplitPersonIds() || alert('Check a Box to Continue');
+
+	let splitBetween = getCheckedSplitPersonIds();
+
+	if (splitBetween.length === 0) {
+		alert('Click a box to continue');
+		return;
+	}
+
 	const customAmounts =
 		splitType === 'custom' ? getCustomAmounts(splitBetween) : null;
 
@@ -417,12 +428,13 @@ addExpenseButton.addEventListener('click', (event) => {
 	newExpense.category = category;
 	newExpense.splitType = splitType;
 	newExpense.splitBetween = splitBetween;
-	newExpense.customAmount = customAmounts;
+	newExpense.customAmounts = customAmounts;
 
 	//Pushing New Expense and Clearing Form Fields
+	console.dir(newExpense);
 	expenses.push(newExpense);
 	expenseDescription.value = '';
-	expenseCategory.value = '';
+	expenseCategory.value = 'general';
 	expenseAmount.value = 0;
 });
 
