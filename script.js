@@ -251,9 +251,30 @@ function handleExpenseFormSubmit(event) {
 const splitCalculator = (() => {
 	function equalSplit(amount, memberIds, payerId) {
 		// TODO: divide evenly, give the leftover cent to payerId
+		const totalCents = Math.round(amount * 100);
+		const baseCentShare = Math.floor(totalCents / memberIds.length);
+		const leftoverCents = totalCents - baseCentShare * memberIds.length;
+		const equalSplitAmount = memberIds.reduce((accumulator, currentMember) => {
+			if (currentMember === payerId) {
+				accumulator[currentMember] = (baseCentShare + leftoverCents) / 100;
+			} else {
+				accumulator[currentMember] = baseCentShare / 100;
+			}
+
+			console.log(accumulator);
+			return accumulator;
+		}, {});
+
+		return equalSplitAmount;
 	}
 	function customSplitIsValid(amount, customAmounts) {
 		// TODO: sum with reduce, compare with Math.abs(sum - amount) < 0.01
+		const customAmountValues = Object.values(customAmounts);
+		const sum = customAmountValues.reduce(
+			(accumulator, currentValue) => accumulator + currentValue,
+			0
+		);
+		return Math.abs(sum - amount) < 0.01;
 	}
 	return { equalSplit, customSplitIsValid };
 })();
@@ -280,26 +301,31 @@ function renderExpenseList() {
 			: expenses
 					.map((expense) => {
 						const payer = people.find((person) => expense.paidBy === person.id);
-
 						return `<div
-						data-expense-id="${expense.id}"
-						class="grid grid-cols-[1fr_120px_120px_110px] gap-3 px-5 py-3 border-t border-slate-100 items-center text-sm"
-					>
-						<span class="font-medium">${expense.description}</span>
-						<span
-							><span
-								class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs"
-								>${initalCapString(expense.category)}</span
-							></span
+							data-expense-id="${expense.id}"
+							class="grid grid-cols-[1fr_120px_120px_110px_70px] gap-3 px-5 py-3 border-t border-slate-100 items-center text-sm"
 						>
-						<span class="flex items-center gap-2"
-							><span
-								class="w-5 h-5 rounded-full bg-slate-400 text-white text-[10px] flex items-center justify-center font-semibold"
-								>${payer?.name?.charAt(0).toUpperCase() ?? 'U'}</span
-							>${payer?.name ?? 'Unknown'}</span
-						>
-						<span class="text-right font-semibold">$${expense.amount.toFixed(2)}</span>
-					</div>`;
+							<span class="font-medium">${expense.description}</span>
+							<span
+								><span
+									class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs"
+									>${initalCapString(expense.category)}</span
+								></span
+							>
+							<span class="flex items-center gap-2"
+								><span
+									class="w-5 h-5 rounded-full bg-slate-400 text-white text-[10px] flex items-center justify-center font-semibold"
+									>${payer?.name?.charAt(0).toUpperCase() ?? 'U'}</span
+								>${payer?.name ?? 'Unknown'}</span
+							>
+							<span class="text-right font-semibold">$${expense.amount.toFixed(2)}</span>
+							<button
+								class="delete-expense-btn text-red-600 text-xs font-medium justify-self-end"
+								data-expense-id="${expense.id}"
+							>
+								Delete
+							</button>
+						</div>`;
 					})
 					.join('');
 
@@ -312,6 +338,11 @@ function getFilteredSortedExpenses() {
 
 function deleteExpense(expenseId) {
 	// TODO: filter it out, renderAll()
+	const filteredExpenses = expenses.filter(
+		(expense) => expense.id !== expenseId
+	);
+	expenses = filteredExpenses;
+	renderAll();
 }
 
 function startEditingExpense(expenseId) {
@@ -463,6 +494,14 @@ addExpenseButton.addEventListener('click', (event) => {
 	const customAmounts =
 		splitType === 'custom' ? getCustomAmounts(splitBetween) : null;
 
+	if (
+		splitType === 'custom' &&
+		!splitCalculator.customSplitIsValid(amountValue, customAmounts)
+	) {
+		alert(`All splits must add to ${amountValue}`);
+		return;
+	}
+
 	//New Expense Object Properties
 	newExpense.id = expenseId;
 	newExpense.description = expenseName;
@@ -482,14 +521,11 @@ addExpenseButton.addEventListener('click', (event) => {
 	expenseAmount.value = 0;
 });
 
-// {
-// 	id: 'e1',
-// 	description: 'Groceries',
-// 	amount: 60,
-// 	paidBy: 'p2',
-// 	category: 'food',
-// 	splitType: 'equal',
-// 	splitBetween: ['p2', 'p4'],
-// 	customAmounts: null
-// 	// 60 / 4 = 15.00 exactly — sanity-check baseline, no remainder to worry about
-// }
+expensesRows.addEventListener('click', (event) => {
+	const deleteButton = event.target.closest('.delete-expense-btn');
+
+	if (!deleteButton) return;
+
+	const expenseId = deleteButton.dataset.expenseId;
+	deleteExpense(expenseId);
+});
