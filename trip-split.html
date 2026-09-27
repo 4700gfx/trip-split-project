@@ -566,7 +566,6 @@
 								>
 							</div>
 						</div>
-
 						<div
 							id="expensesList"
 							class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
@@ -577,150 +576,11 @@
 								<span>Description</span><span>Category</span><span>Paid by</span
 								><span class="text-right">Amount</span>
 							</div>
-
-							<div
-								data-expense="airbnb"
-								class="border-t border-slate-100 bg-indigo-50/60"
-							>
-								<div
-									class="grid grid-cols-[1fr_120px_120px_110px] gap-3 px-5 py-3 items-center text-sm"
-								>
-									<span class="font-medium">Airbnb — 3 nights</span>
-									<span
-										><span
-											class="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-xs"
-											>Lodging</span
-										></span
-									>
-									<span class="flex items-center gap-2"
-										><span
-											class="w-5 h-5 rounded-full bg-indigo-600 text-white text-[10px] flex items-center justify-center font-semibold"
-											>P</span
-										>Priya</span
-									>
-									<span class="text-right font-semibold">$540.00</span>
-								</div>
-								<div id="expensesExpandedDetail" class="px-5 pb-4 pl-14">
-									<div class="flex gap-4 text-xs text-slate-500 mb-2">
-										<span>Custom split · 3 of 4 people</span
-										><span>Added 12 Mar</span>
-										<a href="#" class="font-medium text-indigo-600">Edit</a
-										><a href="#" class="font-medium text-indigo-600"
-											>Duplicate</a
-										><a href="#" class="font-medium text-red-600">Delete</a>
-									</div>
-									<div
-										class="border border-slate-200 rounded-lg overflow-hidden bg-white text-sm"
-									>
-										<div
-											class="grid grid-cols-[1fr_100px_100px_1.2fr] gap-3 px-4 py-2 bg-slate-50 text-xs font-semibold uppercase text-slate-500"
-										>
-											<span>Person</span><span class="text-right">Owes</span
-											><span class="text-right">Paid</span><span></span>
-										</div>
-										<div
-											data-person="priya"
-											class="grid grid-cols-[1fr_100px_100px_1.2fr] gap-3 px-4 py-2 border-t border-slate-100"
-										>
-											<span>Priya</span><span class="text-right">200.00</span
-											><span class="text-right">540.00</span
-											><span class="text-emerald-700">is owed 340.00 here</span>
-										</div>
-										<div
-											data-person="alex"
-											class="grid grid-cols-[1fr_100px_100px_1.2fr] gap-3 px-4 py-2 border-t border-slate-100"
-										>
-											<span>Alex</span><span class="text-right">200.00</span
-											><span class="text-right text-slate-400">—</span
-											><span class="text-slate-500">owes Priya 200.00</span>
-										</div>
-										<div
-											data-person="sam"
-											class="grid grid-cols-[1fr_100px_100px_1.2fr] gap-3 px-4 py-2 border-t border-slate-100"
-										>
-											<span>Sam</span><span class="text-right">140.00</span
-											><span class="text-right text-slate-400">—</span
-											><span class="text-slate-500">owes Priya 140.00</span>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<div
-								data-expense="dinner"
-								class="grid grid-cols-[1fr_120px_120px_110px] gap-3 px-5 py-3 border-t border-slate-100 items-center text-sm"
-							>
-								<span class="font-medium">Group dinner — Bairro Alto</span>
-								<span
-									><span
-										class="px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 text-xs"
-										>Food</span
-									></span
-								>
-								<span class="flex items-center gap-2"
-									><span
-										class="w-5 h-5 rounded-full bg-teal-600 text-white text-[10px] flex items-center justify-center font-semibold"
-										>S</span
-									>Sam</span
-								>
-								<span class="text-right font-semibold">$312.40</span>
-							</div>
-							<div
-								data-expense="tram"
-								class="grid grid-cols-[1fr_120px_120px_110px] gap-3 px-5 py-3 border-t border-slate-100 items-center text-sm"
-							>
-								<span class="font-medium">Tram passes ×4</span>
-								<span
-									><span
-										class="px-2 py-0.5 rounded-full bg-teal-100 text-teal-700 text-xs"
-										>Transport</span
-									></span
-								>
-								<span class="flex items-center gap-2"
-									><span
-										class="w-5 h-5 rounded-full bg-orange-400 text-white text-[10px] flex items-center justify-center font-semibold"
-										>M</span
-									>Mia</span
-								>
-								<span class="text-right font-semibold">$148.00</span>
-							</div>
-							<div
-								data-expense="untitled"
-								class="grid grid-cols-[1fr_120px_120px_110px] gap-3 px-5 py-3 border-t border-slate-100 items-center text-sm"
-							>
-								<span class="font-medium text-slate-400">Untitled expense</span>
-								<span
-									><span
-										class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs"
-										>General</span
-									></span
-								>
-								<span class="flex items-center gap-2"
-									><span
-										class="w-5 h-5 rounded-full bg-violet-500 text-white text-[10px] flex items-center justify-center font-semibold"
-										>A</span
-									>Alex</span
-								>
-								<span class="text-right font-semibold">$64.00</span>
-							</div>
-							<div
-								data-expense="pasteis"
-								class="grid grid-cols-[1fr_120px_120px_110px] gap-3 px-5 py-3 border-t border-slate-100 items-center text-sm"
-							>
-								<span class="font-medium">Pastéis de Belém</span>
-								<span
-									><span
-										class="px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 text-xs"
-										>Food</span
-									></span
-								>
-								<span class="flex items-center gap-2"
-									><span
-										class="w-5 h-5 rounded-full bg-teal-600 text-white text-[10px] flex items-center justify-center font-semibold"
-										>S</span
-									>Sam</span
-								>
-								<span class="text-right font-semibold">$18.60</span>
+							<div id="expensesRows">
+								<!-- renderExpenseList() rebuilds this container only —
+								     the header above stays static. Render either the row
+								     markup for each expense, or an empty-state message,
+								     based on expenses.length. -->
 							</div>
 						</div>
 					</div>

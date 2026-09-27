@@ -407,8 +407,6 @@ addExpenseButton.addEventListener('click', (event) => {
 	const splitType = document.querySelector(
 		'input[name="splitType"]:checked'
 	).value;
-	// const splitBetween =
-	// 	getCheckedSplitPersonIds() || alert('Check a Box to Continue');
 
 	let splitBetween = getCheckedSplitPersonIds();
 
