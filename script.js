@@ -16,7 +16,7 @@ let expenses = [
 		paidBy: 'p2',
 		category: 'food',
 		splitType: 'equal',
-		splitBetween: ['p2', 'p4'],
+		splitBetween: ['p1', 'p2', 'p3', 'p4'],
 		customAmounts: null
 		// 60 / 4 = 15.00 exactly — sanity-check baseline, no remainder to worry about
 	},
@@ -27,7 +27,7 @@ let expenses = [
 		paidBy: 'p2',
 		category: 'transport',
 		splitType: 'equal',
-		splitBetween: ['p2', 'p4'], // Mia deliberately left out
+		splitBetween: ['p2', 'p3', 'p4'], // Black deliberately left out
 		customAmounts: null
 		// 37 / 3 = 12.3333... — forces your remainder-to-payer logic to fire
 	},
@@ -38,7 +38,7 @@ let expenses = [
 		paidBy: 'p2',
 		category: 'activities',
 		splitType: 'custom',
-		splitBetween: ['p2', 'p4'], // Priya not in this one at all
+		splitBetween: ['p2', 'p3', 'p4'], // Black not in this one at all
 		customAmounts: { p2: 15.0, p3: 12.5, p4: 15.0 }
 		// sums exactly to 42.50 — should pass customSplitIsValid
 	},
@@ -56,14 +56,14 @@ let expenses = [
 	},
 	{
 		id: 'e5',
-		description: "Dinner — Alex's treat",
+		description: "Dinner — Lou's treat",
 		amount: 100,
 		paidBy: 'p2',
 		category: 'food',
 		splitType: 'custom',
-		splitBetween: ['p2', 'p4'],
+		splitBetween: ['p1', 'p2', 'p3', 'p4'],
 		customAmounts: { p1: 20, p2: 40, p3: 20, p4: 20 }
-		// payer (Alex) is ALSO in the split and owes his own $40 share of it —
+		// payer (Lou) is ALSO in the split and owes their own $40 share of it —
 		// good check that your balance engine doesn't just zero out the payer
 	}
 ];
@@ -357,7 +357,49 @@ function cancelEditingExpense() {
 
 function computeBalances() {
 	// TODO: reduce over `expenses` into a Map<personId, netAmount>, starting everyone at 0
+
+	//Create New Map for Shares
+	const balanceMap = new Map(people.map((person) => [person.id, 0]));
+	console.log(balanceMap);
+
+	//Reduces Shares into Map
+	const balances = expenses.reduce((accumulator, expense) => {
+		//Determine Shares based on Split Type
+		const shares =
+			expense.splitType === 'custom'
+				? expense.customAmounts
+				: splitCalculator.equalSplit(
+						expense.amount,
+						expense.splitBetween,
+						expense.paidBy
+					);
+
+		//Getting and Setting Payer Share
+		const payerCurrent = accumulator.get(expense.paidBy);
+		accumulator.set(expense.paidBy, payerCurrent + expense.amount);
+
+		//Retriving Shares
+		const shareMembers = Object.keys(shares);
+
+		//Filters the Share List with Split Between
+		const filteredMembers = expense.splitBetween.filter((memberId) =>
+			shareMembers.includes(memberId)
+		);
+
+		//Loop Over Filter Member and Map their Values
+		filteredMembers.forEach((member) => {
+			const memberCurrent = accumulator.get(member);
+			accumulator.set(member, memberCurrent - shares[member]);
+		});
+
+		return accumulator;
+	}, balanceMap);
+
+	return balances;
 }
+
+const result = computeBalances();
+console.log([...result.values()].reduce((a, b) => a + b, 0));
 
 function renderBalances() {
 	// TODO: render computeBalances(); toggle empty state
