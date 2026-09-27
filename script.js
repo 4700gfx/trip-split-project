@@ -99,6 +99,8 @@ const expenseSplitTableContainer = document.querySelector(
 );
 const addExpenseButton = document.querySelector('#addExpenseSaveBtn');
 
+const expensesRows = document.querySelector('#expensesRows');
+
 /* ==================== TRIP-2: MEMBERS ==================== */
 
 function addPerson(rawName) {
@@ -257,13 +259,55 @@ const splitCalculator = (() => {
 })();
 
 /* ==================== TRIP-4 / TRIP-8: EXPENSE LIST ==================== */
+function renderExpenseList() {
+	// TODO: render getFilteredSortedExpenses(); toggle the two empty states correctly
+
+	const rowsHTML =
+		expenses.length === 0
+			? `<div class="flex flex-col items-center text-center gap-3 py-12 px-6">
+		<span class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100"></span>
+		<p class="text-xl font-bold">No expenses yet</p>
+		<p class="text-sm text-slate-500 max-w-xs">
+			Log the first thing someone paid for and balances start filling in.
+		</p>
+		<button
+			class="tab-btn mt-1 px-5 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold"
+			data-target="screen-02"
+		>
+			Add expense
+		</button>
+	</div>`
+			: expenses
+					.map((expense) => {
+						const payer = people.find((person) => expense.paidBy === person.id);
+
+						return `<div
+						data-expense-id="${expense.id}"
+						class="grid grid-cols-[1fr_120px_120px_110px] gap-3 px-5 py-3 border-t border-slate-100 items-center text-sm"
+					>
+						<span class="font-medium">${expense.description}</span>
+						<span
+							><span
+								class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs"
+								>${initalCapString(expense.category)}</span
+							></span
+						>
+						<span class="flex items-center gap-2"
+							><span
+								class="w-5 h-5 rounded-full bg-slate-400 text-white text-[10px] flex items-center justify-center font-semibold"
+								>${payer?.name?.charAt(0).toUpperCase() ?? 'U'}</span
+							>${payer?.name ?? 'Unknown'}</span
+						>
+						<span class="text-right font-semibold">$${expense.amount.toFixed(2)}</span>
+					</div>`;
+					})
+					.join('');
+
+	expensesRows.innerHTML = rowsHTML;
+}
 
 function getFilteredSortedExpenses() {
 	// TODO: filter `expenses` by activeFilters, sort a COPY with an explicit comparator
-}
-
-function renderExpenseList() {
-	// TODO: render getFilteredSortedExpenses(); toggle the two empty states correctly
 }
 
 function deleteExpense(expenseId) {
@@ -339,6 +383,7 @@ function renderAll() {
 	// TODO: call every render*()/populate*() function in an order where nothing reads stale 	data
 
 	renderMemberChips();
+	renderExpenseList();
 	populatePayerDropdown();
 	populateSplitCheckboxes();
 }
@@ -431,6 +476,7 @@ addExpenseButton.addEventListener('click', (event) => {
 	//Pushing New Expense and Clearing Form Fields
 	console.dir(newExpense);
 	expenses.push(newExpense);
+	renderAll();
 	expenseDescription.value = '';
 	expenseCategory.value = 'general';
 	expenseAmount.value = 0;
