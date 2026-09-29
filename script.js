@@ -409,6 +409,50 @@ function renderBalances() {
 
 function computeSettlements(balancesMap) {
 	// TODO: greedy match largest creditor vs largest debtor until all balances are ~0
+
+	//Turn the Balances Map into an Array of Objects
+	const mainBalances = Array.from(balancesMap, ([id, balance]) => ({
+		id,
+		balance
+	})).filter((person) => Math.abs(person.balance) > 0.01);
+
+	//Filter Out All Members with $0 Balance
+	const sortedBalances = mainBalances.sort((a, b) => b.balance - a.balance);
+	console.log(sortedBalances);
+
+	//Adding Payment Until It Hits $0
+	const payments = [];
+
+	while (sortedBalances.length > 1) {
+		const creditor = sortedBalances[0]; //Highest Creditor
+		const debtor = sortedBalances[sortedBalances.length - 1]; // Highest Debtor
+
+		const paymentAmount = Math.min(creditor.balance, Math.abs(debtor.balance));
+
+		payments.push({
+			from: debtor.id,
+			to: creditor.id,
+			amount: paymentAmount.toFixed(2)
+		});
+
+		console.log(payments);
+
+		//Removes Balances Owed and Collected for After Pushing
+		creditor.balance -= paymentAmount;
+		debtor.balance += paymentAmount;
+
+		//Checkes to See If Credit Still Owes and Removes if Not
+		if (Math.abs(creditor.balance) < 0.01) {
+			sortedBalances.shift();
+		}
+
+		//Checks to See If Debtor Still Owes and Pops If Not
+		if (Math.abs(debtor.balance) < 0.01) {
+			sortedBalances.pop();
+		}
+	}
+
+	return payments;
 }
 
 function renderSettleUp() {
