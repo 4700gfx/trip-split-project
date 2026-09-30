@@ -334,6 +334,22 @@ function renderExpenseList() {
 
 function getFilteredSortedExpenses() {
 	// TODO: filter `expenses` by activeFilters, sort a COPY with an explicit comparator
+
+	let personFilter;
+
+	if (activeFilters.personId === 'all') {
+		personFilter = expenses;
+	} else {
+		personFilter = expenses.filter((expense) =>
+			expense.find((expense) => expense.paidBy == personId)
+		);
+	}
+
+	const categoryFilter = expenses.filter(
+		(expense) => expense.category === activeFilters.category
+	);
+
+	const sortByFilter = activeFilters.sortBy;
 }
 
 function deleteExpense(expenseId) {
@@ -590,6 +606,7 @@ addExpenseButton.addEventListener('click', (event) => {
 
 	//New Expense Object Properties
 	newExpense.id = expenseId;
+	newExpense.createdAt = Date.now();
 	newExpense.description = expenseName;
 	newExpense.amount = amountValue;
 	newExpense.paidBy = payer;
