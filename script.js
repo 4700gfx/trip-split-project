@@ -348,13 +348,13 @@ function getFilteredSortedExpenses() {
 		});
 	}
 
-	if (activeFilters.category === 'all') {
-		return filteredExpenses;
-	} else {
-		return filteredExpenses.filter(
+	if (activeFilters.category !== 'all') {
+		filteredExpenses = filteredExpenses.filter(
 			(expense) => expense.category === activeFilters.category
 		);
 	}
+
+	return filteredExpenses;
 }
 
 function deleteExpense(expenseId) {
