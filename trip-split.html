@@ -526,30 +526,41 @@
 							class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4"
 						>
 							<div class="grid grid-cols-4 gap-3 mb-3">
-								<div
-									id="expensesSearchField"
-									class="border border-slate-300 rounded-full px-4 py-2 text-sm text-slate-400"
+								<input
+									id="expensesSearchInput"
+									type="text"
+									placeholder="Search descriptions"
+									class="border border-slate-300 rounded-full px-4 py-2 text-sm"
+								/>
+								<select
+									id="expensesPersonFilterSelect"
+									class="border border-slate-300 rounded-full px-4 py-2 text-sm bg-white"
 								>
-									Search descriptions
-								</div>
-								<div
-									id="expensesPersonFilterField"
-									class="border border-slate-300 rounded-full px-4 py-2 text-sm flex justify-between"
+									<option value="all">Person: All</option>
+									<!-- populateFilterDropdowns() adds one <option> per person here -->
+								</select>
+								<select
+									id="expensesCategoryFilterSelect"
+									class="border border-slate-300 rounded-full px-4 py-2 text-sm bg-white"
 								>
-									Person: Sam <span class="text-slate-400">▾</span>
-								</div>
-								<div
-									id="expensesCategoryFilterField"
-									class="border border-slate-300 rounded-full px-4 py-2 text-sm flex justify-between"
+									<option value="all">Category: All</option>
+									<option value="general">General</option>
+									<option value="lodging">Lodging</option>
+									<option value="food">Food</option>
+									<option value="transport">Transport</option>
+									<option value="activities">Activities</option>
+									<option value="shopping">Shopping</option>
+									<option value="other">Other</option>
+								</select>
+								<select
+									id="expensesSortSelect"
+									class="border border-slate-300 rounded-full px-4 py-2 text-sm bg-white"
 								>
-									Category: All <span class="text-slate-400">▾</span>
-								</div>
-								<div
-									id="expensesSortField"
-									class="border border-slate-300 rounded-full px-4 py-2 text-sm flex justify-between"
-								>
-									Amount ↓ <span class="text-slate-400">▾</span>
-								</div>
+									<option value="date-desc">Date: Newest first</option>
+									<option value="date-asc">Date: Oldest first</option>
+									<option value="amount-desc">Amount: High to low</option>
+									<option value="amount-asc">Amount: Low to high</option>
+								</select>
 							</div>
 							<div class="flex items-center gap-3 text-sm text-slate-500">
 								<span

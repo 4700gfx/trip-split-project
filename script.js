@@ -98,7 +98,6 @@ const expenseSplitTableContainer = document.querySelector(
 	'#addExpenseSplitTable'
 );
 const addExpenseButton = document.querySelector('#addExpenseSaveBtn');
-
 const expensesRows = document.querySelector('#expensesRows');
 
 /* ==================== TRIP-2: MEMBERS ==================== */
@@ -502,6 +501,19 @@ function renderSettleUp() {
 
 function populateFilterDropdowns() {
 	// TODO: rebuild #filterByPerson / #filterByCategory options
+	const expensesPersonFilterSelect = document.querySelector(
+		'#expensesPersonFilterSelect'
+	);
+
+	const allSelectOption = `<option value="all">Person: All</option>`;
+
+	const filterDropdowns = people
+		.map((person) => `<option value="${person.id}">${person.name}</option>`)
+		.join('');
+
+	const allOptions = allSelectOption.concat(filterDropdowns);
+
+	expensesPersonFilterSelect.innerHTML = allOptions;
 }
 
 function handleFilterChange() {
@@ -542,6 +554,7 @@ function renderAll() {
 	renderExpenseList();
 	populatePayerDropdown();
 	populateSplitCheckboxes();
+	populatePayerDropdown();
 }
 
 /* ==================== HELPER FUNCTIONS ==================== */
