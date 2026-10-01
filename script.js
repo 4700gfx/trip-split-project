@@ -335,8 +335,10 @@ function renderExpenseList() {
 function getFilteredSortedExpenses() {
 	// TODO: filter `expenses` by activeFilters, sort a COPY with an explicit comparator
 
+	//Intialize Array for Filtering
 	let filteredExpenses;
 
+	//Check The First Active Filter
 	if (activeFilters.personId === 'all') {
 		filteredExpenses = expenses;
 	} else {
@@ -348,12 +350,14 @@ function getFilteredSortedExpenses() {
 		});
 	}
 
+	//Chaining Filter with Another If/Else Block
 	if (activeFilters.category !== 'all') {
 		filteredExpenses = filteredExpenses.filter(
 			(expense) => expense.category === activeFilters.category
 		);
 	}
 
+	//Speading Filtered Expenses to Sort Based on Date or Amount
 	if (activeFilters.sortBy.includes('date')) {
 		filteredExpenses =
 			activeFilters.sortBy === 'date-asc'
