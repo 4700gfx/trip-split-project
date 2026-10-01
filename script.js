@@ -354,6 +354,20 @@ function getFilteredSortedExpenses() {
 		);
 	}
 
+	if (activeFilters.sortBy.includes('date')) {
+		filteredExpenses =
+			activeFilters.sortBy === 'date-asc'
+				? [...filteredExpenses].sort((a, b) => a.createdAt - b.createdAt)
+				: [...filteredExpenses].sort((a, b) => b.createdAt - a.createdAt);
+	} else if (activeFilters.sortBy.includes('amount')) {
+		filteredExpenses =
+			activeFilters.sortBy === 'amount-asc'
+				? [...filteredExpenses].sort((a, b) => a.amount - b.amount)
+				: [...filteredExpenses].sort((a, b) => b.amount - a.amount);
+	} else {
+		filteredExpenses = [...filteredExpenses];
+	}
+
 	return filteredExpenses;
 }
 
