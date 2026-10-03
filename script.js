@@ -100,6 +100,15 @@ const expenseSplitTableContainer = document.querySelector(
 const addExpenseButton = document.querySelector('#addExpenseSaveBtn');
 const expensesRows = document.querySelector('#expensesRows');
 
+//DOM Elements for Filters
+const expensesPersonFilterSelect = document.querySelector(
+	'#expensesPersonFilterSelect'
+);
+const expensesCategoryFilterSelect = document.querySelector(
+	'#expensesCategoryFilterSelect'
+);
+const expensesSortSelect = document.querySelector('#expensesSortSelect');
+
 /* ==================== TRIP-2: MEMBERS ==================== */
 
 function addPerson(rawName) {
@@ -501,9 +510,7 @@ function renderSettleUp() {
 
 function populateFilterDropdowns() {
 	// TODO: rebuild #filterByPerson / #filterByCategory options
-	const expensesPersonFilterSelect = document.querySelector(
-		'#expensesPersonFilterSelect'
-	);
+	const personFilter = expensesPersonFilterSelect;
 
 	const allSelectOption = `<option value="all">Person: All</option>`;
 
@@ -513,11 +520,17 @@ function populateFilterDropdowns() {
 
 	const allOptions = allSelectOption.concat(filterDropdowns);
 
-	expensesPersonFilterSelect.innerHTML = allOptions;
+	personFilter.innerHTML = allOptions;
 }
 
 function handleFilterChange() {
 	// TODO: read filter controls into activeFilters, renderExpenseList()
+
+	activeFilters.personId = expensesPersonFilterSelect.value;
+	activeFilters.category = expensesCategoryFilterSelect.value;
+	activeFilters.sortBy = expensesSortSelect.value;
+
+	renderExpenseList();
 }
 
 function clearFilters() {
@@ -554,7 +567,7 @@ function renderAll() {
 	renderExpenseList();
 	populatePayerDropdown();
 	populateSplitCheckboxes();
-	populatePayerDropdown();
+	populateFilterDropdowns();
 }
 
 /* ==================== HELPER FUNCTIONS ==================== */
