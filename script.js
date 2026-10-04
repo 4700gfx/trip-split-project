@@ -11,6 +11,7 @@ let people = [
 let expenses = [
 	{
 		id: 'e1',
+		createdAt: Date.now() - 5 * 86400000, // 5 days ago (oldest)
 		description: 'Groceries',
 		amount: 60,
 		paidBy: 'p2',
@@ -22,6 +23,7 @@ let expenses = [
 	},
 	{
 		id: 'e2',
+		createdAt: Date.now() - 4 * 86400000, // 4 days ago
 		description: 'Taxi to airport',
 		amount: 37,
 		paidBy: 'p2',
@@ -33,6 +35,7 @@ let expenses = [
 	},
 	{
 		id: 'e3',
+		createdAt: Date.now() - 3 * 86400000, // 3 days ago
 		description: 'Museum tickets',
 		amount: 42.5,
 		paidBy: 'p2',
@@ -44,6 +47,7 @@ let expenses = [
 	},
 	{
 		id: 'e4',
+		createdAt: Date.now() - 2 * 86400000, // 2 days ago
 		description: '',
 		amount: 18.75,
 		paidBy: 'p4',
@@ -56,6 +60,7 @@ let expenses = [
 	},
 	{
 		id: 'e5',
+		createdAt: Date.now() - 1 * 86400000, // 1 day ago (newest sample)
 		description: "Dinner — Lou's treat",
 		amount: 100,
 		paidBy: 'p2',
@@ -291,25 +296,41 @@ const splitCalculator = (() => {
 function renderExpenseList() {
 	// TODO: render getFilteredSortedExpenses(); toggle the two empty states correctly
 
-	const rowsHTML =
-		expenses.length === 0
-			? `<div class="flex flex-col items-center text-center gap-3 py-12 px-6">
-		<span class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100"></span>
-		<p class="text-xl font-bold">No expenses yet</p>
-		<p class="text-sm text-slate-500 max-w-xs">
-			Log the first thing someone paid for and balances start filling in.
-		</p>
-		<button
-			class="tab-btn mt-1 px-5 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold"
-			data-target="screen-02"
-		>
-			Add expense
-		</button>
-	</div>`
-			: expenses
-					.map((expense) => {
-						const payer = people.find((person) => expense.paidBy === person.id);
-						return `<div
+	const visibleExpenses = getFilteredSortedExpenses();
+	let rowsHTML;
+
+	if (expenses.length === 0) {
+		rowsHTML = `<div class="flex flex-col items-center text-center gap-3 py-12 px-6">
+									<span class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100"></span>
+									<p class="text-xl font-bold">No expenses yet</p>
+									<p class="text-sm text-slate-500 max-w-xs">
+										Log the first thing someone paid for and balances start filling in.
+									</p>
+									<button
+										class="tab-btn mt-1 px-5 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold"
+										data-target="screen-02"
+									>
+										Add expense
+									</button>
+								</div>`;
+	} else if (visibleExpenses.length === 0) {
+		rowsHTML = `<div class="flex flex-col items-center text-center gap-3 py-12 px-6">
+									<span class="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-200"></span>
+									<p class="text-xl font-bold">Nothing matches these filters</p>
+									<p class="text-sm text-slate-500 max-w-xs">
+										Try a different person or category, or clear the filters to see every expense.
+									</p>
+									<button
+										class="clear-filters-btn mt-1 px-5 py-2 rounded-lg border border-slate-300 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+									>
+										Clear filters
+									</button>
+								</div>`;
+	} else {
+		rowsHTML = visibleExpenses
+			.map((expense) => {
+				const payer = people.find((person) => expense.paidBy === person.id);
+				return `<div
 							data-expense-id="${expense.id}"
 							class="grid grid-cols-[1fr_120px_120px_110px_70px] gap-3 px-5 py-3 border-t border-slate-100 items-center text-sm"
 						>
@@ -334,8 +355,9 @@ function renderExpenseList() {
 								Delete
 							</button>
 						</div>`;
-					})
-					.join('');
+			})
+			.join('');
+	}
 
 	expensesRows.innerHTML = rowsHTML;
 }
@@ -681,3 +703,7 @@ expensesRows.addEventListener('click', (event) => {
 	const expenseId = deleteButton.dataset.expenseId;
 	deleteExpense(expenseId);
 });
+
+expensesPersonFilterSelect.addEventListener('click', handleFilterChange);
+expensesCategoryFilterSelect.addEventListener('click', handleFilterChange);
+expensesSortSelect.addEventListener('click', handleFilterChange);
