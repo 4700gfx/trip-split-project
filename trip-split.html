@@ -525,23 +525,27 @@
 						<div
 							class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4"
 						>
-							<div class="grid grid-cols-4 gap-3 mb-3">
+							<!-- Search gets its own full-width row; the three selects share the row below -->
+							<div class="grid grid-cols-3 gap-2 mb-3">
 								<input
 									id="expensesSearchInput"
 									type="text"
 									placeholder="Search descriptions"
-									class="border border-slate-300 rounded-full px-4 py-2 text-sm"
+									aria-label="Search expense descriptions"
+									class="col-span-3 border border-slate-300 rounded-full px-4 py-2 text-sm"
 								/>
 								<select
 									id="expensesPersonFilterSelect"
-									class="border border-slate-300 rounded-full px-4 py-2 text-sm bg-white"
+									aria-label="Filter by person"
+									class="min-w-0 border border-slate-300 rounded-full px-4 py-2 text-sm bg-white"
 								>
 									<option value="all">Person: All</option>
 									<!-- populateFilterDropdowns() adds one <option> per person here -->
 								</select>
 								<select
 									id="expensesCategoryFilterSelect"
-									class="border border-slate-300 rounded-full px-4 py-2 text-sm bg-white"
+									aria-label="Filter by category"
+									class="min-w-0 border border-slate-300 rounded-full px-4 py-2 text-sm bg-white"
 								>
 									<option value="all">Category: All</option>
 									<option value="general">General</option>
@@ -554,12 +558,13 @@
 								</select>
 								<select
 									id="expensesSortSelect"
-									class="border border-slate-300 rounded-full px-4 py-2 text-sm bg-white"
+									aria-label="Sort expenses"
+									class="min-w-0 border border-slate-300 rounded-full px-4 py-2 text-sm bg-white"
 								>
-									<option value="date-desc">Date: Newest first</option>
-									<option value="date-asc">Date: Oldest first</option>
-									<option value="amount-desc">Amount: High to low</option>
-									<option value="amount-asc">Amount: Low to high</option>
+									<option value="date-desc">Newest first</option>
+									<option value="date-asc">Oldest first</option>
+									<option value="amount-desc">Highest amount</option>
+									<option value="amount-asc">Lowest amount</option>
 								</select>
 							</div>
 							<div class="flex items-center gap-3 text-sm text-slate-500">
@@ -581,10 +586,11 @@
 							id="expensesList"
 							class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
 						>
+							<!-- Header grid MUST match the row grid in renderExpenseList() exactly -->
 							<div
-								class="grid grid-cols-[1fr_120px_120px_110px_70px] gap-3 px-5 py-3 bg-slate-50 text-xs font-semibold tracking-wide text-slate-500 uppercase"
+								class="grid grid-cols-[32px_minmax(0,1fr)_88px_64px] gap-3 px-5 py-3 bg-slate-50 text-xs font-semibold tracking-wide text-slate-500 uppercase"
 							>
-								<span>Description</span><span>Category</span><span>Paid by</span
+								<span></span><span>Expense</span
 								><span class="text-right">Amount</span><span></span>
 							</div>
 							<div id="expensesRows">
@@ -1440,27 +1446,32 @@ SETTLE UP
 		</footer>
 
 		<script>
-			document.querySelectorAll('.tab-btn').forEach((btn) => {
-				btn.addEventListener('click', () => {
-					const targetId = btn.dataset.target;
-					document
-						.querySelectorAll('.screen')
-						.forEach((s) => s.classList.toggle('active', s.id === targetId));
-					document.querySelectorAll('.tab-btn').forEach((b) => {
-						const isActive = b.dataset.target === targetId;
-						b.classList.toggle(
-							'bg-indigo-600',
-							isActive &&
-								b.classList.contains('rounded-full') &&
-								!b.classList.contains('border')
-						);
-						b.classList.toggle('border-indigo-500', isActive);
-						b.classList.toggle('border-2', isActive);
-					});
-					document.querySelectorAll('.nav-link').forEach((n) => {
-						n.classList.toggle('border-white', n.dataset.target === targetId);
-						n.classList.toggle('text-white', n.dataset.target === targetId);
-					});
+			// Screen switching (mockup scaffolding).
+			// ONE delegated listener on the document instead of one per button, so it
+			// also works for the top nav links AND for buttons injected later by
+			// script.js (e.g. the "Add expense" button inside the empty state).
+			document.addEventListener('click', (event) => {
+				const btn = event.target.closest('.tab-btn, .nav-link');
+				if (!btn || !btn.dataset.target) return;
+
+				const targetId = btn.dataset.target;
+				document
+					.querySelectorAll('.screen')
+					.forEach((s) => s.classList.toggle('active', s.id === targetId));
+				document.querySelectorAll('.tab-btn').forEach((b) => {
+					const isActive = b.dataset.target === targetId;
+					b.classList.toggle(
+						'bg-indigo-600',
+						isActive &&
+							b.classList.contains('rounded-full') &&
+							!b.classList.contains('border')
+					);
+					b.classList.toggle('border-indigo-500', isActive);
+					b.classList.toggle('border-2', isActive);
+				});
+				document.querySelectorAll('.nav-link').forEach((n) => {
+					n.classList.toggle('border-white', n.dataset.target === targetId);
+					n.classList.toggle('text-white', n.dataset.target === targetId);
 				});
 			});
 		</script>

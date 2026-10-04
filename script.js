@@ -331,30 +331,33 @@ function renderExpenseList() {
 		rowsHTML = visibleExpenses
 			.map((expense) => {
 				const payer = people.find((person) => expense.paidBy === person.id);
-				const descriptionText = expense.description || 'Untitied expense';
+				// || (not ??) because a blank description is '' — falsy, but not null
+				const descriptionText = expense.description || 'Untitled expense';
+				// map + find + join: turn split ids into a readable list of names
 				const splitNames = expense.splitBetween
 					.map(
 						(id) => people.find((person) => person.id === id)?.name ?? 'Unknown'
 					)
 					.join(', ');
+				// Row grid MUST match the static header grid in index.html exactly
 				return `<div
 									data-expense-id="${expense.id}"
-									class="grid grid-cols-[1fr_120px_120px_110px_70px] gap-3 px-5 py-3 min-h-[64px] border-t border-slate-100 items-center text-sm hover:bg-slate-50 transition-colors"
+									class="grid grid-cols-[32px_minmax(0,1fr)_88px_64px] gap-3 px-5 py-3 min-h-[64px] border-t border-slate-100 items-center text-sm hover:bg-slate-50 transition-colors"
 								>
+									<span
+										class="w-8 h-8 rounded-full bg-slate-400 text-white text-xs flex items-center justify-center font-semibold"
+										title="Paid by ${payer?.name ?? 'Unknown'}"
+										>${payer?.name?.charAt(0).toUpperCase() ?? 'U'}</span
+									>
 									<div class="min-w-0">
-										<p class="font-medium truncate">${expense.description || 'Untitled Expenese'}</p>
-											<p class="text-xs text-slate-400 truncate">Split: ${splitNames}</p>
+										<p class="font-medium truncate">${descriptionText}</p>
+										<p class="flex items-center gap-2 mt-0.5 text-xs text-slate-500 min-w-0">
+											<span class="shrink-0 px-2 py-0.5 rounded-full bg-slate-100 text-slate-600"
+												>${initalCapString(expense.category)}</span
+											>
+											<span class="truncate">${payer?.name ?? 'Unknown'} paid · split with ${splitNames}</span>
+										</p>
 									</div>
-									<span class="min-w-0">
-										<span class="inline-block px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs whitespace-nowrap"
-											>${initalCapString(expense.category)}</span
-										>
-									</span>
-									<span class="flex items-center gap-2 min-w-0">
-										<span class="shrink-0 w-5 h-5 rounded-full bg-slate-400 text-white text-[10px] flex items-center justify-center font-semibold"
-											>${payer?.name?.charAt(0).toUpperCase() ?? 'U'}</span
-										><span class="truncate">${payer?.name ?? 'Unknown'}</span>
-									</span>
 									<span class="text-right font-semibold tabular-nums">$${expense.amount.toFixed(2)}</span>
 									<button
 										class="delete-expense-btn justify-self-end px-2 py-1 rounded-md text-red-600 text-xs font-medium hover:bg-red-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
@@ -649,7 +652,7 @@ addExpenseButton.addEventListener('click', (event) => {
 	//Reading the Value of DOM Elements
 	const payer = expensePayer.value;
 	const expenseName = !expenseDescription.value
-		? 'Untitled Expense'
+		? 'Untitled expense'
 		: expenseDescription.value;
 
 	const category = expenseCategory.value;
