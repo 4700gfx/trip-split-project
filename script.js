@@ -113,7 +113,7 @@ const expensesCategoryFilterSelect = document.querySelector(
 	'#expensesCategoryFilterSelect'
 );
 const expensesSortSelect = document.querySelector('#expensesSortSelect');
-
+const clearFilterButton = document.querySelector('#expensesClearAllLink');
 /* ==================== TRIP-2: MEMBERS ==================== */
 
 function addPerson(rawName) {
@@ -553,8 +553,8 @@ function populateFilterDropdowns() {
 		.join('');
 
 	const allOptions = allSelectOption.concat(filterDropdowns);
-
 	personFilter.innerHTML = allOptions;
+	expensesPersonFilterSelect.value = activeFilters.personId;
 }
 
 function handleFilterChange() {
@@ -569,6 +569,14 @@ function handleFilterChange() {
 
 function clearFilters() {
 	// TODO: reset activeFilters + controls, renderExpenseList()
+	activeFilters.personId = 'all';
+	activeFilters.category = 'all';
+	activeFilters.sortBy = 'date-desc';
+
+	expensesPersonFilterSelect.value = activeFilters.personId;
+	expensesCategoryFilterSelect.value = activeFilters.category;
+	expensesSortSelect.value = activeFilters.sortBy;
+	renderExpenseList();
 }
 
 /* ==================== TRIP-9: SUMMARY DASHBOARD ==================== */
@@ -708,6 +716,13 @@ addExpenseButton.addEventListener('click', (event) => {
 });
 
 expensesRows.addEventListener('click', (event) => {
+	const clearButton = event.target.closest('.clear-filters-btn');
+
+	if (clearButton) {
+		clearFilters();
+		return;
+	}
+
 	const deleteButton = event.target.closest('.delete-expense-btn');
 
 	if (!deleteButton) return;
@@ -716,6 +731,12 @@ expensesRows.addEventListener('click', (event) => {
 	deleteExpense(expenseId);
 });
 
+//Filter Buttons Event Handlers
 expensesPersonFilterSelect.addEventListener('change', handleFilterChange);
 expensesCategoryFilterSelect.addEventListener('change', handleFilterChange);
 expensesSortSelect.addEventListener('change', handleFilterChange);
+
+clearFilterButton.addEventListener('click', (event) => {
+	event.preventDefault();
+	clearFilters();
+});
