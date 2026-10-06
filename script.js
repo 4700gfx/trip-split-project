@@ -116,11 +116,14 @@ const expensesSortSelect = document.querySelector('#expensesSortSelect');
 const clearFilterButton = document.querySelector('#expensesClearAllLink');
 
 const expenseFilterSummary = document.querySelector('#expensesFilterSummary');
+const expenseActiveFilterChips = document.querySelector(
+	`#expensesActiveFilterChips`
+);
 
 /* ==================== TRIP-2: MEMBERS ==================== */
 
+//Adding and Removing Person to People Object
 function addPerson(rawName) {
-	// TODO: normalize + de-dupe case-insensitively, keep original casing, push, renderAll()
 	const alreadyEntered = people.some(
 		(person) => person.name === initalCapString(rawName.trim())
 	);
@@ -130,6 +133,7 @@ function addPerson(rawName) {
 
 	if (!rawName || alreadyEntered) return;
 
+	//Adding Person Object to People Array
 	person.id = crypto.randomUUID();
 	person.name = initalCapString(rawName);
 	people.push(person);
@@ -163,6 +167,7 @@ function removePerson(personId) {
 	}
 }
 
+//Rending People Chips from People Array
 function renderMemberChips() {
 	//Setting the DOM Elements
 	const memberListContainer = document.querySelector('#setupMembersList');
@@ -179,7 +184,6 @@ function renderMemberChips() {
 /* ==================== TRIP-3: EXPENSE FORM ==================== */
 
 function populatePayerDropdown() {
-	// TODO: rebuild #expensePayer options from people
 	const payerSelect = document.querySelector('#addExpensePayerSelect');
 
 	const expensePayers = people
@@ -192,8 +196,6 @@ function populatePayerDropdown() {
 }
 
 function populateSplitCheckboxes() {
-	// TODO: rebuild #splitBetweenCheckboxes, one checkbox per person
-
 	const splitRowsHTML = people
 		.map((person) => {
 			return `<div data-person-id="${person.id}" 
@@ -225,7 +227,6 @@ function populateSplitCheckboxes() {
 }
 
 function getCheckedSplitPersonIds() {
-	// TODO: return array of checked person ids
 	const peopleCheckbox = document.querySelectorAll('.split-person-checkbox');
 	const peopleCheckboxArr = [...peopleCheckbox];
 	console.log(peopleCheckboxArr);
@@ -296,13 +297,12 @@ const splitCalculator = (() => {
 })();
 
 /* ==================== TRIP-4 / TRIP-8: EXPENSE LIST ==================== */
-function renderExpenseList() {
-	// TODO: render getFilteredSortedExpenses(); toggle the two empty states correctly
 
+//Rendering Expenses from Expense Array
+function renderExpenseList() {
 	const visibleExpenses = getFilteredSortedExpenses();
 
 	let rowsHTML;
-
 	if (expenses.length === 0) {
 		rowsHTML = `<div class="flex flex-col items-center text-center gap-3 py-12 px-6">
 									<span class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100"></span>
@@ -379,8 +379,6 @@ function renderExpenseList() {
 }
 
 function getFilteredSortedExpenses() {
-	// TODO: filter `expenses` by activeFilters, sort a COPY with an explicit comparator
-
 	//Intialize Array for Filtering
 	let filteredExpenses;
 
@@ -441,8 +439,6 @@ function cancelEditingExpense() {
 /* ==================== TRIP-6: BALANCE ENGINE ==================== */
 
 function computeBalances() {
-	// TODO: reduce over `expenses` into a Map<personId, netAmount>, starting everyone at 0
-
 	//Create New Map for Shares
 	const balanceMap = new Map(people.map((person) => [person.id, 0]));
 	console.log(balanceMap);
@@ -493,8 +489,6 @@ function renderBalances() {
 /* ==================== TRIP-7: SETTLE-UP ALGORITHM ==================== */
 
 function computeSettlements(balancesMap) {
-	// TODO: greedy match largest creditor vs largest debtor until all balances are ~0
-
 	//Turn the Balances Map into an Array of Objects
 	const mainBalances = Array.from(balancesMap, ([id, balance]) => ({
 		id,
@@ -544,6 +538,8 @@ function renderSettleUp() {
 	// TODO: render computeSettlements(computeBalances()); toggle empty state
 }
 
+/* ==================== TRIP-8: FILTERS ==================== */
+
 function renderFilterSummary(visibleExpenses) {
 	const visibleCount = visibleExpenses.length;
 	const totalCount = expenses.length;
@@ -552,10 +548,23 @@ function renderFilterSummary(visibleExpenses) {
 		0
 	);
 
-	expenseFilterSummary.textContent = `${visibleCount} of ${totalCount} · $${shownTotal.toFixed(2)} shown`;
-}
+	expenseFilterSummary.textContent = `${visibleCount} of ${totalCount} expenses · $${shownTotal.toFixed(2)} shown`;
 
-/* ==================== TRIP-8: FILTERS ==================== */
+	const expenseLabels = [];
+
+	if (activeFilters.personId !== 'all') {
+		expenseLabels.push(
+			people.find((person) => activeFilters.personId === person.id)?.name ||
+				'Unknown'
+		);
+	}
+
+	if (activeFilters.category !== 'all') {
+		expenseLabels.push(initalCapString(activeFilters.category));
+	}
+
+	console.log(expenseLabels);
+}
 
 function populateFilterDropdowns() {
 	// TODO: rebuild #filterByPerson / #filterByCategory options
@@ -573,8 +582,6 @@ function populateFilterDropdowns() {
 }
 
 function handleFilterChange() {
-	// TODO: read filter controls into activeFilters, renderExpenseList()
-
 	activeFilters.personId = expensesPersonFilterSelect.value;
 	activeFilters.category = expensesCategoryFilterSelect.value;
 	activeFilters.sortBy = expensesSortSelect.value;
@@ -583,7 +590,6 @@ function handleFilterChange() {
 }
 
 function clearFilters() {
-	// TODO: reset activeFilters + controls, renderExpenseList()
 	activeFilters.personId = 'all';
 	activeFilters.category = 'all';
 	activeFilters.sortBy = 'date-desc';
