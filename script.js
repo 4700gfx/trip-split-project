@@ -114,6 +114,9 @@ const expensesCategoryFilterSelect = document.querySelector(
 );
 const expensesSortSelect = document.querySelector('#expensesSortSelect');
 const clearFilterButton = document.querySelector('#expensesClearAllLink');
+
+const expenseFilterSummary = document.querySelector('#expensesFilterSummary');
+
 /* ==================== TRIP-2: MEMBERS ==================== */
 
 function addPerson(rawName) {
@@ -372,6 +375,7 @@ function renderExpenseList() {
 	}
 
 	expensesRows.innerHTML = rowsHTML;
+	renderFilterSummary(visibleExpenses);
 }
 
 function getFilteredSortedExpenses() {
@@ -538,6 +542,17 @@ function computeSettlements(balancesMap) {
 
 function renderSettleUp() {
 	// TODO: render computeSettlements(computeBalances()); toggle empty state
+}
+
+function renderFilterSummary(visibleExpenses) {
+	const visibleCount = visibleExpenses.length;
+	const totalCount = expenses.length;
+	const shownTotal = visibleExpenses.reduce(
+		(sum, expense) => sum + expense.amount,
+		0
+	);
+
+	expenseFilterSummary.textContent = `${visibleCount} of ${totalCount} · $${shownTotal.toFixed(2)} shown`;
 }
 
 /* ==================== TRIP-8: FILTERS ==================== */
