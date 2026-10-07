@@ -117,7 +117,11 @@ const clearFilterButton = document.querySelector('#expensesClearAllLink');
 
 const expenseFilterSummary = document.querySelector('#expensesFilterSummary');
 const expenseActiveFilterChips = document.querySelector(
-	`#expensesActiveFilterChips`
+	'#expensesActiveFilterChip'
+);
+
+const expensesSidebarBalances = document.querySelector(
+	'#expensesSidebarBalanceList'
 );
 
 /* ==================== TRIP-2: MEMBERS ==================== */
@@ -483,7 +487,47 @@ const result = computeBalances();
 console.log([...result.values()].reduce((a, b) => a + b, 0));
 
 function renderBalances() {
-	// TODO: render computeBalances(); toggle empty state
+	const balances = computeBalances();
+	const balancesArr = Array.from(balances, ([id, balance]) => ({
+		id,
+		name: people.find((person) => person.id === id)?.name || 'Unknown',
+		balance
+	}));
+
+	const sortedBalanceArr = [...balancesArr].sort(
+		(a, b) => b.balance - a.balance
+	);
+
+	const largestBalance = Math.max(
+		...sortedBalanceArr.map((row) => Math.abs(row.balance))
+	);
+
+	console.log(balances);
+
+	const balancesHTML = sortedBalanceArr
+		.map((row) => {
+			const isOwed = row.balance >= 0;
+			const amountText = `${isOwed ? '+' : '-'}${Math.abs(row.balance).toFixed(2)}`;
+			const amountColorClass = isOwed ? 'text-emerald-700' : 'text-red-600';
+			const barColorClass = isOwed ? 'bg-emerald-500' : 'bg-red-500';
+			const barWidth =
+				largestBalance === 0
+					? 0
+					: (Math.abs(row.balance) / largestBalance) * 100;
+
+			return `<div data-person="${row.id}">
+						<div class="flex justify-between mb-1">
+							<span>${row.name}</span>
+							<span class="font-semibold tabular-nums ${amountColorClass}">${amountText}</span>
+						</div>
+						<div class="h-2 rounded-full bg-slate-100">
+							<div class="h-2 rounded-full ${barColorClass}" style="width: ${barWidth}%"></div>
+						</div>
+					</div>`;
+		})
+		.join('');
+
+	expensesSidebarBalances.innerHTML = balancesHTML;
 }
 
 /* ==================== TRIP-7: SETTLE-UP ALGORITHM ==================== */
@@ -563,7 +607,12 @@ function renderFilterSummary(visibleExpenses) {
 		expenseLabels.push(initalCapString(activeFilters.category));
 	}
 
-	console.log(expenseLabels);
+	if (expenseLabels.length === 0) {
+		expenseActiveFilterChips.classList.add('hidden');
+	} else {
+		expenseActiveFilterChips.classList.remove('hidden');
+		expenseActiveFilterChips.textContent = `${expenseLabels.join(' · ')}`;
+	}
 }
 
 function populateFilterDropdowns() {
@@ -628,6 +677,7 @@ function renderAll() {
 
 	renderMemberChips();
 	renderExpenseList();
+	renderBalances();
 	populatePayerDropdown();
 	populateSplitCheckboxes();
 	populateFilterDropdowns();
