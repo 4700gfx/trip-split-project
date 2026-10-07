@@ -123,6 +123,9 @@ const expenseActiveFilterChips = document.querySelector(
 const expensesSidebarBalances = document.querySelector(
 	'#expensesSidebarBalanceList'
 );
+const expensesSidebarBalanceSum = document.querySelector(
+	'#expensesSidebarBalanceSum'
+);
 
 /* ==================== TRIP-2: MEMBERS ==================== */
 
@@ -502,12 +505,10 @@ function renderBalances() {
 		...sortedBalanceArr.map((row) => Math.abs(row.balance))
 	);
 
-	console.log(balances);
-
 	const balancesHTML = sortedBalanceArr
 		.map((row) => {
 			const isOwed = row.balance >= 0;
-			const amountText = `${isOwed ? '+' : '-'}${Math.abs(row.balance).toFixed(2)}`;
+			const amountText = `${isOwed ? '+' : '−'}${Math.abs(row.balance).toFixed(2)}`;
 			const amountColorClass = isOwed ? 'text-emerald-700' : 'text-red-600';
 			const barColorClass = isOwed ? 'bg-emerald-500' : 'bg-red-500';
 			const barWidth =
@@ -528,6 +529,13 @@ function renderBalances() {
 		.join('');
 
 	expensesSidebarBalances.innerHTML = balancesHTML;
+
+	const balanceSum = sortedBalanceArr.reduce(
+		(sum, row) => sum + row.balance,
+		0
+	);
+	const displaySum = Math.abs(balanceSum) < 0.005 ? 0 : balanceSum;
+	expensesSidebarBalanceSum.textContent = `sums to ${displaySum.toFixed(2)}`;
 }
 
 /* ==================== TRIP-7: SETTLE-UP ALGORITHM ==================== */
