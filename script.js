@@ -127,6 +127,8 @@ const expensesSidebarBalanceSum = document.querySelector(
 	'#expensesSidebarBalanceSum'
 );
 
+const settleUpList = document.querySelector('#settleUpList');
+
 /* ==================== TRIP-2: MEMBERS ==================== */
 
 //Adding and Removing Person to People Object
@@ -548,25 +550,23 @@ function computeSettlements(balancesMap) {
 	})).filter((person) => Math.abs(person.balance) > 0.01);
 
 	//Filter Out All Members with $0 Balance
-	const sortedBalances = mainBalances.sort((a, b) => b.balance - a.balance);
-	console.log(sortedBalances);
+	const sortedBalances = [...mainBalances];
+	sortedBalances.sort((a, b) => b.balance - a.balance);
 
 	//Adding Payment Until It Hits $0
 	const payments = [];
 
 	while (sortedBalances.length > 1) {
 		const creditor = sortedBalances[0]; //Highest Creditor
-		const debtor = sortedBalances[sortedBalances.length - 1]; // Highest Debtor
+		const debtor = sortedBalances.at(-1); // Highest Debtor
 
 		const paymentAmount = Math.min(creditor.balance, Math.abs(debtor.balance));
 
 		payments.push({
 			from: debtor.id,
 			to: creditor.id,
-			amount: paymentAmount.toFixed(2)
+			amount: paymentAmount
 		});
-
-		console.log(payments);
 
 		//Removes Balances Owed and Collected for After Pushing
 		creditor.balance -= paymentAmount;
@@ -588,6 +588,43 @@ function computeSettlements(balancesMap) {
 
 function renderSettleUp() {
 	// TODO: render computeSettlements(computeBalances()); toggle empty state
+	const payments = computeSettlements(computeBalances());
+
+	let settleHTML;
+
+	if (payments.length === 0) {
+		settleHTML = `<div class="flex flex-col items-center text-center gap-3 py-12 px-6">
+										<span class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100"></span>
+										<p class="text-xl font-bold">Everyone's square</p>
+										<p class="text-sm text-slate-500 max-w-xs">
+											All balances are 0.00. Nothing left to settle for this trip.
+										</p>
+									</div>`;
+	} else {
+		settleHTML = payments
+			.map((payment) => {
+				const fromName = people.find(
+					(person) => payment.from === person.id
+				)?.name;
+				const toName = people.find((person) => payment.to === person.id)?.name;
+
+				return `<div class="grid grid-cols-[1fr_32px_1fr_auto] gap-3 items-center px-5 py-4 border-t border-slate-100 first:border-t-0">
+					<span class="flex items-center gap-2 min-w-0">
+						<span class="shrink-0 w-8 h-8 rounded-full bg-slate-400 text-white flex items-center justify-center font-semibold">${fromName.charAt(0)}</span>
+						<span class="truncate">${fromName}</span>
+					</span>
+					<span class="text-center text-indigo-600" aria-hidden="true">→</span>
+					<span class="flex items-center gap-2 min-w-0">
+						<span class="shrink-0 w-8 h-8 rounded-full bg-slate-400 text-white flex items-center justify-center font-semibold">${toName.charAt(0)}</span>
+						<span class="truncate">${toName}</span>
+					</span>
+					<span class="text-right font-bold text-xl tabular-nums">$${payment.amount.toFixed(2)}</span>
+				</div>`;
+			})
+			.join('');
+	}
+
+	settleUpList.innerHTML = settleHTML;
 }
 
 /* ==================== TRIP-8: FILTERS ==================== */
@@ -686,6 +723,7 @@ function renderAll() {
 	renderMemberChips();
 	renderExpenseList();
 	renderBalances();
+	renderSettleUp();
 	populatePayerDropdown();
 	populateSplitCheckboxes();
 	populateFilterDropdowns();
