@@ -698,6 +698,35 @@ function clearFilters() {
 
 function computeSummary() {
 	// TODO: total, average (guard /0), top spender, byCategory — all via reduce
+
+	const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+	const average = expenses.length === 0 ? 0 : total / expenses.length;
+	const perHead = people.length === 0 ? 0 : total / people.length;
+
+	const paidByPerson = expenses.reduce((acc, expense) => {
+		acc[expense.paidBy] = (acc[expense.paidBy] ?? 0) + expense.amount;
+		return acc;
+	}, {});
+
+	const entries = Object.entries(paidByPerson);
+	const topEntry = [...entries].sort((a, b) => b[1] - a[1])[0];
+	const topSpender = people.find((person) => person.id == topEntry[0]);
+	const topSpenderAmount = topEntry?.[1] ?? 0;
+
+	const totalPerCategory = expenses.reduce((acc, expense) => {
+		acc[expense.category] = (acc[expense.category] ?? 0) + expense.amount;
+		return acc;
+	}, {});
+
+	return {
+		total,
+		average,
+		perHead,
+		topEntry,
+		topSpender,
+		topSpenderAmount,
+		totalPerCategory
+	};
 }
 
 function renderSummary() {
