@@ -276,7 +276,6 @@ function handleExpenseFormSubmit(event) {
 
 const splitCalculator = (() => {
 	function equalSplit(amount, memberIds, payerId) {
-		// TODO: divide evenly, give the leftover cent to payerId
 		const totalCents = Math.round(amount * 100);
 		const baseCentShare = Math.floor(totalCents / memberIds.length);
 		const leftoverCents = totalCents - baseCentShare * memberIds.length;
@@ -286,8 +285,6 @@ const splitCalculator = (() => {
 			} else {
 				accumulator[currentMember] = baseCentShare / 100;
 			}
-
-			console.log(accumulator);
 			return accumulator;
 		}, {});
 
