@@ -726,9 +726,9 @@ function computeSummary() {
 		'No One Is Top Spender';
 	const topSpenderAmount = topEntry?.[1] ?? 0;
 	const topSpenderCount = expenses.filter(
-		(expense) => expense.paidBy == topSpender.id
+		(expense) => expense.paidBy == topEntry.id
 	).length;
-	console.log(topSpender, topEntry);
+	console.log(topSpenderName, topEntry);
 
 	const totalPerCategory = expenses.reduce((acc, expense) => {
 		acc[expense.category] = (acc[expense.category] ?? 0) + expense.amount;
@@ -751,22 +751,24 @@ function renderSummary() {
 	// TODO: write computeSummary() into the dl/dd elements and category bars
 	// (set bar width via .style.width, not an interpolated Tailwind class)
 	const summaryObject = computeSummary();
-	const {
-		total,
-		average,
-		perHead,
-		topSpender,
-		topSpenderAmount,
-		topSpenderCount
-	} = summaryObject;
+	const { total, average, perHead, topSpenderName, topSpenderAmount } =
+		summaryObject;
 
+	let topSpenderDetail;
+
+	//Stat Cards
 	const totalCard = formatMoney(total);
 	const averageCard = formatMoney(average);
 	const perHeadCard = formatMoney(perHead);
-	const topSpenderCard = topSpender.name;
+	const topSpenderCard = topSpenderName;
 
-	if (!topSpender) {
+	if (!topSpenderName) {
+		topSpenderAmount = 'No Expenses Yet';
+	} else {
+		topSpenderDetail = formatMoney(topSpenderAmount);
 	}
+
+	const infoBar = pluralize(people.length, 'person', 'people');
 
 	const memberBadge = people.length;
 	const expensesBadge = expenses.length;
@@ -777,6 +779,11 @@ function renderSummary() {
 		expenses.length > 1
 			? `${expensesBadge} expenses, ${memberBadge} people`
 			: `1 expenses, ${memberBadge}`;
+
+	summaryTotalSpent.textContent = formatMoney(total);
+	summaryTopSpender.textContent = topSpenderName;
+	summaryPerHead.textContent = formatMoney(perHead);
+	summaryAverageExpense.textContent = formatMoney(average);
 }
 
 /* ==================== TRIP-11: SHARE / EXPORT ==================== */
@@ -801,6 +808,7 @@ function renderAll() {
 	populatePayerDropdown();
 	populateSplitCheckboxes();
 	populateFilterDropdowns();
+	renderSummary();
 }
 
 /* ==================== HELPER FUNCTIONS ==================== */
