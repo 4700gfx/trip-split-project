@@ -486,9 +486,11 @@
 						>
 							<!-- renderMemberChips() rebuilds this container from `people` -->
 						</div>
+						<!-- Hidden by default. JS: set #setupMemberWarningText, then remove 'hidden' (TRIP-2/10). -->
 						<p
 							id="setupMemberWarning"
-							class="flex gap-2.5 text-sm text-indigo-800 bg-indigo-50/80 ring-1 ring-indigo-100 rounded-xl px-4 py-3 mb-7"
+							class="hidden flex gap-2.5 text-sm text-indigo-800 bg-indigo-50/80 ring-1 ring-indigo-100 rounded-xl px-4 py-3 mb-7"
+							role="status"
 						>
 							<svg
 								class="shrink-0 mt-0.5"
@@ -504,8 +506,10 @@
 								<circle cx="12" cy="12" r="9" />
 								<path d="M12 8v5M12 16h.01" />
 							</svg>
-							Sam appears in 3 expenses and can't be removed yet. Delete or
-							reassign those expenses first.
+							<span id="setupMemberWarningText"
+								>Sam appears in 3 expenses and can't be removed yet. Delete or
+								reassign those expenses first.</span
+							>
 						</p>
 
 						<div class="flex items-center gap-4 flex-wrap">
@@ -555,7 +559,11 @@
 				>
 					<div class="glass rounded-3xl p-6 sm:p-8">
 						<div class="flex justify-between items-start mb-6">
-							<h2 class="text-[28px] leading-tight font-semibold display">
+							<!-- JS: switch to "Edit expense" in edit mode (TRIP-4) -->
+							<h2
+								id="addExpenseHeading"
+								class="text-[28px] leading-tight font-semibold display"
+							>
 								Add expense
 							</h2>
 							<span class="text-xs text-slate-400 flex items-center gap-1.5"
@@ -600,11 +608,14 @@
 										inputmode="decimal"
 										placeholder="0.00"
 										class="field num !pl-7"
+										aria-describedby="addExpenseAmountError"
 									/>
 								</div>
+								<!-- Hidden by default. JS removes 'hidden' when the amount is invalid (TRIP-10). -->
 								<p
 									id="addExpenseAmountError"
-									class="text-xs text-red-600 mt-1.5"
+									class="hidden text-xs text-red-600 mt-1.5"
+									role="alert"
 								>
 									Enter a number. Letters and blanks are rejected.
 								</p>
@@ -691,14 +702,17 @@
 								<!-- populateSplitCheckboxes() rebuilds this container only —
 								     the header above and the shortfall row below stay put -->
 							</div>
+							<!-- Hidden by default. JS: set #addExpenseShortfallAmount, then remove 'hidden'. -->
 							<div
 								id="addExpenseShortfallRow"
-								class="flex justify-between gap-3 flex-wrap px-4 py-3 bg-red-50/90 border-t border-red-100 text-sm"
+								class="hidden flex justify-between gap-3 flex-wrap px-4 py-3 bg-red-50/90 border-t border-red-100 text-sm"
 							>
 								<span class="text-red-600"
 									>Custom amounts must add up to the total.</span
 								>
-								<span class="font-semibold num text-red-700"
+								<span
+									id="addExpenseShortfallAmount"
+									class="font-semibold num text-red-700"
 									>520.00 of 540.00, 20.00 short</span
 								>
 							</div>
@@ -715,14 +729,17 @@
 							>
 								Cancel
 							</button>
+							<!-- Hidden by default. JS: set #addExpenseProblemsText, then remove 'hidden'. -->
 							<span
 								id="addExpenseProblemsLabel"
-								class="text-sm text-red-600 flex items-center gap-1.5"
+								class="hidden text-sm text-red-600 flex items-center gap-1.5"
 								><span
 									class="w-1.5 h-1.5 rounded-full bg-red-500"
 									aria-hidden="true"
 								></span
-								>2 problems to fix</span
+								><span id="addExpenseProblemsText"
+									>2 problems to fix</span
+								></span
 							>
 						</div>
 					</div>
@@ -890,7 +907,11 @@
 							>
 								$2,104.60
 							</p>
-							<p class="text-sm mt-3 text-indigo-200/70">
+							<!-- JS: e.g. `${expenses.length} expenses, ${people.length} people` -->
+							<p
+								id="expensesSidebarMeta"
+								class="text-sm mt-3 text-indigo-200/70"
+							>
 								11 expenses, 4 people
 							</p>
 						</div>
@@ -981,7 +1002,7 @@
 						<h2 class="text-[28px] leading-tight font-semibold display">
 							Balances
 						</h2>
-						<p class="text-[15px] text-slate-500 mt-1">
+						<p id="balancesSubtitle" class="text-[15px] text-slate-500 mt-1">
 							Net position per person across 11 expenses.
 						</p>
 					</div>
@@ -1250,7 +1271,11 @@
 							<h2 class="text-[28px] leading-tight font-semibold display">
 								Settle up
 							</h2>
-							<p class="text-[15px] text-slate-500 mt-1 max-w-xl">
+							<!-- JS: e.g. `${payments.length} payments clear the trip.` -->
+							<p
+								id="settleUpIntro"
+								class="text-[15px] text-slate-500 mt-1 max-w-xl"
+							>
 								Three payments clear the trip. The largest creditor is matched
 								with the largest debtor, repeatedly, until everyone is square.
 							</p>
@@ -1358,22 +1383,17 @@
 					<div class="flex flex-col gap-5">
 						<div id="settleUpPlanQualityPanel" class="glass rounded-3xl p-6">
 							<p class="text-[15px] font-semibold mb-4">Plan quality</p>
+							<!-- "Pairwise debts" and "Remaining" removed: they belong to the Mark-paid stretch goal -->
 							<dl class="flex flex-col gap-2.5 text-sm">
 								<div class="flex justify-between">
 									<dt class="text-slate-500">Payments</dt>
-									<dd class="font-semibold num">3</dd>
-								</div>
-								<div class="flex justify-between">
-									<dt class="text-slate-500">Pairwise debts</dt>
-									<dd class="font-semibold num">7</dd>
+									<dd id="settleUpPaymentCount" class="font-semibold num">3</dd>
 								</div>
 								<div class="flex justify-between">
 									<dt class="text-slate-500">Money moved</dt>
-									<dd class="font-semibold num">$508.50</dd>
-								</div>
-								<div class="flex justify-between">
-									<dt class="text-slate-500">Remaining</dt>
-									<dd class="font-semibold num">$412.10</dd>
+									<dd id="settleUpMoneyMoved" class="font-semibold num">
+										$508.50
+									</dd>
 								</div>
 							</dl>
 						</div>
@@ -1437,7 +1457,10 @@
 						>
 							Priya
 						</p>
-						<p class="text-sm text-slate-500 mt-1.5 num">
+						<p
+							id="summaryTopSpenderDetail"
+							class="text-sm text-slate-500 mt-1.5 num"
+						>
 							$928.00 across 4 expenses
 						</p>
 					</div>
@@ -1517,45 +1540,48 @@
 									><span class="text-right">Share</span
 									><span class="text-right">Net</span>
 								</div>
-								<div
-									data-person="priya"
-									class="grid grid-cols-[1fr_80px_80px_70px] gap-2 py-2.5 border-b border-slate-200/50 text-sm num"
-								>
-									<span>Priya</span><span class="text-right">928.00</span
-									><span class="text-right">515.90</span
-									><span class="text-right text-emerald-700 font-semibold"
-										>+412</span
+								<!-- Rows container: render into THIS so the header above survives innerHTML -->
+								<div id="summarySpendVsShareRows">
+									<div
+										data-person="priya"
+										class="grid grid-cols-[1fr_80px_80px_70px] gap-2 py-2.5 border-b border-slate-200/50 text-sm num"
 									>
-								</div>
-								<div
-									data-person="sam"
-									class="grid grid-cols-[1fr_80px_80px_70px] gap-2 py-2.5 border-b border-slate-200/50 text-sm num"
-								>
-									<span>Sam</span><span class="text-right">631.00</span
-									><span class="text-right">534.60</span
-									><span class="text-right text-emerald-700 font-semibold"
-										>+96</span
+										<span>Priya</span><span class="text-right">928.00</span
+										><span class="text-right">515.90</span
+										><span class="text-right text-emerald-700 font-semibold"
+											>+412</span
+										>
+									</div>
+									<div
+										data-person="sam"
+										class="grid grid-cols-[1fr_80px_80px_70px] gap-2 py-2.5 border-b border-slate-200/50 text-sm num"
 									>
-								</div>
-								<div
-									data-person="mia"
-									class="grid grid-cols-[1fr_80px_80px_70px] gap-2 py-2.5 border-b border-slate-200/50 text-sm num"
-								>
-									<span>Mia</span><span class="text-right">148.00</span
-									><span class="text-right">310.00</span
-									><span class="text-right text-red-600 font-semibold"
-										>−162</span
+										<span>Sam</span><span class="text-right">631.00</span
+										><span class="text-right">534.60</span
+										><span class="text-right text-emerald-700 font-semibold"
+											>+96</span
+										>
+									</div>
+									<div
+										data-person="mia"
+										class="grid grid-cols-[1fr_80px_80px_70px] gap-2 py-2.5 border-b border-slate-200/50 text-sm num"
 									>
-								</div>
-								<div
-									data-person="alex"
-									class="grid grid-cols-[1fr_80px_80px_70px] gap-2 py-2.5 text-sm num"
-								>
-									<span>Alex</span><span class="text-right">397.60</span
-									><span class="text-right">744.10</span
-									><span class="text-right text-red-600 font-semibold"
-										>−347</span
+										<span>Mia</span><span class="text-right">148.00</span
+										><span class="text-right">310.00</span
+										><span class="text-right text-red-600 font-semibold"
+											>−162</span
+										>
+									</div>
+									<div
+										data-person="alex"
+										class="grid grid-cols-[1fr_80px_80px_70px] gap-2 py-2.5 text-sm num"
 									>
+										<span>Alex</span><span class="text-right">397.60</span
+										><span class="text-right">744.10</span
+										><span class="text-right text-red-600 font-semibold"
+											>−347</span
+										>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -1599,16 +1625,20 @@ SETTLE UP
 							<button id="shareCopyBtn" class="btn-primary">
 								Copy summary
 							</button>
+							<!-- Hidden by default. JS removes 'hidden' after a successful copy (TRIP-11). -->
 							<span
 								id="shareCopiedBadge"
-								class="px-4 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 font-semibold text-sm"
+								class="hidden px-4 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 font-semibold text-sm"
+								role="status"
 								>Copied ✓</span
 							>
 							<button id="sharePrintBtn" class="btn-quiet">Print view</button>
 						</div>
+						<!-- Hidden by default. JS removes 'hidden' if the Clipboard API fails (TRIP-11). -->
 						<p
 							id="shareFallbackWarning"
-							class="text-sm text-red-700 bg-red-50/90 ring-1 ring-red-100 rounded-xl px-4 py-3"
+							class="hidden text-sm text-red-700 bg-red-50/90 ring-1 ring-red-100 rounded-xl px-4 py-3"
+							role="alert"
 						>
 							Clipboard isn't available in this browser. Select the text above
 							and copy it manually.

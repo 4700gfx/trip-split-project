@@ -709,6 +709,10 @@ function computeSummary() {
 	const topEntry = [...entries].sort((a, b) => b[1] - a[1])[0];
 	const topSpender = people.find((person) => person.id == topEntry[0]);
 	const topSpenderAmount = topEntry?.[1] ?? 0;
+	const topSpenderCount = expenses.filter(
+		(expense) => expense.paidBy == topSpender.id
+	).length;
+	console.log(topSpender);
 
 	const totalPerCategory = expenses.reduce((acc, expense) => {
 		acc[expense.category] = (acc[expense.category] ?? 0) + expense.amount;
@@ -722,6 +726,7 @@ function computeSummary() {
 		topEntry,
 		topSpender,
 		topSpenderAmount,
+		topSpenderCount,
 		totalPerCategory
 	};
 }
@@ -729,6 +734,15 @@ function computeSummary() {
 function renderSummary() {
 	// TODO: write computeSummary() into the dl/dd elements and category bars
 	// (set bar width via .style.width, not an interpolated Tailwind class)
+	const summaryObject = computeSummary();
+	const {
+		total,
+		average,
+		perHead,
+		topSpender,
+		topSpenderAmount,
+		topSpenderCount
+	} = summaryObject;
 }
 
 /* ==================== TRIP-11: SHARE / EXPORT ==================== */
@@ -760,6 +774,18 @@ function renderAll() {
 function initalCapString(name) {
 	if (!name) return;
 	return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+}
+
+function formatMoney(amount) {
+	const safeAmount = Math.abs(amount) < 0.005 ? 0 : amount;
+	return safeAmount.toLocaleString('en-us', {
+		style: 'currency',
+		currency: 'USD'
+	});
+}
+
+function pluralize(count, singular, plural) {
+	return count === 1 ? ` ${singular}` : `${plural}`;
 }
 
 /* ==================== EVENT WIRING ==================== */
