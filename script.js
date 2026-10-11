@@ -129,6 +129,18 @@ const expensesSidebarBalanceSum = document.querySelector(
 
 const settleUpList = document.querySelector('#settleUpList');
 
+//DOM Elements for Summary Page
+const summaryTotalSpent = document.querySelector('#summaryTotalSpent');
+const summaryAverageExpense = document.querySelector('#summaryAverageExpense');
+const summaryPerHead = document.querySelector('#summaryPerHead');
+const summaryTopSpender = document.querySelector('#summaryTopSpender');
+const summaryTopSpenderDetail = document.querySelector(
+	'#summaryTopSpenderDetail'
+);
+const perHeadBadge = document.querySelector('#perHeadBadge');
+const expensesSidebarTotal = document.querySelector('#expensesSidebarTotal');
+const expensesSidebarMeta = document.querySelector('#expensesSidebarMeta');
+
 /* ==================== TRIP-2: MEMBERS ==================== */
 
 //Adding and Removing Person to People Object
@@ -706,13 +718,17 @@ function computeSummary() {
 	}, {});
 
 	const entries = Object.entries(paidByPerson);
-	const topEntry = [...entries].sort((a, b) => b[1] - a[1])[0];
-	const topSpender = people.find((person) => person.id == topEntry[0]);
+
+	const topEntry = [...entries].sort((a, b) => b[1] - a[1])[1] || undefined;
+	const topSpenderId = topEntry?.[1] || undefined;
+	const topSpenderName =
+		people.find((person) => person.id == topEntry[0])?.name ??
+		'No One Is Top Spender';
 	const topSpenderAmount = topEntry?.[1] ?? 0;
 	const topSpenderCount = expenses.filter(
 		(expense) => expense.paidBy == topSpender.id
 	).length;
-	console.log(topSpender);
+	console.log(topSpender, topEntry);
 
 	const totalPerCategory = expenses.reduce((acc, expense) => {
 		acc[expense.category] = (acc[expense.category] ?? 0) + expense.amount;
@@ -723,8 +739,8 @@ function computeSummary() {
 		total,
 		average,
 		perHead,
-		topEntry,
-		topSpender,
+		topSpenderId,
+		topSpenderName,
 		topSpenderAmount,
 		topSpenderCount,
 		totalPerCategory
