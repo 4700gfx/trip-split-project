@@ -743,6 +743,24 @@ function renderSummary() {
 		topSpenderAmount,
 		topSpenderCount
 	} = summaryObject;
+
+	const totalCard = formatMoney(total);
+	const averageCard = formatMoney(average);
+	const perHeadCard = formatMoney(perHead);
+	const topSpenderCard = topSpender.name;
+
+	if (!topSpender) {
+	}
+
+	const memberBadge = people.length;
+	const expensesBadge = expenses.length;
+	const totalBadge = formatMoney(total);
+	const perHeadBadge = formatMoney(perHead);
+
+	const sidebarDetails =
+		expenses.length > 1
+			? `${expensesBadge} expenses, ${memberBadge} people`
+			: `1 expenses, ${memberBadge}`;
 }
 
 /* ==================== TRIP-11: SHARE / EXPORT ==================== */
