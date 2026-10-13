@@ -719,20 +719,22 @@ function computeSummary() {
 
 	const entries = Object.entries(paidByPerson);
 
-	const topEntry = [...entries].sort((a, b) => b[1] - a[1])[0] ?? undefined;
+	const topEntry = [...entries].sort((a, b) => b[1] - a[1])[0];
 	console.log(topEntry);
 	const topSpenderId = topEntry?.[0] || null;
 	const topSpenderName =
 		people.find((person) => person.id === topSpenderId)?.name ?? '—';
 	const topSpenderAmount = topEntry?.[1] ?? 0;
-	const topSpenderCount =
-		expenses.filter((expense) => expense.paidBy == topSpenderId).length ?? 0;
-	console.log(topSpenderName, topEntry, topSpenderId, topSpenderCount);
+	const topSpenderCount = expenses.filter(
+		(expense) => expense.paidBy === topSpenderId
+	).length;
 
 	const totalPerCategory = expenses.reduce((acc, expense) => {
 		acc[expense.category] = (acc[expense.category] ?? 0) + expense.amount;
 		return acc;
 	}, {});
+
+	console.log(topSpenderName, topEntry, topSpenderId, topSpenderCount);
 
 	return {
 		total,
@@ -765,11 +767,21 @@ function renderSummary() {
 	const perHeadCard = formatMoney(perHead);
 	const topSpenderCard = topSpenderName;
 
-	summaryTopSpenderDetail.textContent = `${formatMoney(topSpenderAmount)} across ${topSpenderCount} expenses`;
+	summaryTopSpenderDetail.textContent =
+		topSpenderCount === 0
+			? 'No Expenses Yet'
+			: `${formatMoney(topSpenderAmount)} across ${topSpenderCount} ${pluralize(topSpenderCount, 'expense', 'expenses')}`;
 	summaryTotalSpent.textContent = totalCard;
 	summaryTopSpender.textContent = topSpenderCard;
 	summaryPerHead.textContent = perHeadCard;
 	summaryAverageExpense.textContent = averageCard;
+
+	memberCount.textContent = `${people.length} ${pluralize(people.length, 'person', 'people')}`;
+	expenseCount.textContent = `${expenses.length} ${pluralize(expenses.length, 'expense', 'expenses')}`;
+	totalSpent.textContent = formatMoney(total);
+	perHead.textContent = formatMoney(perHead);
+	expensesSidebarTotal.textContent = formatMoney(total);
+	expensesSidebarMeta.textContent = ` ${expenses.length} ${pluralize(expenses.length, 'expense', 'expenses')}, ${people.length} ${pluralize(people.length, 'person', 'people')}`;
 }
 
 /* ==================== TRIP-11: SHARE / EXPORT ==================== */
@@ -813,7 +825,7 @@ function formatMoney(amount) {
 }
 
 function pluralize(count, singular, plural) {
-	return count === 1 ? ` ${singular}` : ` ${plural}`;
+	return count === 1 ? `${singular}` : `${plural}`;
 }
 
 /* ==================== EVENT WIRING ==================== */
