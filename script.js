@@ -719,16 +719,15 @@ function computeSummary() {
 
 	const entries = Object.entries(paidByPerson);
 
-	const topEntry = [...entries].sort((a, b) => b[1] - a[1])[1] || undefined;
-	const topSpenderId = topEntry?.[1] || undefined;
+	const topEntry = [...entries].sort((a, b) => b[1] - a[1])[0] ?? undefined;
+	console.log(topEntry);
+	const topSpenderId = topEntry?.[0] || null;
 	const topSpenderName =
-		people.find((person) => person.id == topEntry[0])?.name ??
-		'No One Is Top Spender';
+		people.find((person) => person.id === topSpenderId)?.name ?? '—';
 	const topSpenderAmount = topEntry?.[1] ?? 0;
-	const topSpenderCount = expenses.filter(
-		(expense) => expense.paidBy == topEntry.id
-	).length;
-	console.log(topSpenderName, topEntry);
+	const topSpenderCount =
+		expenses.filter((expense) => expense.paidBy == topSpenderId).length ?? 0;
+	console.log(topSpenderName, topEntry, topSpenderId, topSpenderCount);
 
 	const totalPerCategory = expenses.reduce((acc, expense) => {
 		acc[expense.category] = (acc[expense.category] ?? 0) + expense.amount;
@@ -751,10 +750,14 @@ function renderSummary() {
 	// TODO: write computeSummary() into the dl/dd elements and category bars
 	// (set bar width via .style.width, not an interpolated Tailwind class)
 	const summaryObject = computeSummary();
-	const { total, average, perHead, topSpenderName, topSpenderAmount } =
-		summaryObject;
-
-	let topSpenderDetail;
+	const {
+		total,
+		average,
+		perHead,
+		topSpenderName,
+		topSpenderAmount,
+		topSpenderCount
+	} = summaryObject;
 
 	//Stat Cards
 	const totalCard = formatMoney(total);
@@ -762,28 +765,11 @@ function renderSummary() {
 	const perHeadCard = formatMoney(perHead);
 	const topSpenderCard = topSpenderName;
 
-	if (!topSpenderName) {
-		topSpenderAmount = 'No Expenses Yet';
-	} else {
-		topSpenderDetail = formatMoney(topSpenderAmount);
-	}
-
-	const infoBar = pluralize(people.length, 'person', 'people');
-
-	const memberBadge = people.length;
-	const expensesBadge = expenses.length;
-	const totalBadge = formatMoney(total);
-	const perHeadBadge = formatMoney(perHead);
-
-	const sidebarDetails =
-		expenses.length > 1
-			? `${expensesBadge} expenses, ${memberBadge} people`
-			: `1 expenses, ${memberBadge}`;
-
-	summaryTotalSpent.textContent = formatMoney(total);
-	summaryTopSpender.textContent = topSpenderName;
-	summaryPerHead.textContent = formatMoney(perHead);
-	summaryAverageExpense.textContent = formatMoney(average);
+	summaryTopSpenderDetail.textContent = `${formatMoney(topSpenderAmount)} across ${topSpenderCount} expenses`;
+	summaryTotalSpent.textContent = totalCard;
+	summaryTopSpender.textContent = topSpenderCard;
+	summaryPerHead.textContent = perHeadCard;
+	summaryAverageExpense.textContent = averageCard;
 }
 
 /* ==================== TRIP-11: SHARE / EXPORT ==================== */
@@ -827,7 +813,7 @@ function formatMoney(amount) {
 }
 
 function pluralize(count, singular, plural) {
-	return count === 1 ? ` ${singular}` : `${plural}`;
+	return count === 1 ? ` ${singular}` : ` ${plural}`;
 }
 
 /* ==================== EVENT WIRING ==================== */
