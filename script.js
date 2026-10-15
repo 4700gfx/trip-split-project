@@ -145,14 +145,17 @@ const expensesSidebarMeta = document.querySelector('#expensesSidebarMeta');
 
 //Adding and Removing Person to People Object
 function addPerson(rawName) {
+	if (rawName === '' || !rawName || alreadyEntered) {
+		alert('Enter a Real Name');
+		return;
+	}
+
 	const alreadyEntered = people.some(
-		(person) => person.name === initalCapString(rawName.trim())
+		(person) => initalCapString(person.name) === initalCapString(rawName.trim())
 	);
 
 	console.log(alreadyEntered ? 'This has been Entered' : 'This is a New User');
 	const person = {};
-
-	if (!rawName || alreadyEntered) return;
 
 	//Adding Person Object to People Array
 	person.id = crypto.randomUUID();
@@ -166,17 +169,27 @@ function addPerson(rawName) {
 function removePerson(personId) {
 	// TODO: block removal if referenced in any expense (paidBy or splitBetween); else filter out + renderAll()
 
+	const personIdName = people.find((person) => person.id === personId).name;
+	console.log(personIdName);
 	//Checcking if the Person has a Balance
 	const owesBalance = expenses.some(
 		(expense) =>
 			expense.splitBetween.includes(personId) || expense.paidBy === personId
 	);
 
+	const balancesIncludedCount = expenses.filter(
+		(expense) =>
+			expense.splitBetween.includes(personId) ||
+			expense.paidBy.includes(personId)
+	).length;
+
 	console.log(owesBalance);
 
 	if (owesBalance) {
 		//Returns if there is no Balance
-		alert(`You owe an Amount`);
+		alert(
+			`${personIdName} is in ${balancesIncludedCount} ${pluralize(balancesIncludedCount, 'expense', 'expenses')}`
+		);
 		return;
 	} else {
 		//Filter the Person and Rerender
@@ -277,6 +290,7 @@ function getCustomAmounts(checkedPersonId) {
 
 function validateExpenseForm(values) {
 	// TODO: check amount is a valid number, splitBetween isn't empty, custom split sums correctly
+	const expenseValues = { ...values };
 }
 
 function handleExpenseFormSubmit(event) {
@@ -764,7 +778,6 @@ function renderSummary() {
 	//Stat Cards
 	const totalCard = formatMoney(total);
 	const averageCard = formatMoney(average);
-	const perHeadCard = formatMoney(perHead);
 	const topSpenderCard = topSpenderName;
 
 	summaryTopSpenderDetail.textContent =
@@ -773,15 +786,15 @@ function renderSummary() {
 			: `${formatMoney(topSpenderAmount)} across ${topSpenderCount} ${pluralize(topSpenderCount, 'expense', 'expenses')}`;
 	summaryTotalSpent.textContent = totalCard;
 	summaryTopSpender.textContent = topSpenderCard;
-	summaryPerHead.textContent = perHeadCard;
 	summaryAverageExpense.textContent = averageCard;
+	summaryPerHead.textContent = formatMoney(perHead);
+	perHeadBadge.textContent = formatMoney(perHead);
 
 	memberCount.textContent = `${people.length} ${pluralize(people.length, 'person', 'people')}`;
 	expenseCount.textContent = `${expenses.length} ${pluralize(expenses.length, 'expense', 'expenses')}`;
-	totalSpent.textContent = formatMoney(total);
-	perHead.textContent = formatMoney(perHead);
-	expensesSidebarTotal.textContent = formatMoney(total);
-	expensesSidebarMeta.textContent = ` ${expenses.length} ${pluralize(expenses.length, 'expense', 'expenses')}, ${people.length} ${pluralize(people.length, 'person', 'people')}`;
+	totalSpent.textContent = totalCard;
+	expensesSidebarTotal.textContent = totalCard;
+	expensesSidebarMeta.textContent = `${expenses.length} ${pluralize(expenses.length, 'expense', 'expenses')}, ${people.length} ${pluralize(people.length, 'person', 'people')}`;
 }
 
 /* ==================== TRIP-11: SHARE / EXPORT ==================== */
