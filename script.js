@@ -145,14 +145,19 @@ const expensesSidebarMeta = document.querySelector('#expensesSidebarMeta');
 
 //Adding and Removing Person to People Object
 function addPerson(rawName) {
-	if (rawName === '' || !rawName || alreadyEntered) {
-		alert('Enter a Real Name');
-		return;
-	}
+	const userInput = initalCapString(rawName).trim();
 
 	const alreadyEntered = people.some(
-		(person) => initalCapString(person.name) === initalCapString(rawName.trim())
+		(person) => initalCapString(person.name).trim() === userInput
 	);
+
+	if (userInput === '' || !userInput) {
+		alert('Enter a Real Name');
+		return;
+	} else if (alreadyEntered) {
+		alert('This name has been entered');
+		return;
+	}
 
 	console.log(alreadyEntered ? 'This has been Entered' : 'This is a New User');
 	const person = {};
@@ -169,23 +174,18 @@ function addPerson(rawName) {
 function removePerson(personId) {
 	// TODO: block removal if referenced in any expense (paidBy or splitBetween); else filter out + renderAll()
 
-	const personIdName = people.find((person) => person.id === personId).name;
+	const personIdName =
+		people.find((person) => person.id === personId)?.name ?? 'Unknown';
 	console.log(personIdName);
-	//Checcking if the Person has a Balance
-	const owesBalance = expenses.some(
-		(expense) =>
-			expense.splitBetween.includes(personId) || expense.paidBy === personId
-	);
 
+	//Checcking if the Person has a Balance
 	const balancesIncludedCount = expenses.filter(
 		(expense) =>
 			expense.splitBetween.includes(personId) ||
 			expense.paidBy.includes(personId)
 	).length;
 
-	console.log(owesBalance);
-
-	if (owesBalance) {
+	if (balancesIncludedCount.length === 0) {
 		//Returns if there is no Balance
 		alert(
 			`${personIdName} is in ${balancesIncludedCount} ${pluralize(balancesIncludedCount, 'expense', 'expenses')}`
@@ -263,7 +263,6 @@ function populateSplitCheckboxes() {
 function getCheckedSplitPersonIds() {
 	const peopleCheckbox = document.querySelectorAll('.split-person-checkbox');
 	const peopleCheckboxArr = [...peopleCheckbox];
-	console.log(peopleCheckboxArr);
 
 	//Filtered Checked Boxes
 	const checkedPeople = peopleCheckboxArr.filter(
@@ -279,7 +278,7 @@ function getCustomAmounts(checkedPersonId) {
 			`.split-person-amount[data-person-id="${currentItem}"]`
 		);
 
-		accumulator[currentItem] = Number(splitAmount.value);
+		accumulator[currentItem] = Math.abs(Number(splitAmount.value));
 
 		console.log(Number(splitAmount.value));
 		return accumulator;
@@ -720,8 +719,6 @@ function clearFilters() {
 /* ==================== TRIP-9: SUMMARY DASHBOARD ==================== */
 
 function computeSummary() {
-	// TODO: total, average (guard /0), top spender, byCategory — all via reduce
-
 	const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
 	const average = expenses.length === 0 ? 0 : total / expenses.length;
 	const perHead = people.length === 0 ? 0 : total / people.length;
