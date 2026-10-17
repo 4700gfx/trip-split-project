@@ -287,9 +287,40 @@ function getCustomAmounts(checkedPersonId) {
 	return customAmountObj;
 }
 
-function validateExpenseForm(values) {
-	// TODO: check amount is a valid number, splitBetween isn't empty, custom split sums correctly
-	const expenseValues = { ...values };
+function validateExpenseForm({
+	amountText,
+	splitType,
+	splitBetween,
+	customAmounts
+}) {
+	const problems = [];
+	const amount = parseAmount(amountText);
+
+	if (!amount) {
+		problems.push({
+			field: 'amount',
+			message: 'Enter an Amount Greater than Zero'
+		});
+	}
+
+	if (splitBetween < 1) {
+		problems.push({ field: 'split', message: 'Pick at least one person' });
+	}
+
+	if (splitType === 'custom') {
+		const allCustomValid = customAmounts.every(
+			(amount) => amount < 0 || Number.isNaN(amount)
+		);
+
+		if (!allCustomValid) {
+			problems.push({ field: 'custom', message: 'Amount cannot be negative' });
+		} else if (allCustomValid && amount) {
+			const totalAmount = customAmounts.reduce((acc, sum) => acc + sum, 0);
+			const difference = amount - totalAmount;
+		}
+	}
+
+	return problems;
 }
 
 function handleExpenseFormSubmit(event) {
@@ -836,6 +867,25 @@ function formatMoney(amount) {
 
 function pluralize(count, singular, plural) {
 	return count === 1 ? `${singular}` : `${plural}`;
+}
+
+function parseAmount(rawText) {
+	if (!rawText) {
+		alert('Please Enter an Amount');
+		return;
+	}
+
+	const cleanText = rawText.trim();
+	const amount = Number(cleanText);
+
+	if (Number.isNaN(amount)) {
+		alert('Please Enter a Valid Number');
+		return;
+	}
+
+	const roundedAmount = Math.floor(amount);
+
+	return roundedAmount;
 }
 
 /* ==================== EVENT WIRING ==================== */
