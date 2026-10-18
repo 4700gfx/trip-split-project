@@ -303,21 +303,19 @@ function validateExpenseForm({
 		});
 	}
 
-	if (splitBetween < 1) {
+	if (splitBetween.length < 0) {
 		problems.push({ field: 'split', message: 'Pick at least one person' });
 	}
 
 	if (splitType === 'custom') {
-		const allCustomValid = customAmounts.every(
-			(amount) => amount < 0 || Number.isNaN(amount)
-		);
+		const customValues = Object.values(customAmounts);
+		const hasBadValue = customValues.some((value) => Number.isNaN(value));
 
-		if (!allCustomValid) {
+		if (hasBadValue) {
 			problems.push({ field: 'custom', message: 'Amount cannot be negative' });
-		} else if (allCustomValid && amount) {
-			const totalAmount = customAmounts.reduce((acc, sum) => acc + sum, 0);
-			const difference = amount - totalAmount;
 		}
+
+		//Put Step 4b Here
 	}
 
 	return problems;
