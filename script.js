@@ -296,6 +296,7 @@ function validateExpenseForm({
 	const problems = [];
 	const amount = parseAmount(amountText);
 
+	//Amount Rule
 	if (!amount) {
 		problems.push({
 			field: 'amount',
@@ -303,13 +304,17 @@ function validateExpenseForm({
 		});
 	}
 
+	//Split People Rule
 	if (splitBetween.length < 0) {
 		problems.push({ field: 'split', message: 'Pick at least one person' });
 	}
 
+	//Split Type Rule
 	if (splitType === 'custom') {
 		const customValues = Object.values(customAmounts);
-		const hasBadValue = customValues.some((value) => Number.isNaN(value));
+		const hasBadValue = customValues.some(
+			(value) => Number.isNaN(value) || value < 0
+		);
 
 		if (hasBadValue) {
 			problems.push({ field: 'custom', message: 'Amount cannot be negative' });
@@ -868,21 +873,21 @@ function pluralize(count, singular, plural) {
 }
 
 function parseAmount(rawText) {
-	if (!rawText) {
-		alert('Please Enter an Amount');
-		return;
+	const cleanedText = rawText.trim();
+
+	if (cleanedText == '') {
+		return 'Invalid';
 	}
 
-	const cleanText = rawText.trim();
-	const amount = Number(cleanText);
+	const parsedAmount = Number(cleanedText);
 
-	if (Number.isNaN(amount)) {
-		alert('Please Enter a Valid Number');
-		return;
+	if (!Number.isFinite(parsedAmount) || parseAmount < 0) {
+		return 'Invalid';
 	}
 
-	const roundedAmount = Math.floor(amount);
+	const roundedAmount = Number(parsedAmount.toFixed(2));
 
+	// return roundedAmount;
 	return roundedAmount;
 }
 
