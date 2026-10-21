@@ -278,7 +278,7 @@ function getCustomAmounts(checkedPersonId) {
 			`.split-person-amount[data-person-id="${currentItem}"]`
 		);
 
-		accumulator[currentItem] = Math.abs(Number(splitAmount.value));
+		accumulator[currentItem] = Number(splitAmount.value);
 
 		console.log(Number(splitAmount.value));
 		return accumulator;
@@ -297,7 +297,7 @@ function validateExpenseForm({
 	const amount = parseAmount(amountText);
 
 	//Amount Rule
-	if (!amount) {
+	if (Number.isNaN(amount) || amount === undefined) {
 		problems.push({
 			field: 'amount',
 			message: 'Enter an Amount Greater than Zero'
@@ -320,7 +320,15 @@ function validateExpenseForm({
 			problems.push({ field: 'custom', message: 'Amount cannot be negative' });
 		}
 
-		//Put Step 4b Here
+		if (!splitCalculator.customSplitIsValid(amount, customValues)) {
+			const difference =
+				amount - customValues.reduce((acc, sum) => acc + sum, 0);
+			const message =
+				difference > 0
+					? `${difference.toFixed(0)} short`
+					: `${difference.toFixed(2)} over`;
+			problems.push({ field: 'custom', message: message });
+		}
 	}
 
 	return problems;
@@ -986,6 +994,9 @@ addExpenseButton.addEventListener('click', (event) => {
 	expenseCategory.value = 'general';
 	expenseAmount.value = 0;
 });
+
+//Add New Expenses Button with Error Handling [Rename to Original When Done]
+addNewExpenseButton.addEventListener('click', (event) => {});
 
 expensesRows.addEventListener('click', (event) => {
 	const clearButton = event.target.closest('.clear-filters-btn');
