@@ -279,8 +279,6 @@ function getCustomAmounts(checkedPersonId) {
 		);
 
 		accumulator[currentItem] = Number(splitAmount.value);
-
-		console.log(Number(splitAmount.value));
 		return accumulator;
 	}, {});
 
@@ -297,7 +295,7 @@ function validateExpenseForm({
 	const amount = parseAmount(amountText);
 
 	//Amount Rule
-	if (Number.isNaN(amount) || amount === undefined) {
+	if (Number.isNaN(amount)) {
 		problems.push({
 			field: 'amount',
 			message: 'Enter an Amount Greater than Zero'
@@ -305,13 +303,13 @@ function validateExpenseForm({
 	}
 
 	//Split People Rule
-	if (splitBetween.length < 0) {
+	if (splitBetween.length < 1) {
 		problems.push({ field: 'split', message: 'Pick at least one person' });
 	}
 
 	//Split Type Rule
 	if (splitType === 'custom') {
-		const customValues = Object.values(customAmounts);
+		const customValues = Object.values(customAmounts) || [];
 		const hasBadValue = customValues.some(
 			(value) => Number.isNaN(value) || value < 0
 		);
@@ -320,12 +318,13 @@ function validateExpenseForm({
 			problems.push({ field: 'custom', message: 'Amount cannot be negative' });
 		}
 
-		if (!splitCalculator.customSplitIsValid(amount, customValues)) {
+		if (!splitCalculator.customSplitIsValid(amount, customAmounts)) {
 			const difference =
-				amount - customValues.reduce((acc, sum) => acc + sum, 0);
+				amount -
+				customValues.reduce((acc, currentValue) => acc + currentValue, 0);
 			const message =
 				difference > 0
-					? `${difference.toFixed(0)} short`
+					? `${difference.toFixed(2)} short`
 					: `${difference.toFixed(2)} over`;
 			problems.push({ field: 'custom', message: message });
 		}
@@ -883,19 +882,18 @@ function pluralize(count, singular, plural) {
 function parseAmount(rawText) {
 	const cleanedText = rawText.trim();
 
-	if (cleanedText == '') {
-		return 'Invalid';
+	if (cleanedText === '') {
+		return Number.NaN;
 	}
 
 	const parsedAmount = Number(cleanedText);
 
-	if (!Number.isFinite(parsedAmount) || parseAmount < 0) {
+	if (!Number.isFinite(parsedAmount) || parsedAmount > 0) {
 		return 'Invalid';
 	}
 
 	const roundedAmount = Number(parsedAmount.toFixed(2));
 
-	// return roundedAmount;
 	return roundedAmount;
 }
 
