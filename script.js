@@ -888,8 +888,8 @@ function parseAmount(rawText) {
 
 	const parsedAmount = Number(cleanedText);
 
-	if (!Number.isFinite(parsedAmount) || parsedAmount > 0) {
-		return 'Invalid';
+	if (!Number.isFinite(parsedAmount) || parsedAmount < 0) {
+		return Number.NaN;
 	}
 
 	const roundedAmount = Number(parsedAmount.toFixed(2));
@@ -935,43 +935,43 @@ addExpenseButton.addEventListener('click', (event) => {
 	//Initalizing New Expense Object
 	const newExpense = {};
 
-	//Reading the Value of DOM Elements
-	const payer = expensePayer.value;
-	const expenseName = !expenseDescription.value
-		? 'Untitled expense'
-		: expenseDescription.value;
+	// //Reading the Value of DOM Elements
+	// const payer = expensePayer.value;
+	// const expenseName = !expenseDescription.value
+	// 	? 'Untitled expense'
+	// 	: expenseDescription.value;
 
-	const category = expenseCategory.value;
-	const expenseId = crypto.randomUUID();
-	const amountValue = Number(expenseAmount.value);
+	// const category = expenseCategory.value;
+	// const expenseId = crypto.randomUUID();
+	// const amountValue = Number(expenseAmount.value);
 
-	//Gaurd Clause for If the Expense is not a Number
-	if (Number.isNaN(amountValue)) {
-		alert(`Please add a Valid Number for This Expense`);
-		return;
-	}
+	// //Gaurd Clause for If the Expense is not a Number
+	// if (Number.isNaN(amountValue)) {
+	// 	alert(`Please add a Valid Number for This Expense`);
+	// 	return;
+	// }
 
-	const splitType = document.querySelector(
-		'input[name="splitType"]:checked'
-	).value;
+	// const splitType = document.querySelector(
+	// 	'input[name="splitType"]:checked'
+	// ).value;
 
-	let splitBetween = getCheckedSplitPersonIds();
+	// let splitBetween = getCheckedSplitPersonIds();
 
-	if (splitBetween.length === 0) {
-		alert('Click a box to continue');
-		return;
-	}
+	// if (splitBetween.length === 0) {
+	// 	alert('Click a box to continue');
+	// 	return;
+	// }
 
-	const customAmounts =
-		splitType === 'custom' ? getCustomAmounts(splitBetween) : null;
+	// const customAmounts =
+	// 	splitType === 'custom' ? getCustomAmounts(splitBetween) : null;
 
-	if (
-		splitType === 'custom' &&
-		!splitCalculator.customSplitIsValid(amountValue, customAmounts)
-	) {
-		alert(`All splits must add to ${amountValue}`);
-		return;
-	}
+	// if (
+	// 	splitType === 'custom' &&
+	// 	!splitCalculator.customSplitIsValid(amountValue, customAmounts)
+	// ) {
+	// 	alert(`All splits must add to ${amountValue}`);
+	// 	return;
+	// }
 
 	//New Expense Object Properties
 	newExpense.id = expenseId;
@@ -992,9 +992,6 @@ addExpenseButton.addEventListener('click', (event) => {
 	expenseCategory.value = 'general';
 	expenseAmount.value = 0;
 });
-
-//Add New Expenses Button with Error Handling [Rename to Original When Done]
-addNewExpenseButton.addEventListener('click', (event) => {});
 
 expensesRows.addEventListener('click', (event) => {
 	const clearButton = event.target.closest('.clear-filters-btn');
