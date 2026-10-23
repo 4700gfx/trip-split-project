@@ -172,8 +172,6 @@ function addPerson(rawName) {
 }
 
 function removePerson(personId) {
-	// TODO: block removal if referenced in any expense (paidBy or splitBetween); else filter out + renderAll()
-
 	const personIdName =
 		people.find((person) => person.id === personId)?.name ?? 'Unknown';
 	console.log(personIdName);
@@ -316,9 +314,10 @@ function validateExpenseForm({
 
 		if (hasBadValue) {
 			problems.push({ field: 'custom', message: 'Amount cannot be negative' });
-		}
-
-		if (!splitCalculator.customSplitIsValid(amount, customAmounts)) {
+		} else if (
+			!hasBadValue &&
+			!splitCalculator.customSplitIsValid(amount, customAmounts)
+		) {
 			const difference =
 				amount -
 				customValues.reduce((acc, currentValue) => acc + currentValue, 0);
@@ -888,11 +887,15 @@ function parseAmount(rawText) {
 
 	const parsedAmount = Number(cleanedText);
 
-	if (!Number.isFinite(parsedAmount) || parsedAmount < 0) {
+	if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
 		return Number.NaN;
 	}
 
 	const roundedAmount = Number(parsedAmount.toFixed(2));
+
+	if (roundedAmount < 0) {
+		return Number.NaN;
+	}
 
 	return roundedAmount;
 }
