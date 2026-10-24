@@ -887,13 +887,13 @@ function parseAmount(rawText) {
 
 	const parsedAmount = Number(cleanedText);
 
-	if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
+	if (!Number.isFinite(parsedAmount)) {
 		return Number.NaN;
 	}
 
 	const roundedAmount = Number(parsedAmount.toFixed(2));
 
-	if (roundedAmount < 0) {
+	if (roundedAmount <= 0) {
 		return Number.NaN;
 	}
 
