@@ -186,15 +186,13 @@ function removePerson(personId) {
 	if (balancesIncludedCount.length === 0) {
 		//Returns if there is no Balance
 		alert(
-			`${personIdName} is in ${balancesIncludedCount} ${pluralize(balancesIncludedCount, 'expense', 'expenses')}`
+			`${personIdName} is in ${balancesIncludedCount} ${pluralize(balancesIncludedCount, 'expense', 'expenses')}. Delete those expenses first.`
 		);
 		return;
 	} else {
 		//Filter the Person and Rerender
-		const updatedMembers = people.filter((person) => person.id !== personId);
-		people = updatedMembers;
-		console.log(people);
-		console.log(`Person removed`);
+		people = people.filter((person) => person.id !== personId);
+		activeFilters.sortBy = 'all';
 		renderAll();
 	}
 }
