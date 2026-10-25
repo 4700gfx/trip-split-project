@@ -177,22 +177,22 @@ function removePerson(personId) {
 	console.log(personIdName);
 
 	//Checcking if the Person has a Balance
-	const balancesIncludedCount = expenses.filter(
+	const balanceCount = expenses.filter(
 		(expense) =>
 			expense.splitBetween.includes(personId) ||
 			expense.paidBy.includes(personId)
 	).length;
 
-	if (balancesIncludedCount.length === 0) {
+	if (balanceCount === 0) {
 		//Returns if there is no Balance
 		alert(
-			`${personIdName} is in ${balancesIncludedCount} ${pluralize(balancesIncludedCount, 'expense', 'expenses')}. Delete those expenses first.`
+			`${personIdName} is in ${balanceCount} ${pluralize(balanceCount, 'expense', 'expenses')}. Delete those expenses first.`
 		);
 		return;
 	} else {
 		//Filter the Person and Rerender
 		people = people.filter((person) => person.id !== personId);
-		activeFilters.sortBy = 'all';
+		activeFilters.personId = 'all';
 		renderAll();
 	}
 }
@@ -305,15 +305,15 @@ function validateExpenseForm({
 
 	//Split Type Rule
 	if (splitType === 'custom') {
-		const customValues = Object.values(customAmounts) || [];
+		const customValues = Object.values(customAmounts) || {};
 		const hasBadValue = customValues.some(
-			(value) => Number.isNaN(value) || value < 0
+			(value) => !Number.isFinite(value) || value < 0
 		);
 
 		if (hasBadValue) {
-			problems.push({ field: 'custom', message: 'Amount cannot be negative' });
+			problems.push({ field: 'custom', message: 'Enter amounts of 0 or more' });
 		} else if (
-			!hasBadValue &&
+			!Number.isNaN(amount) &&
 			!splitCalculator.customSplitIsValid(amount, customAmounts)
 		) {
 			const difference =
@@ -920,7 +920,7 @@ addPersonButton.addEventListener('click', () => {
 
 //Deleting a Member from Expense
 memberListContainer.addEventListener('click', (event) => {
-	const deleteButton = event.target.closest('[data-person]');
+	const deleteButton = event.target.closest('.remove-person-button');
 
 	if (!deleteButton) {
 		return;
@@ -928,7 +928,6 @@ memberListContainer.addEventListener('click', (event) => {
 
 	const personId = deleteButton.dataset.person;
 	removePerson(personId);
-	renderAll();
 });
 
 //Adding Expenses
