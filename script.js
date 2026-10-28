@@ -174,16 +174,14 @@ function addPerson(rawName) {
 function removePerson(personId) {
 	const personIdName =
 		people.find((person) => person.id === personId)?.name ?? 'Unknown';
-	console.log(personIdName);
 
 	//Checcking if the Person has a Balance
 	const balanceCount = expenses.filter(
 		(expense) =>
-			expense.splitBetween.includes(personId) ||
-			expense.paidBy.includes(personId)
+			expense.splitBetween.includes(personId) || expense.paidBy === personId
 	).length;
 
-	if (balanceCount === 0) {
+	if (balanceCount > 0) {
 		//Returns if there is no Balance
 		alert(
 			`${personIdName} is in ${balanceCount} ${pluralize(balanceCount, 'expense', 'expenses')}. Delete those expenses first.`
@@ -305,7 +303,7 @@ function validateExpenseForm({
 
 	//Split Type Rule
 	if (splitType === 'custom') {
-		const customValues = Object.values(customAmounts) || {};
+		const customValues = Object.values(customAmounts, {});
 		const hasBadValue = customValues.some(
 			(value) => !Number.isFinite(value) || value < 0
 		);
@@ -322,7 +320,7 @@ function validateExpenseForm({
 			const message =
 				difference > 0
 					? `${difference.toFixed(2)} short`
-					: `${difference.toFixed(2)} over`;
+					: `${Math.abs(Number(difference.toFixed(2)))} over`;
 			problems.push({ field: 'custom', message: message });
 		}
 	}
@@ -926,7 +924,8 @@ memberListContainer.addEventListener('click', (event) => {
 		return;
 	}
 
-	const personId = deleteButton.dataset.person;
+	const chip = deleteButton.closest('[data-person]');
+	const personId = chip.dataset.person;
 	removePerson(personId);
 });
 
@@ -935,43 +934,13 @@ addExpenseButton.addEventListener('click', (event) => {
 	//Initalizing New Expense Object
 	const newExpense = {};
 
-	// //Reading the Value of DOM Elements
-	// const payer = expensePayer.value;
-	// const expenseName = !expenseDescription.value
-	// 	? 'Untitled expense'
-	// 	: expenseDescription.value;
-
-	// const category = expenseCategory.value;
-	// const expenseId = crypto.randomUUID();
-	// const amountValue = Number(expenseAmount.value);
-
-	// //Gaurd Clause for If the Expense is not a Number
-	// if (Number.isNaN(amountValue)) {
-	// 	alert(`Please add a Valid Number for This Expense`);
-	// 	return;
-	// }
-
-	// const splitType = document.querySelector(
-	// 	'input[name="splitType"]:checked'
-	// ).value;
-
-	// let splitBetween = getCheckedSplitPersonIds();
-
-	// if (splitBetween.length === 0) {
-	// 	alert('Click a box to continue');
-	// 	return;
-	// }
-
-	// const customAmounts =
-	// 	splitType === 'custom' ? getCustomAmounts(splitBetween) : null;
-
-	// if (
-	// 	splitType === 'custom' &&
-	// 	!splitCalculator.customSplitIsValid(amountValue, customAmounts)
-	// ) {
-	// 	alert(`All splits must add to ${amountValue}`);
-	// 	return;
-	// }
+	// const amountText;
+	// const splitType;
+	// const splitBetween;
+	// const customAmounts;
+	// const payer;
+	// const category;
+	// const description;
 
 	//New Expense Object Properties
 	newExpense.id = expenseId;
