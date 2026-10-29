@@ -934,13 +934,34 @@ addExpenseButton.addEventListener('click', (event) => {
 	//Initalizing New Expense Object
 	const newExpense = {};
 
-	// const amountText;
-	// const splitType;
-	// const splitBetween;
-	// const customAmounts;
-	// const payer;
-	// const category;
-	// const description;
+	const amountText = expenseAmount.value;
+	const splitType;
+	const splitBetween;
+	const customAmounts;
+	const payer = expensePayer.value;
+	const category = expenseCategory.value;
+	const expenseName = expenseDescription.value ?? ' ';
+
+	const problems = validateExpenseForm({
+		amountText,
+		splitType,
+		splitBetween,
+		customAmounts
+	});
+
+	if (problems) {
+		const amountProblem = problems.find(
+			(problem) => problem.field === 'amount'
+		);
+		if (amountProblem) {
+			alert(amountProblem.message);
+		} else {
+			alert(problems.map((problem) => problem.message));
+		}
+	}
+
+	const amountValue = parseAmount(amountText);
+	const expenseId = randomUUID();
 
 	//New Expense Object Properties
 	newExpense.id = expenseId;
@@ -955,12 +976,24 @@ addExpenseButton.addEventListener('click', (event) => {
 
 	//Pushing New Expense and Clearing Form Fields
 	console.dir(newExpense);
-	expenses.push(newExpense);
+	expenses = [...expenses, newExpense];
 	renderAll();
 	expenseDescription.value = '';
 	expenseCategory.value = 'general';
 	expenseAmount.value = 0;
 });
+
+// const expenseDescription = document.querySelector(
+// 	`#addExpenseDescriptionInput`
+// );
+// const expenseAmount = document.querySelector('#addExpenseAmountInput');
+// const expensePayer = document.querySelector('#addExpensePayerSelect');
+// const expenseCategory = document.querySelector('#addExpenseCategorySelect');
+// const expenseSplitTableContainer = document.querySelector(
+// 	'#addExpenseSplitTable'
+// );
+// const addExpenseButton = document.querySelector('#addExpenseSaveBtn');
+// const expensesRows = document.querySelector('#expensesRows');
 
 expensesRows.addEventListener('click', (event) => {
 	const clearButton = event.target.closest('.clear-filters-btn');
