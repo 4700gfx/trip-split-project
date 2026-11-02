@@ -1,6 +1,100 @@
 /* TripSplit — script.js skeleton. Fill in every TODO. Sections map to TRIP-1..TRIP-12. */
 
 /* -------------------- STATE -------------------- */
+
+const stateObj = {
+	tripName: 'My Trip',
+	members: [],
+	expenses: [],
+	editingId: null,
+	filters: {
+		person: 'all',
+		category: 'all',
+		sort: 'newest'
+	}
+};
+
+/* -------------------- DOM REFERENCES (the ONLY place static elements are looked up) -------------------- */
+
+const elements = {
+	//DOM Elements for Initial Setup
+	tripName: document.querySelector('#tripNameInput'),
+	tripNameBadge: document.querySelector('#tripNameBadge'),
+	setupMemberName: document.querySelector('#setupPersonNameInput'),
+	addPersonButton: document.querySelector('#setupAddPersonBtn'),
+	memberCount: document.querySelector('#memberCountBadge'),
+	expenseCount: document.querySelector('#expenseCountBadge'),
+	totalSpent: document.querySelector('#totalSpentBadge'),
+	memberListContainer: document.querySelector('#setupMembersList'),
+	setupMemberCountLabel: document.querySelector('#setupMemberCountLabel'),
+	setupMemberWarning: document.querySelector('#setupMemberWarning'),
+	setupMemberWarningText: document.querySelector('#setupMemberWarningText'),
+
+	//DOM Elements for Adding Expenses
+	addExpenseSplitRows: document.querySelector('#addExpenseSplitRows'),
+
+	//DOM Element for Expense Form Input
+	addExpenseHeading: document.querySelector('#addExpenseHeading'),
+	expenseDescription: document.querySelector(`#addExpenseDescriptionInput`),
+	expenseAmount: document.querySelector('#addExpenseAmountInput'),
+	expensePayer: document.querySelector('#addExpensePayerSelect'),
+	expenseCategory: document.querySelector('#addExpenseCategorySelect'),
+	splitEqualRadio: document.querySelector('#addExpenseSplitEqualRadio'),
+	splitCustomRadio: document.querySelector('#addExpenseSplitCustomRadio'),
+	expenseSplitTableContainer: document.querySelector('#addExpenseSplitTable'),
+	addExpenseButton: document.querySelector('#addExpenseSaveBtn'),
+	addExpenseCancelButton: document.querySelector('#addExpenseCancelBtn'),
+
+	//DOM Elements for Expense Form Feedback (hidden by default in index.html)
+	expenseAmountError: document.querySelector('#addExpenseAmountError'),
+	expenseShortfallRow: document.querySelector('#addExpenseShortfallRow'),
+	expenseShortfallAmount: document.querySelector('#addExpenseShortfallAmount'),
+	expenseProblemsLabel: document.querySelector('#addExpenseProblemsLabel'),
+	expenseProblemsText: document.querySelector('#addExpenseProblemsText'),
+
+	//DOM Elements for Expense List
+	expensesRows: document.querySelector('#expensesRows'),
+
+	//DOM Elements for Filters
+	expensesSearchInput: document.querySelector('#expensesSearchInput'),
+	expensesPersonFilterSelect: document.querySelector(
+		'#expensesPersonFilterSelect'
+	),
+	expensesCategoryFilterSelect: document.querySelector(
+		'#expensesCategoryFilterSelect'
+	),
+	expensesSortSelect: document.querySelector('#expensesSortSelect'),
+	clearFilterButton: document.querySelector('#expensesClearAllLink'),
+
+	expenseFilterSummary: document.querySelector('#expensesFilterSummary'),
+	expenseActiveFilterChips: document.querySelector('#expensesActiveFilterChip'),
+
+	expensesSidebarBalances: document.querySelector(
+		'#expensesSidebarBalanceList'
+	),
+	expensesSidebarBalanceSum: document.querySelector(
+		'#expensesSidebarBalanceSum'
+	),
+
+	settleUpList: document.querySelector('#settleUpList'),
+
+	//DOM Elements for Summary Page
+	summaryTotalSpent: document.querySelector('#summaryTotalSpent'),
+	summaryAverageExpense: document.querySelector('#summaryAverageExpense'),
+	summaryPerHead: document.querySelector('#summaryPerHead'),
+	summaryTopSpender: document.querySelector('#summaryTopSpender'),
+	summaryTopSpenderDetail: document.querySelector('#summaryTopSpenderDetail'),
+	perHeadBadge: document.querySelector('#perHeadBadge'),
+	expensesSidebarTotal: document.querySelector('#expensesSidebarTotal'),
+	expensesSidebarMeta: document.querySelector('#expensesSidebarMeta'),
+
+	//DOM Elements for Share Page
+	shareSummaryText: document.querySelector('#shareSummaryText'),
+	shareCopyButton: document.querySelector('#shareCopyBtn'),
+	shareCopiedBadge: document.querySelector('#shareCopiedBadge'),
+	shareFallbackWarning: document.querySelector('#shareFallbackWarning')
+};
+
 let people = [
 	{ id: 'p1', name: 'Black' },
 	{ id: 'p2', name: 'Lou' },
@@ -79,68 +173,6 @@ let activeFilters = {
 	sortBy: 'date-desc'
 };
 
-/* -------------------- DOM REFERENCES -------------------- */
-//DOM Elements for Initial Setup
-const tripName = document.querySelector('#tripNameInput');
-const setupMemberName = document.querySelector('#setupPersonNameInput');
-const addPersonButton = document.querySelector('#setupAddPersonBtn');
-const memberCount = document.querySelector('#memberCountBadge');
-const expenseCount = document.querySelector('#expenseCountBadge');
-const totalSpent = document.querySelector('#totalSpentBadge');
-const memberListContainer = document.querySelector('#setupMembersList');
-
-//DOM Elements for Adding Expenses
-const addExpenseSplitRows = document.querySelector('#addExpenseSplitRows');
-
-//DOM Element for Expense Form Input
-const expenseDescription = document.querySelector(
-	`#addExpenseDescriptionInput`
-);
-const expenseAmount = document.querySelector('#addExpenseAmountInput');
-const expensePayer = document.querySelector('#addExpensePayerSelect');
-const expenseCategory = document.querySelector('#addExpenseCategorySelect');
-const expenseSplitTableContainer = document.querySelector(
-	'#addExpenseSplitTable'
-);
-const addExpenseButton = document.querySelector('#addExpenseSaveBtn');
-const expensesRows = document.querySelector('#expensesRows');
-
-//DOM Elements for Filters
-const expensesPersonFilterSelect = document.querySelector(
-	'#expensesPersonFilterSelect'
-);
-const expensesCategoryFilterSelect = document.querySelector(
-	'#expensesCategoryFilterSelect'
-);
-const expensesSortSelect = document.querySelector('#expensesSortSelect');
-const clearFilterButton = document.querySelector('#expensesClearAllLink');
-
-const expenseFilterSummary = document.querySelector('#expensesFilterSummary');
-const expenseActiveFilterChips = document.querySelector(
-	'#expensesActiveFilterChip'
-);
-
-const expensesSidebarBalances = document.querySelector(
-	'#expensesSidebarBalanceList'
-);
-const expensesSidebarBalanceSum = document.querySelector(
-	'#expensesSidebarBalanceSum'
-);
-
-const settleUpList = document.querySelector('#settleUpList');
-
-//DOM Elements for Summary Page
-const summaryTotalSpent = document.querySelector('#summaryTotalSpent');
-const summaryAverageExpense = document.querySelector('#summaryAverageExpense');
-const summaryPerHead = document.querySelector('#summaryPerHead');
-const summaryTopSpender = document.querySelector('#summaryTopSpender');
-const summaryTopSpenderDetail = document.querySelector(
-	'#summaryTopSpenderDetail'
-);
-const perHeadBadge = document.querySelector('#perHeadBadge');
-const expensesSidebarTotal = document.querySelector('#expensesSidebarTotal');
-const expensesSidebarMeta = document.querySelector('#expensesSidebarMeta');
-
 /* ==================== TRIP-2: MEMBERS ==================== */
 
 //Adding and Removing Person to People Object
@@ -197,8 +229,6 @@ function removePerson(personId) {
 
 //Rending People Chips from People Array
 function renderMemberChips() {
-	//Setting the DOM Elements
-	const memberListContainer = document.querySelector('#setupMembersList');
 	const memberPillRow = people
 		.map((person) => {
 			return `<span data-person="${person.id}" class="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full bg-indigo-50"><span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-semibold">${person.name.charAt(0).toUpperCase()}</span>${person.name} <span class="text-slate-400 remove-person-button">×</span></span>`;
@@ -206,21 +236,19 @@ function renderMemberChips() {
 		.join('');
 
 	//Adding Elements to Inner HTML
-	memberListContainer.innerHTML = memberPillRow;
+	elements.memberListContainer.innerHTML = memberPillRow;
 }
 
 /* ==================== TRIP-3: EXPENSE FORM ==================== */
 
 function populatePayerDropdown() {
-	const payerSelect = document.querySelector('#addExpensePayerSelect');
-
 	const expensePayers = people
 		.map((person) => {
 			return `<option value='${person.id}'>${person.name}</option>`;
 		})
 		.join('');
 
-	payerSelect.innerHTML = expensePayers;
+	elements.expensePayer.innerHTML = expensePayers;
 }
 
 function populateSplitCheckboxes() {
@@ -251,11 +279,14 @@ function populateSplitCheckboxes() {
 		})
 		.join('');
 
-	addExpenseSplitRows.innerHTML = splitRowsHTML;
+	elements.addExpenseSplitRows.innerHTML = splitRowsHTML;
 }
 
 function getCheckedSplitPersonIds() {
-	const peopleCheckbox = document.querySelectorAll('.split-person-checkbox');
+	// Rows are rendered by JS, so search INSIDE the static rows container
+	const peopleCheckbox = elements.addExpenseSplitRows.querySelectorAll(
+		'.split-person-checkbox'
+	);
 	const peopleCheckboxArr = [...peopleCheckbox];
 
 	//Filtered Checked Boxes
@@ -268,7 +299,8 @@ function getCheckedSplitPersonIds() {
 
 function getCustomAmounts(checkedPersonId) {
 	const customAmountObj = checkedPersonId.reduce((accumulator, currentItem) => {
-		const splitAmount = document.querySelector(
+		// Rows are rendered by JS, so search INSIDE the static rows container
+		const splitAmount = elements.addExpenseSplitRows.querySelector(
 			`.split-person-amount[data-person-id="${currentItem}"]`
 		);
 
@@ -441,7 +473,7 @@ function renderExpenseList() {
 			.join('');
 	}
 
-	expensesRows.innerHTML = rowsHTML;
+	elements.expensesRows.innerHTML = rowsHTML;
 	renderFilterSummary(visibleExpenses);
 }
 
@@ -588,14 +620,14 @@ function renderBalances() {
 		})
 		.join('');
 
-	expensesSidebarBalances.innerHTML = balancesHTML;
+	elements.expensesSidebarBalances.innerHTML = balancesHTML;
 
 	const balanceSum = sortedBalanceArr.reduce(
 		(sum, row) => sum + row.balance,
 		0
 	);
 	const displaySum = Math.abs(balanceSum) < 0.005 ? 0 : balanceSum;
-	expensesSidebarBalanceSum.textContent = `sums to ${displaySum.toFixed(2)}`;
+	elements.expensesSidebarBalanceSum.textContent = `sums to ${displaySum.toFixed(2)}`;
 }
 
 /* ==================== TRIP-7: SETTLE-UP ALGORITHM ==================== */
@@ -682,7 +714,7 @@ function renderSettleUp() {
 			.join('');
 	}
 
-	settleUpList.innerHTML = settleHTML;
+	elements.settleUpList.innerHTML = settleHTML;
 }
 
 /* ==================== TRIP-8: FILTERS ==================== */
@@ -695,7 +727,7 @@ function renderFilterSummary(visibleExpenses) {
 		0
 	);
 
-	expenseFilterSummary.textContent = `${visibleCount} of ${totalCount} expenses · $${shownTotal.toFixed(2)} shown`;
+	elements.expenseFilterSummary.textContent = `${visibleCount} of ${totalCount} expenses · $${shownTotal.toFixed(2)} shown`;
 
 	const expenseLabels = [];
 
@@ -711,17 +743,15 @@ function renderFilterSummary(visibleExpenses) {
 	}
 
 	if (expenseLabels.length === 0) {
-		expenseActiveFilterChips.classList.add('hidden');
+		elements.expenseActiveFilterChips.classList.add('hidden');
 	} else {
-		expenseActiveFilterChips.classList.remove('hidden');
-		expenseActiveFilterChips.textContent = `${expenseLabels.join(' · ')}`;
+		elements.expenseActiveFilterChips.classList.remove('hidden');
+		elements.expenseActiveFilterChips.textContent = `${expenseLabels.join(' · ')}`;
 	}
 }
 
 function populateFilterDropdowns() {
 	// TODO: rebuild #filterByPerson / #filterByCategory options
-	const personFilter = expensesPersonFilterSelect;
-
 	const allSelectOption = `<option value="all">Person: All</option>`;
 
 	const filterDropdowns = people
@@ -729,14 +759,14 @@ function populateFilterDropdowns() {
 		.join('');
 
 	const allOptions = allSelectOption.concat(filterDropdowns);
-	personFilter.innerHTML = allOptions;
-	expensesPersonFilterSelect.value = activeFilters.personId;
+	elements.expensesPersonFilterSelect.innerHTML = allOptions;
+	elements.expensesPersonFilterSelect.value = activeFilters.personId;
 }
 
 function handleFilterChange() {
-	activeFilters.personId = expensesPersonFilterSelect.value;
-	activeFilters.category = expensesCategoryFilterSelect.value;
-	activeFilters.sortBy = expensesSortSelect.value;
+	activeFilters.personId = elements.expensesPersonFilterSelect.value;
+	activeFilters.category = elements.expensesCategoryFilterSelect.value;
+	activeFilters.sortBy = elements.expensesSortSelect.value;
 
 	renderExpenseList();
 }
@@ -746,9 +776,9 @@ function clearFilters() {
 	activeFilters.category = 'all';
 	activeFilters.sortBy = 'date-desc';
 
-	expensesPersonFilterSelect.value = activeFilters.personId;
-	expensesCategoryFilterSelect.value = activeFilters.category;
-	expensesSortSelect.value = activeFilters.sortBy;
+	elements.expensesPersonFilterSelect.value = activeFilters.personId;
+	elements.expensesCategoryFilterSelect.value = activeFilters.category;
+	elements.expensesSortSelect.value = activeFilters.sortBy;
 	renderExpenseList();
 }
 
@@ -813,21 +843,21 @@ function renderSummary() {
 	const averageCard = formatMoney(average);
 	const topSpenderCard = topSpenderName;
 
-	summaryTopSpenderDetail.textContent =
+	elements.summaryTopSpenderDetail.textContent =
 		topSpenderCount === 0
 			? 'No Expenses Yet'
 			: `${formatMoney(topSpenderAmount)} across ${topSpenderCount} ${pluralize(topSpenderCount, 'expense', 'expenses')}`;
-	summaryTotalSpent.textContent = totalCard;
-	summaryTopSpender.textContent = topSpenderCard;
-	summaryAverageExpense.textContent = averageCard;
-	summaryPerHead.textContent = formatMoney(perHead);
-	perHeadBadge.textContent = formatMoney(perHead);
+	elements.summaryTotalSpent.textContent = totalCard;
+	elements.summaryTopSpender.textContent = topSpenderCard;
+	elements.summaryAverageExpense.textContent = averageCard;
+	elements.summaryPerHead.textContent = formatMoney(perHead);
+	elements.perHeadBadge.textContent = formatMoney(perHead);
 
-	memberCount.textContent = `${people.length} ${pluralize(people.length, 'person', 'people')}`;
-	expenseCount.textContent = `${expenses.length} ${pluralize(expenses.length, 'expense', 'expenses')}`;
-	totalSpent.textContent = totalCard;
-	expensesSidebarTotal.textContent = totalCard;
-	expensesSidebarMeta.textContent = `${expenses.length} ${pluralize(expenses.length, 'expense', 'expenses')}, ${people.length} ${pluralize(people.length, 'person', 'people')}`;
+	elements.memberCount.textContent = `${people.length} ${pluralize(people.length, 'person', 'people')}`;
+	elements.expenseCount.textContent = `${expenses.length} ${pluralize(expenses.length, 'expense', 'expenses')}`;
+	elements.totalSpent.textContent = totalCard;
+	elements.expensesSidebarTotal.textContent = totalCard;
+	elements.expensesSidebarMeta.textContent = `${expenses.length} ${pluralize(expenses.length, 'expense', 'expenses')}, ${people.length} ${pluralize(people.length, 'person', 'people')}`;
 }
 
 /* ==================== TRIP-11: SHARE / EXPORT ==================== */
@@ -904,20 +934,20 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 //Adding a Person to Set Up Trip
-addPersonButton.addEventListener('click', () => {
-	const memberName = initalCapString(setupMemberName.value);
+elements.addPersonButton.addEventListener('click', () => {
+	const memberName = initalCapString(elements.setupMemberName.value);
 
 	if (!memberName) {
 		alert('Please Type in a Name');
 	} else {
 		console.log(memberName);
 		addPerson(memberName);
-		setupMemberName.value = '';
+		elements.setupMemberName.value = '';
 	}
 });
 
 //Deleting a Member from Expense
-memberListContainer.addEventListener('click', (event) => {
+elements.memberListContainer.addEventListener('click', (event) => {
 	const deleteButton = event.target.closest('.remove-person-button');
 
 	if (!deleteButton) {
@@ -930,17 +960,19 @@ memberListContainer.addEventListener('click', (event) => {
 });
 
 //Adding Expenses
-addExpenseButton.addEventListener('click', (event) => {
+elements.addExpenseButton.addEventListener('click', (event) => {
 	//Initalizing New Expense Object
 	const newExpense = {};
 
-	const amountText = expenseAmount.value;
+	const amountText = elements.expenseAmount.value;
+	// FIXME (yours to finish): `const` with no value is a SyntaxError and stops the WHOLE file.
+	// Give each of these three its value from the form when you declare it.
 	const splitType;
 	const splitBetween;
 	const customAmounts;
-	const payer = expensePayer.value;
-	const category = expenseCategory.value;
-	const expenseName = expenseDescription.value ?? ' ';
+	const payer = elements.expensePayer.value;
+	const category = elements.expenseCategory.value;
+	const expenseName = elements.expenseDescription.value ?? ' ';
 
 	const problems = validateExpenseForm({
 		amountText,
@@ -978,24 +1010,12 @@ addExpenseButton.addEventListener('click', (event) => {
 	console.dir(newExpense);
 	expenses = [...expenses, newExpense];
 	renderAll();
-	expenseDescription.value = '';
-	expenseCategory.value = 'general';
-	expenseAmount.value = 0;
+	elements.expenseDescription.value = '';
+	elements.expenseCategory.value = 'general';
+	elements.expenseAmount.value = 0;
 });
 
-// const expenseDescription = document.querySelector(
-// 	`#addExpenseDescriptionInput`
-// );
-// const expenseAmount = document.querySelector('#addExpenseAmountInput');
-// const expensePayer = document.querySelector('#addExpensePayerSelect');
-// const expenseCategory = document.querySelector('#addExpenseCategorySelect');
-// const expenseSplitTableContainer = document.querySelector(
-// 	'#addExpenseSplitTable'
-// );
-// const addExpenseButton = document.querySelector('#addExpenseSaveBtn');
-// const expensesRows = document.querySelector('#expensesRows');
-
-expensesRows.addEventListener('click', (event) => {
+elements.expensesRows.addEventListener('click', (event) => {
 	const clearButton = event.target.closest('.clear-filters-btn');
 
 	if (clearButton) {
@@ -1012,11 +1032,17 @@ expensesRows.addEventListener('click', (event) => {
 });
 
 //Filter Buttons Event Handlers
-expensesPersonFilterSelect.addEventListener('change', handleFilterChange);
-expensesCategoryFilterSelect.addEventListener('change', handleFilterChange);
-expensesSortSelect.addEventListener('change', handleFilterChange);
+elements.expensesPersonFilterSelect.addEventListener(
+	'change',
+	handleFilterChange
+);
+elements.expensesCategoryFilterSelect.addEventListener(
+	'change',
+	handleFilterChange
+);
+elements.expensesSortSelect.addEventListener('change', handleFilterChange);
 
-clearFilterButton.addEventListener('click', (event) => {
+elements.clearFilterButton.addEventListener('click', (event) => {
 	event.preventDefault();
 	clearFilters();
 });
