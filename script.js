@@ -2,16 +2,86 @@
 
 /* -------------------- STATE -------------------- */
 
+let activeFilters = {
+	personId: 'all',
+	category: 'all',
+	sortBy: 'date-desc'
+};
+
 const stateObj = {
 	tripName: 'My Trip',
-	members: [],
-	expenses: [],
+	members: [
+		{ id: 'p1', name: 'Black' },
+		{ id: 'p2', name: 'Lou' },
+		{ id: 'p3', name: 'Kidd' },
+		{ id: 'p4', name: 'Slick' }
+	],
+	expenses: [
+		{
+			id: 'e1',
+			createdAt: Date.now() - 5 * 86400000, // 5 days ago (oldest)
+			description: 'Groceries',
+			amount: 60,
+			paidBy: 'p2',
+			category: 'food',
+			splitType: 'equal',
+			splitBetween: ['p1', 'p2', 'p3', 'p4'],
+			customAmounts: null
+			// 60 / 4 = 15.00 exactly — sanity-check baseline, no remainder to worry about
+		},
+		{
+			id: 'e2',
+			createdAt: Date.now() - 4 * 86400000, // 4 days ago
+			description: 'Taxi to airport',
+			amount: 37,
+			paidBy: 'p2',
+			category: 'transport',
+			splitType: 'equal',
+			splitBetween: ['p2', 'p3', 'p4'], // Black deliberately left out
+			customAmounts: null
+			// 37 / 3 = 12.3333... — forces your remainder-to-payer logic to fire
+		},
+		{
+			id: 'e3',
+			createdAt: Date.now() - 3 * 86400000, // 3 days ago
+			description: 'Museum tickets',
+			amount: 42.5,
+			paidBy: 'p2',
+			category: 'activities',
+			splitType: 'custom',
+			splitBetween: ['p2', 'p3', 'p4'], // Black not in this one at all
+			customAmounts: { p2: 15.0, p3: 12.5, p4: 15.0 }
+			// sums exactly to 42.50 — should pass customSplitIsValid
+		},
+		{
+			id: 'e4',
+			createdAt: Date.now() - 2 * 86400000, // 2 days ago
+			description: '',
+			amount: 18.75,
+			paidBy: 'p4',
+			category: 'general',
+			splitType: 'equal',
+			splitBetween: ['p2', 'p4'],
+			customAmounts: null
+			// blank description -> should render/save as "Untitled expense"
+			// 18.75 / 2 = 9.375 -> another rounding case, only 2 people this time
+		},
+		{
+			id: 'e5',
+			createdAt: Date.now() - 1 * 86400000, // 1 day ago (newest sample)
+			description: "Dinner — Lou's treat",
+			amount: 100,
+			paidBy: 'p2',
+			category: 'food',
+			splitType: 'custom',
+			splitBetween: ['p1', 'p2', 'p3', 'p4'],
+			customAmounts: { p1: 20, p2: 40, p3: 20, p4: 20 }
+			// payer (Lou) is ALSO in the split and owes their own $40 share of it —
+			// good check that your balance engine doesn't just zero out the payer
+		}
+	],
 	editingId: null,
-	filters: {
-		person: 'all',
-		category: 'all',
-		sort: 'newest'
-	}
+	filters: activeFilters
 };
 
 /* -------------------- DOM REFERENCES (the ONLY place static elements are looked up) -------------------- */
@@ -95,91 +165,13 @@ const elements = {
 	shareFallbackWarning: document.querySelector('#shareFallbackWarning')
 };
 
-let people = [
-	{ id: 'p1', name: 'Black' },
-	{ id: 'p2', name: 'Lou' },
-	{ id: 'p3', name: 'Kidd' },
-	{ id: 'p4', name: 'Slick' }
-];
-
-let expenses = [
-	{
-		id: 'e1',
-		createdAt: Date.now() - 5 * 86400000, // 5 days ago (oldest)
-		description: 'Groceries',
-		amount: 60,
-		paidBy: 'p2',
-		category: 'food',
-		splitType: 'equal',
-		splitBetween: ['p1', 'p2', 'p3', 'p4'],
-		customAmounts: null
-		// 60 / 4 = 15.00 exactly — sanity-check baseline, no remainder to worry about
-	},
-	{
-		id: 'e2',
-		createdAt: Date.now() - 4 * 86400000, // 4 days ago
-		description: 'Taxi to airport',
-		amount: 37,
-		paidBy: 'p2',
-		category: 'transport',
-		splitType: 'equal',
-		splitBetween: ['p2', 'p3', 'p4'], // Black deliberately left out
-		customAmounts: null
-		// 37 / 3 = 12.3333... — forces your remainder-to-payer logic to fire
-	},
-	{
-		id: 'e3',
-		createdAt: Date.now() - 3 * 86400000, // 3 days ago
-		description: 'Museum tickets',
-		amount: 42.5,
-		paidBy: 'p2',
-		category: 'activities',
-		splitType: 'custom',
-		splitBetween: ['p2', 'p3', 'p4'], // Black not in this one at all
-		customAmounts: { p2: 15.0, p3: 12.5, p4: 15.0 }
-		// sums exactly to 42.50 — should pass customSplitIsValid
-	},
-	{
-		id: 'e4',
-		createdAt: Date.now() - 2 * 86400000, // 2 days ago
-		description: '',
-		amount: 18.75,
-		paidBy: 'p4',
-		category: 'general',
-		splitType: 'equal',
-		splitBetween: ['p2', 'p4'],
-		customAmounts: null
-		// blank description -> should render/save as "Untitled expense"
-		// 18.75 / 2 = 9.375 -> another rounding case, only 2 people this time
-	},
-	{
-		id: 'e5',
-		createdAt: Date.now() - 1 * 86400000, // 1 day ago (newest sample)
-		description: "Dinner — Lou's treat",
-		amount: 100,
-		paidBy: 'p2',
-		category: 'food',
-		splitType: 'custom',
-		splitBetween: ['p1', 'p2', 'p3', 'p4'],
-		customAmounts: { p1: 20, p2: 40, p3: 20, p4: 20 }
-		// payer (Lou) is ALSO in the split and owes their own $40 share of it —
-		// good check that your balance engine doesn't just zero out the payer
-	}
-];
-
-let activeFilters = {
-	personId: 'all',
-	category: 'all',
-	sortBy: 'date-desc'
-};
-
 /* ==================== TRIP-2: MEMBERS ==================== */
 
 //Adding and Removing Person to People Object
 function addPerson(rawName) {
 	const userInput = initalCapString(rawName).trim();
 
-	const alreadyEntered = people.some(
+	const alreadyEntered = stateObj.members.some(
 		(person) => initalCapString(person.name).trim() === userInput
 	);
 
@@ -191,21 +183,23 @@ function addPerson(rawName) {
 		return;
 	}
 
-	console.log(alreadyEntered ? 'This has been Entered' : 'This is a New User');
+	console.alert(
+		alreadyEntered ? 'This has been Entered' : 'This is a New User'
+	);
 	const person = {};
 
 	//Adding Person Object to People Array
 	person.id = crypto.randomUUID();
 	person.name = initalCapString(rawName);
-	people.push(person);
+	stateObj.members.push(person);
 	renderAll();
-	console.log(`Added ${person.name} to the array`);
-	console.log(people);
+	console.log(stateObj.members);
 }
 
 function removePerson(personId) {
 	const personIdName =
-		people.find((person) => person.id === personId)?.name ?? 'Unknown';
+		stateObj.members.find((person) => person.id === personId)?.name ??
+		'Unknown';
 
 	//Checcking if the Person has a Balance
 	const balanceCount = expenses.filter(
@@ -221,15 +215,17 @@ function removePerson(personId) {
 		return;
 	} else {
 		//Filter the Person and Rerender
-		people = people.filter((person) => person.id !== personId);
-		activeFilters.personId = 'all';
+		stateObj.members = stateObj.members.filter(
+			(person) => person.id !== personId
+		);
+		stateObj.filters.personId = 'all';
 		renderAll();
 	}
 }
 
 //Rending People Chips from People Array
 function renderMemberChips() {
-	const memberPillRow = people
+	const memberPillRow = stateObj.members
 		.map((person) => {
 			return `<span data-person="${person.id}" class="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full bg-indigo-50"><span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-semibold">${person.name.charAt(0).toUpperCase()}</span>${person.name} <span class="text-slate-400 remove-person-button">×</span></span>`;
 		})
@@ -242,7 +238,7 @@ function renderMemberChips() {
 /* ==================== TRIP-3: EXPENSE FORM ==================== */
 
 function populatePayerDropdown() {
-	const expensePayers = people
+	const expensePayers = stateObj.members
 		.map((person) => {
 			return `<option value='${person.id}'>${person.name}</option>`;
 		})
@@ -252,7 +248,7 @@ function populatePayerDropdown() {
 }
 
 function populateSplitCheckboxes() {
-	const splitRowsHTML = people
+	const splitRowsHTML = stateObj.members
 		.map((person) => {
 			return `<div data-person-id="${person.id}" 
 		class="grid grid-cols-[28px_1fr_120px_80px] gap-3 px-4 py-3 border-t border-slate-100 items-center text-sm">
@@ -402,7 +398,7 @@ function renderExpenseList() {
 	const visibleExpenses = getFilteredSortedExpenses();
 
 	let rowsHTML;
-	if (expenses.length === 0) {
+	if (stateObj.expenses.length === 0) {
 		rowsHTML = `<div class="flex flex-col items-center text-center gap-3 py-12 px-6">
 									<span class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100"></span>
 									<p class="text-xl font-bold">No expenses yet</p>
@@ -432,13 +428,17 @@ function renderExpenseList() {
 	} else {
 		rowsHTML = visibleExpenses
 			.map((expense) => {
-				const payer = people.find((person) => expense.paidBy === person.id);
+				const payer = stateObj.members.find(
+					(person) => expense.paidBy === person.id
+				);
 				// || (not ??) because a blank description is '' — falsy, but not null
 				const descriptionText = expense.description || 'Untitled expense';
 				// map + find + join: turn split ids into a readable list of names
 				const splitNames = expense.splitBetween
 					.map(
-						(id) => people.find((person) => person.id === id)?.name ?? 'Unknown'
+						(id) =>
+							stateObj.members.find((person) => person.id === id)?.name ??
+							'Unknown'
 					)
 					.join(', ');
 				// Row grid MUST match the static header grid in index.html exactly
@@ -482,33 +482,33 @@ function getFilteredSortedExpenses() {
 	let filteredExpenses;
 
 	//Check The First Active Filter
-	if (activeFilters.personId === 'all') {
-		filteredExpenses = expenses;
+	if (stateObj.filters.personId === 'all') {
+		filteredExpenses = stateObj.expenses;
 	} else {
 		filteredExpenses = expenses.filter((expense) => {
 			return (
-				activeFilters.personId === expense.paidBy ||
-				expense.splitBetween.includes(activeFilters.personId)
+				stateObj.filters.personId === expense.paidBy ||
+				expense.splitBetween.includes(stateObj.filters.personId)
 			);
 		});
 	}
 
 	//Chaining Filter with Another If/Else Block
-	if (activeFilters.category !== 'all') {
+	if (stateObj.filters.category !== 'all') {
 		filteredExpenses = filteredExpenses.filter(
-			(expense) => expense.category === activeFilters.category
+			(expense) => expense.category === stateObj.filters.category
 		);
 	}
 
 	//Speading Filtered Expenses to Sort Based on Date or Amount
-	if (activeFilters.sortBy.includes('date')) {
+	if (stateObj.filters.sortBy.includes('date')) {
 		filteredExpenses =
-			activeFilters.sortBy === 'date-asc'
+			stateObj.filters.sortBy === 'date-asc'
 				? [...filteredExpenses].sort((a, b) => a.createdAt - b.createdAt)
 				: [...filteredExpenses].sort((a, b) => b.createdAt - a.createdAt);
-	} else if (activeFilters.sortBy.includes('amount')) {
+	} else if (stateObj.filters.sortBy.includes('amount')) {
 		filteredExpenses =
-			activeFilters.sortBy === 'amount-asc'
+			stateObj.filters.sortBy === 'amount-asc'
 				? [...filteredExpenses].sort((a, b) => a.amount - b.amount)
 				: [...filteredExpenses].sort((a, b) => b.amount - a.amount);
 	} else {
@@ -539,11 +539,11 @@ function cancelEditingExpense() {
 
 function computeBalances() {
 	//Create New Map for Shares
-	const balanceMap = new Map(people.map((person) => [person.id, 0]));
+	const balanceMap = new Map(stateObj.members.map((person) => [person.id, 0]));
 	console.log(balanceMap);
 
 	//Reduces Shares into Map
-	const balances = expenses.reduce((accumulator, expense) => {
+	const balances = stateObj.expenses.reduce((accumulator, expense) => {
 		//Determine Shares based on Split Type
 		const shares =
 			expense.splitType === 'custom'
@@ -578,14 +578,12 @@ function computeBalances() {
 	return balances;
 }
 
-const result = computeBalances();
-console.log([...result.values()].reduce((a, b) => a + b, 0));
-
 function renderBalances() {
 	const balances = computeBalances();
 	const balancesArr = Array.from(balances, ([id, balance]) => ({
 		id,
-		name: people.find((person) => person.id === id)?.name || 'Unknown',
+		name:
+			stateObj.members.find((person) => person.id === id)?.name || 'Unknown',
 		balance
 	}));
 
@@ -693,10 +691,12 @@ function renderSettleUp() {
 	} else {
 		settleHTML = payments
 			.map((payment) => {
-				const fromName = people.find(
+				const fromName = stateObj.members.find(
 					(person) => payment.from === person.id
 				)?.name;
-				const toName = people.find((person) => payment.to === person.id)?.name;
+				const toName = stateObj.members.find(
+					(person) => payment.to === person.id
+				)?.name;
 
 				return `<div class="grid grid-cols-[1fr_32px_1fr_auto] gap-3 items-center px-5 py-4 border-t border-slate-100 first:border-t-0">
 					<span class="flex items-center gap-2 min-w-0">
@@ -721,7 +721,7 @@ function renderSettleUp() {
 
 function renderFilterSummary(visibleExpenses) {
 	const visibleCount = visibleExpenses.length;
-	const totalCount = expenses.length;
+	const totalCount = stateObj.expenses.length;
 	const shownTotal = visibleExpenses.reduce(
 		(sum, expense) => sum + expense.amount,
 		0
@@ -731,15 +731,15 @@ function renderFilterSummary(visibleExpenses) {
 
 	const expenseLabels = [];
 
-	if (activeFilters.personId !== 'all') {
+	if (stateObj.filters.personId !== 'all') {
 		expenseLabels.push(
-			people.find((person) => activeFilters.personId === person.id)?.name ||
-				'Unknown'
+			stateObj.members.find((person) => stateObj.filters.personId === person.id)
+				?.name || 'Unknown'
 		);
 	}
 
-	if (activeFilters.category !== 'all') {
-		expenseLabels.push(initalCapString(activeFilters.category));
+	if (stateObj.filters.category !== 'all') {
+		expenseLabels.push(initalCapString(stateObj.filters.category));
 	}
 
 	if (expenseLabels.length === 0) {
@@ -754,42 +754,47 @@ function populateFilterDropdowns() {
 	// TODO: rebuild #filterByPerson / #filterByCategory options
 	const allSelectOption = `<option value="all">Person: All</option>`;
 
-	const filterDropdowns = people
+	const filterDropdowns = stateObj.members
 		.map((person) => `<option value="${person.id}">${person.name}</option>`)
 		.join('');
 
 	const allOptions = allSelectOption.concat(filterDropdowns);
 	elements.expensesPersonFilterSelect.innerHTML = allOptions;
-	elements.expensesPersonFilterSelect.value = activeFilters.personId;
+	elements.expensesPersonFilterSelect.value = stateObj.filters.personId;
 }
 
 function handleFilterChange() {
-	activeFilters.personId = elements.expensesPersonFilterSelect.value;
-	activeFilters.category = elements.expensesCategoryFilterSelect.value;
-	activeFilters.sortBy = elements.expensesSortSelect.value;
+	stateObj.filters.personId = elements.expensesPersonFilterSelect.value;
+	stateObj.filters.category = elements.expensesCategoryFilterSelect.value;
+	stateObj.filters.sortBy = elements.expensesSortSelect.value;
 
 	renderExpenseList();
 }
 
 function clearFilters() {
-	activeFilters.personId = 'all';
-	activeFilters.category = 'all';
-	activeFilters.sortBy = 'date-desc';
+	stateObj.filters.personId = 'all';
+	stateObj.filters.category = 'all';
+	stateObj.filters.sortBy = 'date-desc';
 
-	elements.expensesPersonFilterSelect.value = activeFilters.personId;
-	elements.expensesCategoryFilterSelect.value = activeFilters.category;
-	elements.expensesSortSelect.value = activeFilters.sortBy;
+	elements.expensesPersonFilterSelect.value = stateObj.filters.personId;
+	elements.expensesCategoryFilterSelect.value = stateObj.filters.category;
+	elements.expensesSortSelect.value = stateObj.filters.sortBy;
 	renderExpenseList();
 }
 
 /* ==================== TRIP-9: SUMMARY DASHBOARD ==================== */
 
 function computeSummary() {
-	const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-	const average = expenses.length === 0 ? 0 : total / expenses.length;
-	const perHead = people.length === 0 ? 0 : total / people.length;
+	const total = stateObj.expenses.reduce(
+		(sum, expense) => sum + expense.amount,
+		0
+	);
+	const average =
+		stateObj.expenses.length === 0 ? 0 : total / stateObj.expenses.length;
+	const perHead =
+		stateObj.members.length === 0 ? 0 : total / stateObj.members.length;
 
-	const paidByPerson = expenses.reduce((acc, expense) => {
+	const paidByPerson = stateObj.expenses.reduce((acc, expense) => {
 		acc[expense.paidBy] = (acc[expense.paidBy] ?? 0) + expense.amount;
 		return acc;
 	}, {});
@@ -797,16 +802,15 @@ function computeSummary() {
 	const entries = Object.entries(paidByPerson);
 
 	const topEntry = [...entries].sort((a, b) => b[1] - a[1])[0];
-	console.log(topEntry);
 	const topSpenderId = topEntry?.[0] || null;
 	const topSpenderName =
-		people.find((person) => person.id === topSpenderId)?.name ?? '—';
+		stateObj.members.find((person) => person.id === topSpenderId)?.name ?? '—';
 	const topSpenderAmount = topEntry?.[1] ?? 0;
-	const topSpenderCount = expenses.filter(
+	const topSpenderCount = stateObj.expenses.filter(
 		(expense) => expense.paidBy === topSpenderId
 	).length;
 
-	const totalPerCategory = expenses.reduce((acc, expense) => {
+	const totalPerCategory = stateObj.expenses.reduce((acc, expense) => {
 		acc[expense.category] = (acc[expense.category] ?? 0) + expense.amount;
 		return acc;
 	}, {});
@@ -853,11 +857,11 @@ function renderSummary() {
 	elements.summaryPerHead.textContent = formatMoney(perHead);
 	elements.perHeadBadge.textContent = formatMoney(perHead);
 
-	elements.memberCount.textContent = `${people.length} ${pluralize(people.length, 'person', 'people')}`;
-	elements.expenseCount.textContent = `${expenses.length} ${pluralize(expenses.length, 'expense', 'expenses')}`;
+	elements.memberCount.textContent = `${stateObj.members.length} ${pluralize(stateObj.members.length, 'person', 'people')}`;
+	elements.expenseCount.textContent = `${stateObj.expenses.length} ${pluralize(stateObj.expenses.length, 'expense', 'expenses')}`;
 	elements.totalSpent.textContent = totalCard;
 	elements.expensesSidebarTotal.textContent = totalCard;
-	elements.expensesSidebarMeta.textContent = `${expenses.length} ${pluralize(expenses.length, 'expense', 'expenses')}, ${people.length} ${pluralize(people.length, 'person', 'people')}`;
+	elements.expensesSidebarMeta.textContent = `${stateObj.expenses.length} ${pluralize(stateObj.expenses.length, 'expense', 'expenses')}, ${stateObj.members.length} ${pluralize(stateObj.members.length, 'person', 'people')}`;
 }
 
 /* ==================== TRIP-11: SHARE / EXPORT ==================== */
@@ -967,9 +971,10 @@ elements.addExpenseButton.addEventListener('click', (event) => {
 	const amountText = elements.expenseAmount.value;
 	// FIXME (yours to finish): `const` with no value is a SyntaxError and stops the WHOLE file.
 	// Give each of these three its value from the form when you declare it.
-	const splitType;
-	const splitBetween;
-	const customAmounts;
+	const splitType = elements.splitCustomRadio.checked ? 'custom' : 'equal';
+	const splitBetween = getCheckedSplitPersonIds();
+	const customAmounts =
+		splitType === 'custom' ? getCustomAmounts(splitBetween) : null;
 	const payer = elements.expensePayer.value;
 	const category = elements.expenseCategory.value;
 	const expenseName = elements.expenseDescription.value ?? ' ';
@@ -981,7 +986,7 @@ elements.addExpenseButton.addEventListener('click', (event) => {
 		customAmounts
 	});
 
-	if (problems) {
+	if (problems.length === 0) {
 		const amountProblem = problems.find(
 			(problem) => problem.field === 'amount'
 		);
@@ -1008,7 +1013,7 @@ elements.addExpenseButton.addEventListener('click', (event) => {
 
 	//Pushing New Expense and Clearing Form Fields
 	console.dir(newExpense);
-	expenses = [...expenses, newExpense];
+	stateObj.expenses = [...stateObj.expenses, newExpense];
 	renderAll();
 	elements.expenseDescription.value = '';
 	elements.expenseCategory.value = 'general';
