@@ -183,15 +183,13 @@ function addPerson(rawName) {
 		return;
 	}
 
-	console.alert(
-		alreadyEntered ? 'This has been Entered' : 'This is a New User'
-	);
+\
 	const person = {};
 
 	//Adding Person Object to People Array
 	person.id = crypto.randomUUID();
 	person.name = initalCapString(rawName);
-	stateObj.members.push(person);
+	stateObj.members = [...stateObj.members, person]
 	renderAll();
 	console.log(stateObj.members);
 }
@@ -202,7 +200,7 @@ function removePerson(personId) {
 		'Unknown';
 
 	//Checcking if the Person has a Balance
-	const balanceCount = expenses.filter(
+	const balanceCount = stateObj.expenses.filter(
 		(expense) =>
 			expense.splitBetween.includes(personId) || expense.paidBy === personId
 	).length;
@@ -485,7 +483,7 @@ function getFilteredSortedExpenses() {
 	if (stateObj.filters.personId === 'all') {
 		filteredExpenses = stateObj.expenses;
 	} else {
-		filteredExpenses = expenses.filter((expense) => {
+		filteredExpenses = stateObj.expenses.filter((expense) => {
 			return (
 				stateObj.filters.personId === expense.paidBy ||
 				expense.splitBetween.includes(stateObj.filters.personId)
@@ -520,10 +518,10 @@ function getFilteredSortedExpenses() {
 
 function deleteExpense(expenseId) {
 	// TODO: filter it out, renderAll()
-	const filteredExpenses = expenses.filter(
+	const filteredExpenses = stateObj.expenses.filter(
 		(expense) => expense.id !== expenseId
 	);
-	expenses = filteredExpenses;
+	stateObj.expenses = filteredExpenses;
 	renderAll();
 }
 
@@ -830,8 +828,6 @@ function computeSummary() {
 }
 
 function renderSummary() {
-	// TODO: write computeSummary() into the dl/dd elements and category bars
-	// (set bar width via .style.width, not an interpolated Tailwind class)
 	const summaryObject = computeSummary();
 	const {
 		total,
@@ -877,7 +873,6 @@ function handleCopySummary() {
 /* ==================== RENDER ORCHESTRATION ==================== */
 
 function renderAll() {
-	// TODO: call every render*()/populate*() function in an order where nothing reads stale 	data
 
 	renderMemberChips();
 	renderExpenseList();
@@ -930,12 +925,31 @@ function parseAmount(rawText) {
 	return roundedAmount;
 }
 
+function checkElements() {
+	const missing = [];
+
+	Object.entries(elements).forEach(([key, value]) => {
+		if (value === null) {
+			missing.push(key);
+		}
+	});
+
+	if (missing.length > 0) {
+		console.error('Missing Elements:', missing.join(', '));
+	}
+}
+
 /* ==================== EVENT WIRING ==================== */
 
 document.addEventListener('DOMContentLoaded', () => {
 	// TODO: cache dom refs, wire all forms/buttons, use event delegation for #membersList and #expenseList
 	renderAll();
 });
+
+
+
+
+
 
 //Adding a Person to Set Up Trip
 elements.addPersonButton.addEventListener('click', () => {
@@ -998,7 +1012,7 @@ elements.addExpenseButton.addEventListener('click', (event) => {
 	}
 
 	const amountValue = parseAmount(amountText);
-	const expenseId = randomUUID();
+	const expenseId = crypto.randomUUID();
 
 	//New Expense Object Properties
 	newExpense.id = expenseId;
