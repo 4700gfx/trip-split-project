@@ -165,26 +165,30 @@ const elements = {
 
 //Adding and Removing Person to People Object
 function addPerson(rawName) {
-	const userInput = initalCapString(rawName).trim();
+	const userInput = normalizeName(rawName);
 
 	const alreadyEntered = stateObj.members.some(
 		(person) => initalCapString(person.name).trim() === userInput
 	);
 
 	if (userInput === '' || !userInput) {
-		alert('Enter a Real Name');
-		return;
-	} else if (alreadyEntered) {
-		alert('This name has been entered');
+		showMemberWarning('Enter a Name');
 		return;
 	}
 
-	const person = {};
+	if (alreadyEntered) {
+		showMemberWarning(`${userInput} is already entered on the Trip`);
+	}
+
+	hideMemberWarning();
+
+	const newPerson = {
+		id: crypto.randomUUID(),
+		name: userInput
+	};
 
 	//Adding Person Object to People Array
-	person.id = crypto.randomUUID();
-	person.name = initalCapString(rawName);
-	stateObj.members = [...stateObj.members, person];
+	stateObj.members = [...stateObj.members, newPerson];
 	renderAll();
 }
 
@@ -201,12 +205,13 @@ function removePerson(personId) {
 
 	if (balanceCount > 0) {
 		//Returns if there is no Balance
-		alert(
+		showMemberWarning(
 			`${personIdName} is in ${balanceCount} ${pluralize(balanceCount, 'expense', 'expenses')}. Delete those expenses first.`
 		);
 		return;
 	} else {
 		//Filter the Person and Rerender
+		hideMemberWarning();
 		stateObj.members = stateObj.members.filter(
 			(person) => person.id !== personId
 		);
@@ -564,8 +569,8 @@ function computeBalances() {
 	return balances;
 }
 
-function renderBalances() {
-	const balances = computeBalances();
+function renderBalances(balances) {
+	const balance = computeBalances();
 	const balancesArr = Array.from(balances, ([id, balance]) => ({
 		id,
 		name:
@@ -660,7 +665,7 @@ function computeSettlements(balancesMap) {
 	return payments;
 }
 
-function renderSettleUp() {
+function renderSettleUp(balances) {
 	// TODO: render computeSettlements(computeBalances()); toggle empty state
 	const payments = computeSettlements(computeBalances());
 
@@ -883,17 +888,21 @@ function handleAddPerson() {
 	elements.setupMemberName.focus();
 }
 
+function handleMemberNameKey(event) {
+	if (event.key !== 'Enter') return;
+	handleAddPerson();
+}
+
 function handleTripNameInput() {
-	const typedTripName = elements.tripName.trim();
+	const typedTripName = elements.tripName.value.trim();
 	stateObj.tripName = !typedTripName ? 'My Trip' : typedTripName;
-	elements.tripNameBadge = stateObj.tripName;
+	elements.tripNameBadge.textContent = stateObj.tripName;
 }
 
 function handleSplitTypeChange() {}
 
 function handleExpenseFormSubmit(event) {
 	//Initalizing New Expense Object
-	const newExpense = {};
 
 	const amountText = elements.expenseAmount.value;
 	const splitType = elements.splitCustomRadio.checked ? 'custom' : 'equal';
@@ -912,37 +921,32 @@ function handleExpenseFormSubmit(event) {
 	});
 
 	if (problems.length > 0) {
-		const amountProblem = problems.find(
-			(problem) => problem.field === 'amount'
-		);
-		if (amountProblem) {
-			alert(amountProblem.message);
-		} else {
-			alert(problems.map((problem) => problem.message));
-		}
+		showFormErrors(problems);
+		return;
 	}
+
+	clearFormErrors();
 
 	const amountValue = parseAmount(amountText);
 
 	const expenseId = crypto.randomUUID();
 
 	//New Expense Object Properties
-	newExpense.id = expenseId;
-	newExpense.createdAt = Date.now();
-	newExpense.description = expenseName;
-	newExpense.amount = amountValue;
-	newExpense.paidBy = payer;
-	newExpense.category = category;
-	newExpense.splitType = splitType;
-	newExpense.splitBetween = splitBetween;
-	newExpense.customAmounts = customAmounts;
+
+	const newExpense = buildExpense({
+		description: expenseName,
+		amount: amountValue,
+		paidBy: payer,
+		splitType: splitType,
+		splitBetween: splitBetween,
+		customAmounts: customAmounts,
+		category: category || 'General'
+	});
 
 	//Pushing New Expense and Clearing Form Fields
 	stateObj.expenses = [...stateObj.expenses, newExpense];
+	resetExpenseForm();
 	renderAll();
-	elements.expenseDescription.value = '';
-	elements.expenseCategory.value = 'general';
-	elements.expenseAmount.value = 0;
 }
 
 function handleMemberListClick(event) {
@@ -979,6 +983,24 @@ function handleClearFiltersClick(event) {
 }
 
 /* ==================== HELPER FUNCTIONS ==================== */
+
+function normalizeName(raw) {
+	return raw.trim().toLowerCase();
+}
+
+function displayName(raw) {
+	const trimmedName = raw.trim();
+	return trimmedName[0].toUpperCase() + trimmedName.slice(1).toLowerCase();
+}
+
+function showMemberWarning(message) {
+	elements.setupMemberWarningText.textContent = message;
+	elements.setupMemberWarning.classList.remove('hidden');
+}
+
+function hideMemberWarning() {
+	elements.setupMemberWarning.classList.add('hidden');
+}
 
 function initalCapString(name) {
 	if (!name) return;
@@ -1035,6 +1057,55 @@ function checkElements() {
 	return missing;
 }
 
+function clearFormErrors() {
+	elements.expenseAmountError.classList.add('hidden');
+	elements.expenseShortfallAmount.classList.add('hidden');
+	elements.expenseProblemsLabel.classList.add('hidden');
+}
+
+function showFormErrors(problems) {
+	clearFormErrors();
+	if (problems.some((problem) => problem.field === 'amount')) {
+		elements.expenseAmountError.classList.remove('hidden');
+	}
+
+	if (problems.some((problem) => problem.field === 'custom')) {
+		elements.expenseShortfallAmount.classList.remove('hidden');
+	}
+
+	elements.expenseProblemsText.textContent = `${problems.length} problem(s) to fix`;
+
+	elements.expenseProblemsLabel.classList.remove('hidden');
+}
+
+function buildExpense({
+	description,
+	amount,
+	paidBy,
+	splitBetween,
+	splitType,
+	customAmounts,
+	category = 'general'
+}) {
+	return {
+		id: crypto.randomUUID(),
+		createdAt: Date.now(),
+		description: description ?? 'Untitied Expenses',
+		amount: amount,
+		paidBy: paidBy,
+		category: category,
+		splitType: splitType,
+		splitBetween: splitBetween,
+		customAmounts: customAmounts
+	};
+}
+
+function resetExpenseForm() {
+	elements.expenseDescription.value = '';
+	elements.expenseCategory.value = 'general';
+	elements.expenseAmount.value = '';
+}
+
 /* ==================== EVENT WIRING ==================== */
 function init() {
 	checkElements();
@@ -1052,7 +1123,7 @@ function wireSetupEvents() {
 	elements.addPersonButton.addEventListener('click', handleAddPerson);
 
 	//Adding Person Name and Trip Name
-	elements.setupMemberName.addEventListener('keydown', handleAddPerson);
+	elements.setupMemberName.addEventListener('keydown', handleMemberNameKey);
 	elements.tripName.addEventListener('input', handleTripNameInput);
 
 	//Deleting a Member from Expense
