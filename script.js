@@ -1,12 +1,4 @@
-/* TripSplit — script.js skeleton. Fill in every TODO. Sections map to TRIP-1..TRIP-12. */
-
 /* -------------------- STATE -------------------- */
-
-let activeFilters = {
-	personId: 'all',
-	category: 'all',
-	sortBy: 'date-desc'
-};
 
 const stateObj = {
 	tripName: 'My Trip',
@@ -81,7 +73,11 @@ const stateObj = {
 		}
 	],
 	editingId: null,
-	filters: activeFilters
+	filters: {
+		personId: 'all',
+		category: 'all',
+		sortBy: 'date-desc'
+	}
 };
 
 /* -------------------- DOM REFERENCES (the ONLY place static elements are looked up) -------------------- */
@@ -190,7 +186,6 @@ function addPerson(rawName) {
 	person.name = initalCapString(rawName);
 	stateObj.members = [...stateObj.members, person];
 	renderAll();
-	console.log(stateObj.members);
 }
 
 function removePerson(personId) {
@@ -351,11 +346,6 @@ function validateExpenseForm({
 	}
 
 	return problems;
-}
-
-function handleExpenseFormSubmit(event) {
-	// TODO: preventDefault, read fields (default description), validate, build expense object,
-	//       branch on #editingExpenseId to edit (map) vs add (push), reset form, renderAll()
 }
 
 /* ==================== TRIP-5: SPLIT CALCULATOR ==================== */
@@ -537,7 +527,6 @@ function cancelEditingExpense() {
 function computeBalances() {
 	//Create New Map for Shares
 	const balanceMap = new Map(stateObj.members.map((person) => [person.id, 0]));
-	console.log(balanceMap);
 
 	//Reduces Shares into Map
 	const balances = stateObj.expenses.reduce((accumulator, expense) => {
@@ -812,8 +801,6 @@ function computeSummary() {
 		return acc;
 	}, {});
 
-	console.log(topSpenderName, topEntry, topSpenderId, topSpenderCount);
-
 	return {
 		total,
 		average,
@@ -873,13 +860,122 @@ function handleCopySummary() {
 
 function renderAll() {
 	renderMemberChips();
-	renderExpenseList();
-	renderBalances();
-	renderSettleUp();
 	populatePayerDropdown();
 	populateSplitCheckboxes();
 	populateFilterDropdowns();
+	renderExpenseList();
+
+	const balances = computeBalances();
+	renderBalances(balances);
+	renderSettleUp(balances);
 	renderSummary();
+}
+
+/* ==================== RENDER ORCHESTRATION ==================== */
+
+function handleAddPerson() {
+	const rawText = elements.setupMemberName.value;
+
+	if (!rawText.trim()) return;
+
+	addPerson(rawText.trim());
+	elements.setupMemberName.value = '';
+	elements.setupMemberName.focus();
+}
+
+function handleTripNameInput() {
+	const typedTripName = elements.tripName.trim();
+	stateObj.tripName = !typedTripName ? 'My Trip' : typedTripName;
+	elements.tripNameBadge = stateObj.tripName;
+}
+
+function handleSplitTypeChange() {}
+
+function handleExpenseFormSubmit(event) {
+	//Initalizing New Expense Object
+	const newExpense = {};
+
+	const amountText = elements.expenseAmount.value;
+	const splitType = elements.splitCustomRadio.checked ? 'custom' : 'equal';
+	const splitBetween = getCheckedSplitPersonIds();
+	const customAmounts =
+		splitType === 'custom' ? getCustomAmounts(splitBetween) : null;
+	const payer = elements.expensePayer.value;
+	const category = elements.expenseCategory.value;
+	const expenseName = elements.expenseDescription.value ?? ' ';
+
+	const problems = validateExpenseForm({
+		amountText,
+		splitType,
+		splitBetween,
+		customAmounts
+	});
+
+	if (problems.length > 0) {
+		const amountProblem = problems.find(
+			(problem) => problem.field === 'amount'
+		);
+		if (amountProblem) {
+			alert(amountProblem.message);
+		} else {
+			alert(problems.map((problem) => problem.message));
+		}
+	}
+
+	const amountValue = parseAmount(amountText);
+
+	const expenseId = crypto.randomUUID();
+
+	//New Expense Object Properties
+	newExpense.id = expenseId;
+	newExpense.createdAt = Date.now();
+	newExpense.description = expenseName;
+	newExpense.amount = amountValue;
+	newExpense.paidBy = payer;
+	newExpense.category = category;
+	newExpense.splitType = splitType;
+	newExpense.splitBetween = splitBetween;
+	newExpense.customAmounts = customAmounts;
+
+	//Pushing New Expense and Clearing Form Fields
+	stateObj.expenses = [...stateObj.expenses, newExpense];
+	renderAll();
+	elements.expenseDescription.value = '';
+	elements.expenseCategory.value = 'general';
+	elements.expenseAmount.value = 0;
+}
+
+function handleMemberListClick(event) {
+	const deleteButton = event.target.closest('.remove-person-button');
+
+	if (!deleteButton) {
+		return;
+	}
+
+	const chip = deleteButton.closest('[data-person]');
+	const personId = chip.dataset.person;
+	removePerson(personId);
+}
+
+function handleExpenseRowClick(event) {
+	const clearButton = event.target.closest('.clear-filters-btn');
+
+	if (clearButton) {
+		clearFilters();
+		return;
+	}
+
+	const deleteButton = event.target.closest('.delete-expense-btn');
+
+	if (!deleteButton) return;
+
+	const expenseId = deleteButton.dataset.expenseId;
+	deleteExpense(expenseId);
+}
+
+function handleClearFiltersClick(event) {
+	event.preventDefault();
+	clearFilters();
 }
 
 /* ==================== HELPER FUNCTIONS ==================== */
@@ -940,103 +1036,31 @@ function checkElements() {
 }
 
 /* ==================== EVENT WIRING ==================== */
-
-document.addEventListener('DOMContentLoaded', () => {
-	// TODO: cache dom refs, wire all forms/buttons, use event delegation for #membersList and #expenseList
+function init() {
+	checkElements();
+	wireEvents();
+	elements.tripName.value = stateObj.tripName;
+	elements.tripNameBadge.textContent = stateObj.tripName;
 	renderAll();
-});
+}
+
+document.addEventListener('DOMContentLoaded', init);
 
 //Event Listeners for Setting Up Expenses and Trip
 function wireSetupEvents() {
 	//Adding a Person
-	elements.addPersonButton.addEventListener('click', () => {
-		const memberName = initalCapString(elements.setupMemberName.value);
-
-		if (!memberName) {
-			alert('Please Type in a Name');
-			return;
-		} else {
-			console.log(memberName);
-			addPerson(memberName);
-			elements.setupMemberName.value = '';
-		}
-	});
+	elements.addPersonButton.addEventListener('click', handleAddPerson);
 
 	//Adding Person Name and Trip Name
 	elements.setupMemberName.addEventListener('keydown', handleAddPerson);
-	elements.tripName.addEventListener('input', () => {});
+	elements.tripName.addEventListener('input', handleTripNameInput);
 
 	//Deleting a Member from Expense
-	elements.memberListContainer.addEventListener('click', (event) => {
-		const deleteButton = event.target.closest('.remove-person-button');
-
-		if (!deleteButton) {
-			return;
-		}
-
-		const chip = deleteButton.closest('[data-person]');
-		const personId = chip.dataset.person;
-		removePerson(personId);
-	});
+	elements.memberListContainer.addEventListener('click', handleMemberListClick);
 }
 
 function wireExpenseFormEvents() {
 	//Adding Expenses
-	elements.addExpenseButton.addEventListener('click', (event) => {
-		//Initalizing New Expense Object
-		const newExpense = {};
-
-		const amountText = elements.expenseAmount.value;
-		const splitType = elements.splitCustomRadio.checked ? 'custom' : 'equal';
-		const splitBetween = getCheckedSplitPersonIds();
-		const customAmounts =
-			splitType === 'custom' ? getCustomAmounts(splitBetween) : null;
-		const payer = elements.expensePayer.value;
-		const category = elements.expenseCategory.value;
-		const expenseName = elements.expenseDescription.value ?? ' ';
-
-		const problems = validateExpenseForm({
-			amountText,
-			splitType,
-			splitBetween,
-			customAmounts
-		});
-
-		if (problems.length === 0) {
-			const amountProblem = problems.find(
-				(problem) => problem.field === 'amount'
-			);
-			if (amountProblem) {
-				alert(amountProblem.message);
-			} else {
-				alert(problems.map((problem) => problem.message));
-			}
-		}
-
-		const amountValue = parseAmount(amountText);
-		ƒ;
-		const expenseId = crypto.randomUUID();
-
-		//New Expense Object Properties
-		newExpense.id = expenseId;
-		newExpense.createdAt = Date.now();
-		newExpense.description = expenseName;
-		newExpense.amount = amountValue;
-		newExpense.paidBy = payer;
-		newExpense.category = category;
-		newExpense.splitType = splitType;
-		newExpense.splitBetween = splitBetween;
-		newExpense.customAmounts = customAmounts;
-
-		//Pushing New Expense and Clearing Form Fields
-		console.dir(newExpense);
-		stateObj.expenses = [...stateObj.expenses, newExpense];
-		renderAll();
-		elements.expenseDescription.value = '';
-		elements.expenseCategory.value = 'general';
-		elements.expenseAmount.value = 0;
-	});
-
 	elements.addExpenseButton.addEventListener('click', handleExpenseFormSubmit);
 
 	//Event Listeners for Custom and Equal Splits
@@ -1046,28 +1070,12 @@ function wireExpenseFormEvents() {
 		'click',
 		cancelEditingExpense
 	);
-	elements.addExpenseSplitRows.addEventListener('input', () => {});
-	document.addEventListener('keydown', cancelEditingExpense);
 }
 
 //Event Listeners for List Events
 function wireExpenseListEvents() {
 	// Removes Expenses
-	elements.expensesRows.addEventListener('click', (event) => {
-		const clearButton = event.target.closest('.clear-filters-btn');
-
-		if (clearButton) {
-			clearFilters();
-			return;
-		}
-
-		const deleteButton = event.target.closest('.delete-expense-btn');
-
-		if (!deleteButton) return;
-
-		const expenseId = deleteButton.dataset.expenseId;
-		deleteExpense(expenseId);
-	});
+	elements.expensesRows.addEventListener('click', handleExpenseRowClick);
 }
 
 //Event Listeners for Filter Events
@@ -1082,13 +1090,7 @@ function wireFilterEvents() {
 		handleFilterChange
 	);
 	elements.expensesSortSelect.addEventListener('change', handleFilterChange);
-
-	elements.clearFilterButton.addEventListener('click', (event) => {
-		event.preventDefault();
-		clearFilters();
-	});
-
-	elements.expensesSearchInput.addEventListener('input', () => {});
+	elements.clearFilterButton.addEventListener('click', handleClearFiltersClick);
 }
 
 function wireShareEvents() {
