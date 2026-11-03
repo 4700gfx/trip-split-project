@@ -183,13 +183,12 @@ function addPerson(rawName) {
 		return;
 	}
 
-\
 	const person = {};
 
 	//Adding Person Object to People Array
 	person.id = crypto.randomUUID();
 	person.name = initalCapString(rawName);
-	stateObj.members = [...stateObj.members, person]
+	stateObj.members = [...stateObj.members, person];
 	renderAll();
 	console.log(stateObj.members);
 }
@@ -873,7 +872,6 @@ function handleCopySummary() {
 /* ==================== RENDER ORCHESTRATION ==================== */
 
 function renderAll() {
-
 	renderMemberChips();
 	renderExpenseList();
 	renderBalances();
@@ -937,6 +935,8 @@ function checkElements() {
 	if (missing.length > 0) {
 		console.error('Missing Elements:', missing.join(', '));
 	}
+
+	return missing;
 }
 
 /* ==================== EVENT WIRING ==================== */
@@ -946,122 +946,159 @@ document.addEventListener('DOMContentLoaded', () => {
 	renderAll();
 });
 
+//Event Listeners for Setting Up Expenses and Trip
+function wireSetupEvents() {
+	//Adding a Person
+	elements.addPersonButton.addEventListener('click', () => {
+		const memberName = initalCapString(elements.setupMemberName.value);
 
-
-
-
-
-//Adding a Person to Set Up Trip
-elements.addPersonButton.addEventListener('click', () => {
-	const memberName = initalCapString(elements.setupMemberName.value);
-
-	if (!memberName) {
-		alert('Please Type in a Name');
-	} else {
-		console.log(memberName);
-		addPerson(memberName);
-		elements.setupMemberName.value = '';
-	}
-});
-
-//Deleting a Member from Expense
-elements.memberListContainer.addEventListener('click', (event) => {
-	const deleteButton = event.target.closest('.remove-person-button');
-
-	if (!deleteButton) {
-		return;
-	}
-
-	const chip = deleteButton.closest('[data-person]');
-	const personId = chip.dataset.person;
-	removePerson(personId);
-});
-
-//Adding Expenses
-elements.addExpenseButton.addEventListener('click', (event) => {
-	//Initalizing New Expense Object
-	const newExpense = {};
-
-	const amountText = elements.expenseAmount.value;
-	// FIXME (yours to finish): `const` with no value is a SyntaxError and stops the WHOLE file.
-	// Give each of these three its value from the form when you declare it.
-	const splitType = elements.splitCustomRadio.checked ? 'custom' : 'equal';
-	const splitBetween = getCheckedSplitPersonIds();
-	const customAmounts =
-		splitType === 'custom' ? getCustomAmounts(splitBetween) : null;
-	const payer = elements.expensePayer.value;
-	const category = elements.expenseCategory.value;
-	const expenseName = elements.expenseDescription.value ?? ' ';
-
-	const problems = validateExpenseForm({
-		amountText,
-		splitType,
-		splitBetween,
-		customAmounts
+		if (!memberName) {
+			alert('Please Type in a Name');
+			return;
+		} else {
+			console.log(memberName);
+			addPerson(memberName);
+			elements.setupMemberName.value = '';
+		}
 	});
 
-	if (problems.length === 0) {
-		const amountProblem = problems.find(
-			(problem) => problem.field === 'amount'
-		);
-		if (amountProblem) {
-			alert(amountProblem.message);
-		} else {
-			alert(problems.map((problem) => problem.message));
+	//Adding Person Name and Trip Name
+	elements.setupMemberName.addEventListener('keydown', handleAddPerson);
+	elements.tripName.addEventListener('input', () => {});
+
+	//Deleting a Member from Expense
+	elements.memberListContainer.addEventListener('click', (event) => {
+		const deleteButton = event.target.closest('.remove-person-button');
+
+		if (!deleteButton) {
+			return;
 		}
-	}
 
-	const amountValue = parseAmount(amountText);
-	const expenseId = crypto.randomUUID();
+		const chip = deleteButton.closest('[data-person]');
+		const personId = chip.dataset.person;
+		removePerson(personId);
+	});
+}
 
-	//New Expense Object Properties
-	newExpense.id = expenseId;
-	newExpense.createdAt = Date.now();
-	newExpense.description = expenseName;
-	newExpense.amount = amountValue;
-	newExpense.paidBy = payer;
-	newExpense.category = category;
-	newExpense.splitType = splitType;
-	newExpense.splitBetween = splitBetween;
-	newExpense.customAmounts = customAmounts;
+function wireExpenseFormEvents() {
+	//Adding Expenses
+	elements.addExpenseButton.addEventListener('click', (event) => {
+		//Initalizing New Expense Object
+		const newExpense = {};
 
-	//Pushing New Expense and Clearing Form Fields
-	console.dir(newExpense);
-	stateObj.expenses = [...stateObj.expenses, newExpense];
-	renderAll();
-	elements.expenseDescription.value = '';
-	elements.expenseCategory.value = 'general';
-	elements.expenseAmount.value = 0;
-});
+		const amountText = elements.expenseAmount.value;
+		const splitType = elements.splitCustomRadio.checked ? 'custom' : 'equal';
+		const splitBetween = getCheckedSplitPersonIds();
+		const customAmounts =
+			splitType === 'custom' ? getCustomAmounts(splitBetween) : null;
+		const payer = elements.expensePayer.value;
+		const category = elements.expenseCategory.value;
+		const expenseName = elements.expenseDescription.value ?? ' ';
 
-elements.expensesRows.addEventListener('click', (event) => {
-	const clearButton = event.target.closest('.clear-filters-btn');
+		const problems = validateExpenseForm({
+			amountText,
+			splitType,
+			splitBetween,
+			customAmounts
+		});
 
-	if (clearButton) {
+		if (problems.length === 0) {
+			const amountProblem = problems.find(
+				(problem) => problem.field === 'amount'
+			);
+			if (amountProblem) {
+				alert(amountProblem.message);
+			} else {
+				alert(problems.map((problem) => problem.message));
+			}
+		}
+
+		const amountValue = parseAmount(amountText);
+		ƒ;
+		const expenseId = crypto.randomUUID();
+
+		//New Expense Object Properties
+		newExpense.id = expenseId;
+		newExpense.createdAt = Date.now();
+		newExpense.description = expenseName;
+		newExpense.amount = amountValue;
+		newExpense.paidBy = payer;
+		newExpense.category = category;
+		newExpense.splitType = splitType;
+		newExpense.splitBetween = splitBetween;
+		newExpense.customAmounts = customAmounts;
+
+		//Pushing New Expense and Clearing Form Fields
+		console.dir(newExpense);
+		stateObj.expenses = [...stateObj.expenses, newExpense];
+		renderAll();
+		elements.expenseDescription.value = '';
+		elements.expenseCategory.value = 'general';
+		elements.expenseAmount.value = 0;
+	});
+
+	elements.addExpenseButton.addEventListener('click', handleExpenseFormSubmit);
+
+	//Event Listeners for Custom and Equal Splits
+	elements.splitEqualRadio.addEventListener('change', handleSplitTypeChange);
+	elements.splitCustomRadio.addEventListener('change', handleSplitTypeChange);
+	elements.addExpenseCancelButton.addEventListener(
+		'click',
+		cancelEditingExpense
+	);
+	elements.addExpenseSplitRows.addEventListener('input', () => {});
+	document.addEventListener('keydown', cancelEditingExpense);
+}
+
+//Event Listeners for List Events
+function wireExpenseListEvents() {
+	// Removes Expenses
+	elements.expensesRows.addEventListener('click', (event) => {
+		const clearButton = event.target.closest('.clear-filters-btn');
+
+		if (clearButton) {
+			clearFilters();
+			return;
+		}
+
+		const deleteButton = event.target.closest('.delete-expense-btn');
+
+		if (!deleteButton) return;
+
+		const expenseId = deleteButton.dataset.expenseId;
+		deleteExpense(expenseId);
+	});
+}
+
+//Event Listeners for Filter Events
+function wireFilterEvents() {
+	//Filter Buttons Event Handlers
+	elements.expensesPersonFilterSelect.addEventListener(
+		'change',
+		handleFilterChange
+	);
+	elements.expensesCategoryFilterSelect.addEventListener(
+		'change',
+		handleFilterChange
+	);
+	elements.expensesSortSelect.addEventListener('change', handleFilterChange);
+
+	elements.clearFilterButton.addEventListener('click', (event) => {
+		event.preventDefault();
 		clearFilters();
-		return;
-	}
+	});
 
-	const deleteButton = event.target.closest('.delete-expense-btn');
+	elements.expensesSearchInput.addEventListener('input', () => {});
+}
 
-	if (!deleteButton) return;
+function wireShareEvents() {
+	elements.shareCopyButton.addEventListener('click', handleCopySummary);
+}
 
-	const expenseId = deleteButton.dataset.expenseId;
-	deleteExpense(expenseId);
-});
-
-//Filter Buttons Event Handlers
-elements.expensesPersonFilterSelect.addEventListener(
-	'change',
-	handleFilterChange
-);
-elements.expensesCategoryFilterSelect.addEventListener(
-	'change',
-	handleFilterChange
-);
-elements.expensesSortSelect.addEventListener('change', handleFilterChange);
-
-elements.clearFilterButton.addEventListener('click', (event) => {
-	event.preventDefault();
-	clearFilters();
-});
+function wireEvents() {
+	wireSetupEvents();
+	wireExpenseFormEvents();
+	wireExpenseListEvents();
+	wireFilterEvents();
+	wireShareEvents();
+}
