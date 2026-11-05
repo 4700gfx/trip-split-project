@@ -168,7 +168,7 @@ function addPerson(rawName) {
 	const userInput = normalizeName(rawName);
 
 	const alreadyEntered = stateObj.members.some(
-		(person) => initalCapString(person.name).trim() === userInput
+		(person) => normalizeName(person.name).trim() === userInput
 	);
 
 	if (userInput === '' || !userInput) {
@@ -178,13 +178,14 @@ function addPerson(rawName) {
 
 	if (alreadyEntered) {
 		showMemberWarning(`${userInput} is already entered on the Trip`);
+		return;
 	}
 
 	hideMemberWarning();
 
 	const newPerson = {
 		id: crypto.randomUUID(),
-		name: userInput
+		name: displayName(userInput)
 	};
 
 	//Adding Person Object to People Array
@@ -570,7 +571,6 @@ function computeBalances() {
 }
 
 function renderBalances(balances) {
-	const balance = computeBalances();
 	const balancesArr = Array.from(balances, ([id, balance]) => ({
 		id,
 		name:
@@ -667,7 +667,7 @@ function computeSettlements(balancesMap) {
 
 function renderSettleUp(balances) {
 	// TODO: render computeSettlements(computeBalances()); toggle empty state
-	const payments = computeSettlements(computeBalances());
+	const payments = computeSettlements(balances);
 
 	let settleHTML;
 
@@ -911,7 +911,7 @@ function handleExpenseFormSubmit(event) {
 		splitType === 'custom' ? getCustomAmounts(splitBetween) : null;
 	const payer = elements.expensePayer.value;
 	const category = elements.expenseCategory.value;
-	const expenseName = elements.expenseDescription.value ?? ' ';
+	const expenseName = elements.expenseDescription.value || 'Untitled Expense';
 
 	const problems = validateExpenseForm({
 		amountText,
@@ -928,9 +928,6 @@ function handleExpenseFormSubmit(event) {
 	clearFormErrors();
 
 	const amountValue = parseAmount(amountText);
-
-	const expenseId = crypto.randomUUID();
-
 	//New Expense Object Properties
 
 	const newExpense = buildExpense({
@@ -1059,18 +1056,23 @@ function checkElements() {
 
 function clearFormErrors() {
 	elements.expenseAmountError.classList.add('hidden');
-	elements.expenseShortfallAmount.classList.add('hidden');
+	elements.expenseShortfallRow.classList.add('hidden');
 	elements.expenseProblemsLabel.classList.add('hidden');
 }
 
 function showFormErrors(problems) {
 	clearFormErrors();
-	if (problems.some((problem) => problem.field === 'amount')) {
+
+	const customProblem = problems.some((problem) => problem.field === 'custom');
+	const amountProblem = problems.some((problem) => problem.field === 'amount');
+
+	if (amountProblem) {
 		elements.expenseAmountError.classList.remove('hidden');
 	}
 
-	if (problems.some((problem) => problem.field === 'custom')) {
-		elements.expenseShortfallAmount.classList.remove('hidden');
+	if (customProblem) {
+		elements.expenseShortfallAmount.textContent = customProblem;
+		elements.expenseShortfallRow.classList.remove('hidden');
 	}
 
 	elements.expenseProblemsText.textContent = `${problems.length} problem(s) to fix`;
@@ -1090,7 +1092,7 @@ function buildExpense({
 	return {
 		id: crypto.randomUUID(),
 		createdAt: Date.now(),
-		description: description ?? 'Untitied Expenses',
+		description: description || 'Untitied Expenses',
 		amount: amount,
 		paidBy: paidBy,
 		category: category,
