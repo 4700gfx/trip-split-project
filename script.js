@@ -168,7 +168,7 @@ function addPerson(rawName) {
 	const userInput = normalizeName(rawName);
 
 	const alreadyEntered = stateObj.members.some(
-		(person) => normalizeName(person.name).trim() === userInput
+		(person) => normalizeName(person.name) === userInput
 	);
 
 	if (userInput === '' || !userInput) {
@@ -177,7 +177,9 @@ function addPerson(rawName) {
 	}
 
 	if (alreadyEntered) {
-		showMemberWarning(`${userInput} is already entered on the Trip`);
+		showMemberWarning(
+			`${displayName(userInput)} is already entered on the Trip`
+		);
 		return;
 	}
 
@@ -231,6 +233,8 @@ function renderMemberChips() {
 
 	//Adding Elements to Inner HTML
 	elements.memberListContainer.innerHTML = memberPillRow;
+	const memberTotal = stateObj.members.length;
+	elements.setupMemberCountLabel.textContent = `${memberTotal} added`;
 }
 
 /* ==================== TRIP-3: EXPENSE FORM ==================== */
@@ -911,7 +915,7 @@ function handleExpenseFormSubmit(event) {
 		splitType === 'custom' ? getCustomAmounts(splitBetween) : null;
 	const payer = elements.expensePayer.value;
 	const category = elements.expenseCategory.value;
-	const expenseName = elements.expenseDescription.value || 'Untitled Expense';
+	const expenseName = elements.expenseDescription.value.trim();
 
 	const problems = validateExpenseForm({
 		amountText,
@@ -931,13 +935,13 @@ function handleExpenseFormSubmit(event) {
 	//New Expense Object Properties
 
 	const newExpense = buildExpense({
-		description: expenseName,
+		description: expenseName || 'Untitled Expense',
 		amount: amountValue,
 		paidBy: payer,
 		splitType: splitType,
 		splitBetween: splitBetween,
 		customAmounts: customAmounts,
-		category: category || 'General'
+		category: category || undefined
 	});
 
 	//Pushing New Expense and Clearing Form Fields
@@ -1063,7 +1067,7 @@ function clearFormErrors() {
 function showFormErrors(problems) {
 	clearFormErrors();
 
-	const customProblem = problems.some((problem) => problem.field === 'custom');
+	const customProblem = problems.find((problem) => problem.field === 'custom');
 	const amountProblem = problems.some((problem) => problem.field === 'amount');
 
 	if (amountProblem) {
@@ -1071,7 +1075,7 @@ function showFormErrors(problems) {
 	}
 
 	if (customProblem) {
-		elements.expenseShortfallAmount.textContent = customProblem;
+		elements.expenseShortfallAmount.textContent = customProblem.message;
 		elements.expenseShortfallRow.classList.remove('hidden');
 	}
 
@@ -1092,7 +1096,7 @@ function buildExpense({
 	return {
 		id: crypto.randomUUID(),
 		createdAt: Date.now(),
-		description: description || 'Untitied Expenses',
+		description: description || 'Untitied Expense',
 		amount: amount,
 		paidBy: paidBy,
 		category: category,
@@ -1106,6 +1110,8 @@ function resetExpenseForm() {
 	elements.expenseDescription.value = '';
 	elements.expenseCategory.value = 'general';
 	elements.expenseAmount.value = '';
+	elements.splitEqualRadio.checked = true;
+	clearFormErrors();
 }
 
 /* ==================== EVENT WIRING ==================== */
