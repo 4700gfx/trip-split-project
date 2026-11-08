@@ -441,7 +441,7 @@ function renderExpenseList() {
 				// Row grid MUST match the static header grid in index.html exactly
 				return `<div
 									data-expense-id="${expense.id}"
-									class="grid grid-cols-[32px_minmax(0,1fr)_88px_64px] gap-3 px-5 py-3 min-h-[64px] border-t border-slate-100 items-center text-sm hover:bg-slate-50 transition-colors"
+									class="grid grid-cols-[32px_minmax(0,1fr)_88px_120px] gap-3 px-5 py-3 bg-white/50 text-xs font-medium text-slate-500"
 								>
 									<span
 										class="w-8 h-8 rounded-full bg-slate-400 text-white text-xs flex items-center justify-center font-semibold"
@@ -458,13 +458,25 @@ function renderExpenseList() {
 										</p>
 									</div>
 									<span class="text-right font-semibold tabular-nums">$${expense.amount.toFixed(2)}</span>
-									<button
-										class="delete-expense-btn justify-self-end px-2 py-1 rounded-md text-red-600 text-xs font-medium hover:bg-red-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
-										data-expense-id="${expense.id}"
-										aria-label="Delete expense"
-									>
-										Delete
-									</button>
+									<div class="flex items-center justify-end gap-1">
+										<button
+											type="button"
+											class="edit-expense-btn tab-btn px-2 py-1 rounded-md text-indigo-600 text-xs font-medium hover:bg-indigo-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+											data-expense-id="EXPENSE_ID"
+											data-target="screen-02"
+											aria-label="Edit DESCRIPTION"
+										>
+											Edit
+										</button>
+										<button
+											type="button"
+											class="delete-expense-btn px-2 py-1 rounded-md text-red-600 text-xs font-medium hover:bg-red-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+											data-expense-id="EXPENSE_ID"
+											aria-label="Delete DESCRIPTION"
+										>
+											Delete
+										</button>
+									</div>
 								</div>`;
 			})
 			.join('');
@@ -526,6 +538,7 @@ function deleteExpense(expenseId) {
 
 function startEditingExpense(expenseId) {
 	// TODO: populate the form from the expense, set #editingExpenseId, show edit UI
+	console.log('Editing:', expenseId);
 }
 
 function cancelEditingExpense() {
@@ -935,7 +948,7 @@ function handleExpenseFormSubmit(event) {
 	//New Expense Object Properties
 
 	const newExpense = buildExpense({
-		description: expenseName || 'Untitled Expense',
+		description: expenseName,
 		amount: amountValue,
 		paidBy: payer,
 		splitType: splitType,
@@ -963,6 +976,7 @@ function handleMemberListClick(event) {
 }
 
 function handleExpenseRowClick(event) {
+	//Looking for Clear Button within Row
 	const clearButton = event.target.closest('.clear-filters-btn');
 
 	if (clearButton) {
@@ -970,8 +984,15 @@ function handleExpenseRowClick(event) {
 		return;
 	}
 
-	const deleteButton = event.target.closest('.delete-expense-btn');
+	//Looking for Editing Button within Row
+	const editButton = event.target.closest('.edit-expense-btn');
+	if (editButton) {
+		startEditingExpense(expenseId);
+		return;
+	}
 
+	//Looking for Delete Button within Row
+	const deleteButton = event.target.closest('.delete-expense-btn');
 	if (!deleteButton) return;
 
 	const expenseId = deleteButton.dataset.expenseId;
@@ -1096,7 +1117,7 @@ function buildExpense({
 	return {
 		id: crypto.randomUUID(),
 		createdAt: Date.now(),
-		description: description || 'Untitied Expense',
+		description: description || 'Untitled Expense',
 		amount: amount,
 		paidBy: paidBy,
 		category: category,
