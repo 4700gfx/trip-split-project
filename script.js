@@ -441,7 +441,7 @@ function renderExpenseList() {
 				// Row grid MUST match the static header grid in index.html exactly
 				return `<div
 									data-expense-id="${expense.id}"
-									class="grid grid-cols-[32px_minmax(0,1fr)_88px_120px] gap-3 px-5 py-3 bg-white/50 text-xs font-medium text-slate-500"
+									class="grid grid-cols-[32px_minmax(0,1fr)_88px_120px] gap-3 px-5 py-3 min-h-[64px] border-t border-slate-100 items-center text-sm hover:bg-slate-50 transition-colors"
 								>
 									<span
 										class="w-8 h-8 rounded-full bg-slate-400 text-white text-xs flex items-center justify-center font-semibold"
@@ -462,17 +462,17 @@ function renderExpenseList() {
 										<button
 											type="button"
 											class="edit-expense-btn tab-btn px-2 py-1 rounded-md text-indigo-600 text-xs font-medium hover:bg-indigo-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-											data-expense-id="EXPENSE_ID"
+											data-expense-id="${expense.id}"
 											data-target="screen-02"
-											aria-label="Edit DESCRIPTION"
+											aria-label="Edit ${descriptionText}"
 										>
 											Edit
 										</button>
 										<button
 											type="button"
 											class="delete-expense-btn px-2 py-1 rounded-md text-red-600 text-xs font-medium hover:bg-red-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
-											data-expense-id="EXPENSE_ID"
-											aria-label="Delete DESCRIPTION"
+											data-expense-id="${expense.id}"
+											aria-label="Delete ${descriptionText}"
 										>
 											Delete
 										</button>
@@ -537,8 +537,49 @@ function deleteExpense(expenseId) {
 }
 
 function startEditingExpense(expenseId) {
-	// TODO: populate the form from the expense, set #editingExpenseId, show edit UI
+	//Finding the Expense to Edit
+	const expense = stateObj.expenses.find((expense) => expense.id === expenseId);
+
+	if (!expense) return;
+
+	stateObj.editingId = expenseId;
 	console.log('Editing:', expenseId);
+
+	//Set Fields to Expense Information
+	elements.expenseDescription.value = expense.description;
+	elements.expenseAmount.value = expense.amount.toFixed(2);
+	elements.expensePayer.value = expense.paidBy;
+	elements.expenseCategory.value = expense.category;
+
+	//Setting the Boxes based on the Expense
+	if (expense.splitType === 'custom') {
+		elements.splitCustomRadio.checked = true;
+	} else {
+		elements.splitEqualRadio.checked = true;
+	}
+
+	const boxes = document.querySelectorAll('.split-person-checkbox');
+
+	boxes.forEach((box) => {
+		const personId = box.dataset.personId;
+		box.checked = expense.splitBetween.includes(personId);
+	});
+
+	//Setting the Amount Value based on the Expense
+	const amountInputs = document.querySelectorAll('.split-person-amount');
+
+	amountInputs.forEach((input) => {
+		const personId = input.dataset.personId;
+		if (expense.splitType === 'custom') {
+			input.value = expense.customAmounts[personId] || '';
+		} else {
+			input.value = '';
+		}
+	});
+
+	elements.addExpenseHeading.textContent = 'Edit Changes';
+	elements.addExpenseButton.textContent = 'Save Changes';
+	clearFormErrors();
 }
 
 function cancelEditingExpense() {
@@ -983,12 +1024,10 @@ function handleExpenseRowClick(event) {
 		clearFilters();
 		return;
 	}
-
 	//Looking for Editing Button within Row
 	const editButton = event.target.closest('.edit-expense-btn');
 	if (editButton) {
-		startEditingExpense(expenseId);
-		return;
+		startEditingExpense(editButton.dataset.expenseId);
 	}
 
 	//Looking for Delete Button within Row
