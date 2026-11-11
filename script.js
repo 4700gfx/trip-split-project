@@ -361,6 +361,9 @@ function validateExpenseForm({
 /* ==================== TRIP-5: SPLIT CALCULATOR ==================== */
 
 const splitCalculator = (() => {
+	//Using Closures for Calculator
+
+	//Private Function for Closure
 	function equalSplit(amount, memberIds, payerId) {
 		const totalCents = Math.round(amount * 100);
 		const baseCentShare = Math.floor(totalCents / memberIds.length);
@@ -376,6 +379,8 @@ const splitCalculator = (() => {
 
 		return equalSplitAmount;
 	}
+
+	//Returned Function within Object
 	function customSplitIsValid(amount, customAmounts) {
 		// TODO: sum with reduce, compare with Math.abs(sum - amount) < 0.01
 		const customAmountValues = Object.values(customAmounts);
@@ -385,7 +390,18 @@ const splitCalculator = (() => {
 		);
 		return Math.abs(sum - amount) < 0.01;
 	}
-	return { equalSplit, customSplitIsValid };
+
+	//Return Function with Object
+	function getShares(expense) {
+		if (expense.splitType === 'custom') {
+			return expense.customAmounts;
+		} else {
+			return equalSplit(expense.amount, expense.splitBetween, expense.paidBy);
+		}
+	}
+
+	//Function Returning Object with 2 Functions via Closure
+	return { customSplitIsValid, getShares };
 })();
 
 /* ==================== TRIP-4 / TRIP-8: EXPENSE LIST ==================== */
@@ -602,14 +618,7 @@ function computeBalances() {
 	//Reduces Shares into Map
 	const balances = stateObj.expenses.reduce((accumulator, expense) => {
 		//Determine Shares based on Split Type
-		const shares =
-			expense.splitType === 'custom'
-				? expense.customAmounts
-				: splitCalculator.equalSplit(
-						expense.amount,
-						expense.splitBetween,
-						expense.paidBy
-					);
+		const shares = splitCalculator.getShares(expense);
 
 		//Getting and Setting Payer Share
 		const payerCurrent = accumulator.get(expense.paidBy);
