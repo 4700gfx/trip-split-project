@@ -546,7 +546,6 @@ function startEditingExpense(expenseId) {
 	if (!expense) return;
 
 	stateObj.editingId = expenseId;
-	console.log('Editing:', expenseId);
 
 	//Set Fields to Expense Information
 	elements.expenseDescription.value = expense.description;
@@ -561,7 +560,9 @@ function startEditingExpense(expenseId) {
 		elements.splitEqualRadio.checked = true;
 	}
 
-	const boxes = document.querySelectorAll('.split-person-checkbox');
+	const boxes = elements.addExpenseSplitRows.querySelectorAll(
+		'.split-person-checkbox'
+	);
 
 	boxes.forEach((box) => {
 		const personId = box.dataset.personId;
@@ -569,7 +570,9 @@ function startEditingExpense(expenseId) {
 	});
 
 	//Setting the Amount Value based on the Expense
-	const amountInputs = document.querySelectorAll('.split-person-amount');
+	const amountInputs = elements.addExpenseSplitRows.querySelectorAll(
+		'.split-person-amount'
+	);
 
 	amountInputs.forEach((input) => {
 		const personId = input.dataset.personId;
@@ -1023,7 +1026,6 @@ function handleExpenseFormSubmit(event) {
 		stateObj.expenses = [...stateObj.expenses, newExpense];
 	}
 
-	console.log(stateObj.expenses);
 	resetExpenseForm();
 	renderAll();
 }
