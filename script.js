@@ -529,6 +529,9 @@ function getFilteredSortedExpenses() {
 
 function deleteExpense(expenseId) {
 	// TODO: filter it out, renderAll()
+	//Guard Clause
+	if (stateObj.editingId === expenseId) resetExpenseForm();
+
 	const filteredExpenses = stateObj.expenses.filter(
 		(expense) => expense.id !== expenseId
 	);
@@ -571,7 +574,7 @@ function startEditingExpense(expenseId) {
 	amountInputs.forEach((input) => {
 		const personId = input.dataset.personId;
 		if (expense.splitType === 'custom') {
-			input.value = expense.customAmounts[personId] || '';
+			input.value = expense.customAmounts[personId] ?? '';
 		} else {
 			input.value = '';
 		}
@@ -584,6 +587,7 @@ function startEditingExpense(expenseId) {
 
 function cancelEditingExpense() {
 	// TODO: reset form to "new expense" state
+	resetExpenseForm();
 }
 
 /* ==================== TRIP-6: BALANCE ENGINE ==================== */
@@ -999,7 +1003,27 @@ function handleExpenseFormSubmit(event) {
 	});
 
 	//Pushing New Expense and Clearing Form Fields
-	stateObj.expenses = [...stateObj.expenses, newExpense];
+	if (stateObj.editingId) {
+		const original = stateObj.expenses.find(
+			(expense) => expense.id === stateObj.editingId
+		);
+		const updated = {
+			...newExpense,
+			id: original.id,
+			createdAt: original.createdAt
+		};
+		stateObj.expenses = stateObj.expenses.map((expense) => {
+			if (expense.id === stateObj.editingId) {
+				return updated;
+			} else {
+				return expense;
+			}
+		});
+	} else {
+		stateObj.expenses = [...stateObj.expenses, newExpense];
+	}
+
+	console.log(stateObj.expenses);
 	resetExpenseForm();
 	renderAll();
 }
@@ -1028,6 +1052,7 @@ function handleExpenseRowClick(event) {
 	const editButton = event.target.closest('.edit-expense-btn');
 	if (editButton) {
 		startEditingExpense(editButton.dataset.expenseId);
+		return;
 	}
 
 	//Looking for Delete Button within Row
@@ -1171,6 +1196,9 @@ function resetExpenseForm() {
 	elements.expenseCategory.value = 'general';
 	elements.expenseAmount.value = '';
 	elements.splitEqualRadio.checked = true;
+	stateObj.editingId = null;
+	elements.addExpenseHeading.textContent = 'Add Expense';
+	elements.addExpenseButton.textContent = 'Save Expense';
 	clearFormErrors();
 }
 
