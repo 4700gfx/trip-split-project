@@ -1213,6 +1213,21 @@ function resetExpenseForm() {
 	clearFormErrors();
 }
 
+function syncSplitUI() {
+	console.log('sync', elements.splitCustomRadio.checked ? 'custom' : 'equal');
+	const isCustom = elements.splitCustomRadio.checked;
+	const amountInputs = document.querySelectorAll('.split-person-amount');
+
+	amountInputs.forEach((amount) => {
+		const personId = amount.dataset.personId;
+		const checkbox = elements.addExpenseSplitRows.find((box) => {});
+	});
+}
+
+function handleSplitTypeChange() {
+	syncSplitUI();
+}
+
 /* ==================== EVENT WIRING ==================== */
 function init() {
 	checkElements();
