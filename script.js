@@ -268,7 +268,7 @@ function populateSplitCheckboxes() {
 			<input
 				type="text"
 				inputmode="decimal"
-				class="split-person-amount border border-slate-300 rounded-md px-2 py-1 bg-white w-full"
+				class="split-person-amount border border-slate-300 rounded-md px-2 py-1 bg-white w-full disabled:bg-slate-100 disabled:text-slate-400"
 				data-person-id="${person.id}"
 				value=""
 			/>
@@ -278,6 +278,7 @@ function populateSplitCheckboxes() {
 		.join('');
 
 	elements.addExpenseSplitRows.innerHTML = splitRowsHTML;
+	syncSplitUI();
 }
 
 function getCheckedSplitPersonIds() {
@@ -602,6 +603,7 @@ function startEditingExpense(expenseId) {
 	elements.addExpenseHeading.textContent = 'Edit Changes';
 	elements.addExpenseButton.textContent = 'Save Changes';
 	clearFormErrors();
+	syncSplitUI();
 }
 
 function cancelEditingExpense() {
@@ -973,7 +975,9 @@ function handleTripNameInput() {
 	elements.tripNameBadge.textContent = stateObj.tripName;
 }
 
-function handleSplitTypeChange() {}
+function handleSplitTypeChange() {
+	syncSplitUI();
+}
 
 function handleExpenseFormSubmit(event) {
 	//Initalizing New Expense Object
@@ -1211,21 +1215,23 @@ function resetExpenseForm() {
 	elements.addExpenseHeading.textContent = 'Add Expense';
 	elements.addExpenseButton.textContent = 'Save Expense';
 	clearFormErrors();
+	syncSplitUI();
 }
 
 function syncSplitUI() {
 	console.log('sync', elements.splitCustomRadio.checked ? 'custom' : 'equal');
 	const isCustom = elements.splitCustomRadio.checked;
-	const amountInputs = document.querySelectorAll('.split-person-amount');
+	const amountInputs = elements.addExpenseSplitRows.querySelectorAll(
+		'.split-person-amount'
+	);
 
-	amountInputs.forEach((amount) => {
-		const personId = amount.dataset.personId;
-		const checkbox = elements.addExpenseSplitRows.find((box) => {});
+	amountInputs.forEach((input) => {
+		const personId = input.dataset.personId;
+		const checkbox = elements.addExpenseSplitRows.querySelector(
+			`.split-person-checkbox[data-person-id="${personId}"]`
+		);
+		input.disabled = !isCustom || !checkbox.checked;
 	});
-}
-
-function handleSplitTypeChange() {
-	syncSplitUI();
 }
 
 /* ==================== EVENT WIRING ==================== */
@@ -1263,6 +1269,7 @@ function wireExpenseFormEvents() {
 		'click',
 		cancelEditingExpense
 	);
+	elements.addExpenseSplitRows.addEventListener('change', syncSplitUI);
 }
 
 //Event Listeners for List Events
