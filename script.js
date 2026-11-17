@@ -1234,6 +1234,22 @@ function syncSplitUI() {
 	});
 }
 
+function updateSplitPreview() {
+	const shareCells = elements.addExpenseSplitRows.querySelectorAll(
+		'.split-person-share'
+	);
+	shareCells.forEach((cell) => {
+		cell.textContent = '-';
+	});
+
+	const total = parseAmount(elements.expenseAmount.value);
+	const checkedIds = getCheckedSplitPersonIds();
+	if (Number.isNaN(total) || checkedIds.length === 0) {
+		elements.expenseShortfallRow.classList.add('hidden');
+		return;
+	}
+}
+
 /* ==================== EVENT WIRING ==================== */
 function init() {
 	checkElements();
