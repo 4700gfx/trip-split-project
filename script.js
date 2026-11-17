@@ -272,7 +272,7 @@ function populateSplitCheckboxes() {
 				data-person-id="${person.id}"
 				value=""
 			/>
-			<span class="text-right text-slate-500 split-person-share">—</span>
+			<span class="text-right text-slate-500 split-person-share" data-person-id="${person.id}">—</span>
 		</div>`;
 		})
 		.join('');
@@ -1248,6 +1248,28 @@ function updateSplitPreview() {
 		elements.expenseShortfallRow.classList.add('hidden');
 		return;
 	}
+
+	const isCustom = elements.splitCustomRadio.checked;
+
+	if (isCustom) {
+		const share = splitCalculator.getShares({
+			amount: total,
+			splitBetween: checkedIds,
+			paidBy: elements.expensePayer.value,
+			splitType: 'equal'
+		});
+
+		checkedIds.forEach((id) => {
+			const row = elements.addExpenseSplitRows;
+			const cell = elements.addExpenseSplitRows.querySelector(
+				`.split-person-share[data-person-id=${id}`
+			);
+			cell.textContent = formatMoney(share[id]);
+		});
+
+		elements.expenseShortfallRow.classList.add('hidden');
+		return;
+	}
 }
 
 /* ==================== EVENT WIRING ==================== */
@@ -1286,6 +1308,9 @@ function wireExpenseFormEvents() {
 		cancelEditingExpense
 	);
 	elements.addExpenseSplitRows.addEventListener('change', syncSplitUI);
+	elements.expenseAmount.addEventListener('input', updateSplitPreview);
+	elements.expensePayer.addEventListener('change', updateSplitPreview);
+	elements.addExpenseSplitRows.addEventListener('input', updateSplitPreview);
 }
 
 //Event Listeners for List Events
