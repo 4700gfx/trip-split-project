@@ -1232,6 +1232,7 @@ function syncSplitUI() {
 		);
 		input.disabled = !isCustom || !checkbox.checked;
 	});
+	updateSplitPreview();
 }
 
 function updateSplitPreview() {
@@ -1242,6 +1243,7 @@ function updateSplitPreview() {
 		cell.textContent = '-';
 	});
 
+	//Getting Totals and IDs
 	const total = parseAmount(elements.expenseAmount.value);
 	const checkedIds = getCheckedSplitPersonIds();
 	if (Number.isNaN(total) || checkedIds.length === 0) {
@@ -1251,7 +1253,8 @@ function updateSplitPreview() {
 
 	const isCustom = elements.splitCustomRadio.checked;
 
-	if (isCustom) {
+	//Equal Share Branch Logic
+	if (!isCustom) {
 		const share = splitCalculator.getShares({
 			amount: total,
 			splitBetween: checkedIds,
@@ -1260,15 +1263,36 @@ function updateSplitPreview() {
 		});
 
 		checkedIds.forEach((id) => {
-			const row = elements.addExpenseSplitRows;
 			const cell = elements.addExpenseSplitRows.querySelector(
-				`.split-person-share[data-person-id=${id}`
+				`.split-person-share[data-person-id="${id}"]`
 			);
 			cell.textContent = formatMoney(share[id]);
 		});
 
 		elements.expenseShortfallRow.classList.add('hidden');
 		return;
+	}
+
+	//Custom Share Branch Logic
+	if (isCustom) {
+		const amounts = getCustomAmounts(checkedIds);
+		checkedIds.forEach((id) => {
+			const cell = elements.addExpenseSplitRows.querySelector(
+				`.split-person-share[data-person-id="${id}"]`
+			);
+			cell.textContent = formatMoney(amounts[id]);
+		});
+
+		const sum = Object.values(amounts).reduce((acc, sum) => sum + acc, 0);
+		const difference = total - sum;
+
+		if (Math.abs(difference) < 0.01) {
+			elements.expenseShortfallRow.classList.add('hidden');
+		} else {
+			const word = difference > 0 ? 'short' : 'over';
+			elements.expenseShortfallAmount.textContent = `${formatMoney(sum)} of ${formatMoney(total)}, ${formatMoney(difference)} ${word}`;
+			elements.expenseShortfallRow.classList.remove('hidden');
+		}
 	}
 }
 
