@@ -76,7 +76,8 @@ const stateObj = {
 	filters: {
 		personId: 'all',
 		category: 'all',
-		sortBy: 'date-desc'
+		sortBy: 'date-desc',
+		search: ''
 	}
 };
 
@@ -526,6 +527,14 @@ function getFilteredSortedExpenses() {
 		);
 	}
 
+	if (stateObj.filters.search) {
+		filteredExpenses = filteredExpenses.filter((expense) => {
+			return (
+				expense.description.trim().toLowerCase() || 'untitled expense'
+			).includes(stateObj.filters.search);
+		});
+	}
+
 	//Speading Filtered Expenses to Sort Based on Date or Amount
 	if (stateObj.filters.sortBy.includes('date')) {
 		filteredExpenses =
@@ -691,6 +700,11 @@ function renderBalances(balances) {
 		(sum, row) => sum + row.balance,
 		0
 	);
+
+	if (Math.abs(balanceSum) > 0.005) {
+		console.warn('Balances do not sum to zero', balanceSum);
+	}
+
 	const displaySum = Math.abs(balanceSum) < 0.005 ? 0 : balanceSum;
 	elements.expensesSidebarBalanceSum.textContent = `sums to ${displaySum.toFixed(2)}`;
 }
@@ -834,6 +848,9 @@ function handleFilterChange() {
 	stateObj.filters.personId = elements.expensesPersonFilterSelect.value;
 	stateObj.filters.category = elements.expensesCategoryFilterSelect.value;
 	stateObj.filters.sortBy = elements.expensesSortSelect.value;
+	stateObj.filters.search = elements.expensesSearchInput.value
+		.trim()
+		.toLowerCase();
 
 	renderExpenseList();
 }
@@ -842,10 +859,11 @@ function clearFilters() {
 	stateObj.filters.personId = 'all';
 	stateObj.filters.category = 'all';
 	stateObj.filters.sortBy = 'date-desc';
-
+	stateObj.filters.search = '';
 	elements.expensesPersonFilterSelect.value = stateObj.filters.personId;
 	elements.expensesCategoryFilterSelect.value = stateObj.filters.category;
 	elements.expensesSortSelect.value = stateObj.filters.sortBy;
+	elements.expensesSearchInput.value = '';
 	renderExpenseList();
 }
 
@@ -1290,7 +1308,7 @@ function updateSplitPreview() {
 			elements.expenseShortfallRow.classList.add('hidden');
 		} else {
 			const word = difference > 0 ? 'short' : 'over';
-			elements.expenseShortfallAmount.textContent = `${formatMoney(sum)} of ${formatMoney(total)}, ${formatMoney(difference)} ${word}`;
+			elements.expenseShortfallAmount.textContent = `${formatMoney(sum)} of ${formatMoney(total)}, ${formatMoney(Math.abs(difference))} ${word}`;
 			elements.expenseShortfallRow.classList.remove('hidden');
 		}
 	}
@@ -1356,6 +1374,7 @@ function wireFilterEvents() {
 	);
 	elements.expensesSortSelect.addEventListener('change', handleFilterChange);
 	elements.clearFilterButton.addEventListener('click', handleClearFiltersClick);
+	elements.expensesSearchInput.addEventListener('input', handleFilterChange);
 }
 
 function wireShareEvents() {
