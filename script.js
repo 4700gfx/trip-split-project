@@ -154,6 +154,7 @@ const elements = {
 	perHeadBadge: document.querySelector('#perHeadBadge'),
 	expensesSidebarTotal: document.querySelector('#expensesSidebarTotal'),
 	expensesSidebarMeta: document.querySelector('#expensesSidebarMeta'),
+	summaryCategoryBreakdown: document.querySelector('#summaryCategoryBreakdown'),
 
 	//DOM Elements for Share Page
 	shareSummaryText: document.querySelector('#shareSummaryText'),
@@ -161,6 +162,13 @@ const elements = {
 	shareCopiedBadge: document.querySelector('#shareCopiedBadge'),
 	shareFallbackWarning: document.querySelector('#shareFallbackWarning')
 };
+
+const CATEGORY_BAR_COLORS = [
+	'bg-gradient-to-r from-indigo-600 to-indigo-500',
+	'bg-gradient-to-r from-violet-500 to-violet-400',
+	'bg-gradient-to-r from-teal-500 to-emerald-400',
+	'bg-gradient-to-r from-sky-500 to-sky-400'
+];
 
 /* ==================== TRIP-2: MEMBERS ==================== */
 
@@ -943,6 +951,39 @@ function renderSummary() {
 	elements.totalSpent.textContent = totalCard;
 	elements.expensesSidebarTotal.textContent = totalCard;
 	elements.expensesSidebarMeta.textContent = `${stateObj.expenses.length} ${pluralize(stateObj.expenses.length, 'expense', 'expenses')}, ${stateObj.members.length} ${pluralize(stateObj.members.length, 'person', 'people')}`;
+
+	renderCategoryBars(summaryObject.totalPerCategory, total);
+}
+
+function renderCategoryBars(totalPerCategory, total) {
+	const entries = Object.entries(totalPerCategory).sort((a, b) => b[1] - a[1]);
+	const container = elements.summaryCategoryBreakdown;
+
+	if (entries.length === 0) {
+		container.textContent = 'No Spending Yet!';
+		return;
+	}
+
+	const rowHTML = entries
+		.map(([category, amount], index) => {
+			const percent = Math.round((amount / total) * 100);
+			const label = initalCapString(category);
+			const colorClass =
+				CATEGORY_BAR_COLORS[index % CATEGORY_BAR_COLORS.length];
+
+			return `<div data-category="${category}" class="mb-5 last:mb-0">
+								<div class="flex justify-between text-sm mb-1.5">
+									<span class="font-medium">${label}</span>
+									<span class="text-slate-500 num">${formatMoney(amount)} · ${percent}%</span>
+								</div>
+								<div class="h-3 rounded-full bg-slate-900/[0.06]">
+									<div class="h-3 rounded-full ${colorClass}" style="width: ${percent}%"></div>
+								</div>
+						</div>`;
+		})
+		.join('');
+
+	container.innerHTML = rowHTML;
 }
 
 /* ==================== TRIP-11: SHARE / EXPORT ==================== */
