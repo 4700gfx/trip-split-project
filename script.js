@@ -916,7 +916,8 @@ function computeSummary() {
 		topSpenderName,
 		topSpenderAmount,
 		topSpenderCount,
-		totalPerCategory
+		totalPerCategory,
+		paidByPerson
 	};
 }
 
@@ -989,7 +990,28 @@ function renderCategoryBars(totalPerCategory, total) {
 /* ==================== TRIP-11: SHARE / EXPORT ==================== */
 
 function buildShareText() {
-	// TODO: template literal + Array.join('\n') for the settle-up lines
+	const summary = computeSummary();
+	const payments = computeSettlements(computeBalances());
+	const memberCount = stateObj.members.length;
+	const expenseCount = stateObj.expenses.length;
+
+	const lines = [];
+
+	//Header Lines
+	lines
+		.push(
+			`${elements.tripName.value.toUpperCase()} - ${expenseCount} ${pluralize(expenseCount, 'expense', 'expenses')} ${pluralize(memberCount, 'person', 'people')}`
+		)
+		.push(
+			`Total ${formatMoney(summary.total)} · ${formatMoney(summary.perHead)} per head`
+		)
+		.push(``);
+
+	return 'Hello from buildShareText';
+}
+
+function renderSharePreview() {
+	elements.shareSummaryText.textContent = buildShareText();
 }
 
 function handleCopySummary() {
@@ -1009,6 +1031,7 @@ function renderAll() {
 	renderBalances(balances);
 	renderSettleUp(balances);
 	renderSummary();
+	renderSharePreview();
 }
 
 /* ==================== RENDER ORCHESTRATION ==================== */
