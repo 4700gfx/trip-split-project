@@ -170,6 +170,8 @@ const CATEGORY_BAR_COLORS = [
 	'bg-gradient-to-r from-sky-500 to-sky-400'
 ];
 
+let copiedTimer = null;
+
 /* ==================== TRIP-2: MEMBERS ==================== */
 
 //Adding and Removing Person to People Object
@@ -998,24 +1000,74 @@ function buildShareText() {
 	const lines = [];
 
 	//Header Lines
-	lines
-		.push(
-			`${elements.tripName.value.toUpperCase()} - ${expenseCount} ${pluralize(expenseCount, 'expense', 'expenses')} ${pluralize(memberCount, 'person', 'people')}`
-		)
-		.push(
-			`Total ${formatMoney(summary.total)} · ${formatMoney(summary.perHead)} per head`
-		)
-		.push(``);
+	lines.push(
+		`${elements.tripName.value.toUpperCase()} - ${expenseCount} ${pluralize(expenseCount, 'expense', 'expenses')} ${pluralize(memberCount, 'person', 'people')}`
+	);
+	lines.push(
+		`Total ${formatMoney(summary.total)} · ${formatMoney(summary.perHead)} per head`
+	);
+	lines.push(``);
+	lines.push('PAID');
 
-	return 'Hello from buildShareText';
+	const paidRows = stateObj.members
+		.map((member) => ({
+			memberName: member.name,
+			paid: summary.paidByPerson[member.id] ?? 0
+		}))
+		.sort((a, b) => b.paid - a.paid)
+		.forEach(({ memberName, paid }) =>
+			lines.push(`${memberName} ${formatMoney(paid)}`)
+		);
+
+	lines.push('SETTLE UP');
+	lines.push(' ');
+
+	if (payments.length === 0) {
+		lines.push('Everyone is Square');
+	} else {
+		console.log(payments);
+		console.log(stateObj.members);
+		payments.forEach((payment) => {
+			//Finding Names based on the IDs in the payment array
+			console.log(payment);
+			const fromName = stateObj.members.find(
+				(member) => member.id === payment.from
+			).name;
+			const toName = stateObj.members.find(
+				(member) => member.id === payment.to
+			).name;
+			lines.push(`${fromName} to ${toName} ${formatMoney(payment.amount)}`);
+		});
+	}
+
+	return lines.join('\n');
 }
 
 function renderSharePreview() {
 	elements.shareSummaryText.textContent = buildShareText();
 }
 
-function handleCopySummary() {
-	// TODO: navigator.clipboard.writeText(buildShareText()).then(...).catch(...)
+async function handleCopySummary() {
+	elements.shareCopiedBadge.classList.add('hidden');
+	elements.shareFallbackWarning.classList.add('hidden');
+
+	const text = buildShareText();
+
+	if (!navigator.clipboard) {
+		elements.shareFallbackWarning.classList.remove('hidden');
+		return;
+	}
+	try {
+		await navigator.clipboard.writeText(text);
+		elements.shareCopiedBadge.classList.remove('hidden');
+		clearTimeout(copiedTimer);
+		copiedTimer = setTimeout(() => {
+			elements.shareCopiedBadge.classList.add('hidden');
+		}, 2000);
+	} catch (error) {
+		// Clipboard access can be denied or unavailable in restricted contexts; show the existing fallback instead.
+		elements.shareFallbackWarning.classList.remove('hidden');
+	}
 }
 
 /* ==================== RENDER ORCHESTRATION ==================== */
