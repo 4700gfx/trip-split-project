@@ -1001,7 +1001,7 @@ function buildShareText() {
 
 	//Header Lines
 	lines.push(
-		`${elements.tripName.value.toUpperCase()} - ${expenseCount} ${pluralize(expenseCount, 'expense', 'expenses')} ${pluralize(memberCount, 'person', 'people')}`
+		`${stateObj.tripName.toUpperCase()} - ${expenseCount} ${pluralize(expenseCount, 'expense', 'expenses')}, ${memberCount} ${pluralize(memberCount, 'person', 'people')}`
 	);
 	lines.push(
 		`Total ${formatMoney(summary.total)} · ${formatMoney(summary.perHead)} per head`
@@ -1009,7 +1009,7 @@ function buildShareText() {
 	lines.push(``);
 	lines.push('PAID');
 
-	const paidRows = stateObj.members
+	stateObj.members
 		.map((member) => ({
 			memberName: member.name,
 			paid: summary.paidByPerson[member.id] ?? 0
@@ -1025,11 +1025,8 @@ function buildShareText() {
 	if (payments.length === 0) {
 		lines.push('Everyone is Square');
 	} else {
-		console.log(payments);
-		console.log(stateObj.members);
 		payments.forEach((payment) => {
 			//Finding Names based on the IDs in the payment array
-			console.log(payment);
 			const fromName = stateObj.members.find(
 				(member) => member.id === payment.from
 			).name;

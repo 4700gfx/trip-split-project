@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>TripSplit — Design Mockup</title>
+		<title>TripSplit</title>
 
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -167,7 +167,7 @@
 				letter-spacing: -0.035em;
 			}
 
-			/* ---------- Screens (mockup scaffolding) ---------- */
+			/* ---------- Screens ---------- */
 			.screen {
 				display: none;
 			}
@@ -222,11 +222,13 @@
 					<span class="font-semibold text-[17px] display">TripSplit</span>
 				</div>
 
+				<!-- Desktop navigation (md and up) -->
 				<nav
 					class="hidden md:flex items-center gap-1 p-1 rounded-xl bg-slate-900/[0.04] text-sm text-slate-500"
 					aria-label="Main"
 				>
 					<button
+						type="button"
 						id="navLinkSetup"
 						class="nav-link px-3.5 py-1.5 rounded-lg font-medium hover:text-slate-900 transition"
 						data-target="screen-01"
@@ -234,6 +236,7 @@
 						Setup
 					</button>
 					<button
+						type="button"
 						id="navLinkExpenses"
 						class="nav-link px-3.5 py-1.5 rounded-lg font-medium hover:text-slate-900 transition"
 						data-target="screen-03"
@@ -241,6 +244,7 @@
 						Expenses
 					</button>
 					<button
+						type="button"
 						id="navLinkBalances"
 						class="nav-link px-3.5 py-1.5 rounded-lg font-medium hover:text-slate-900 transition"
 						data-target="screen-04"
@@ -248,6 +252,7 @@
 						Balances
 					</button>
 					<button
+						type="button"
 						id="navLinkSettleUp"
 						class="nav-link px-3.5 py-1.5 rounded-lg font-medium hover:text-slate-900 transition"
 						data-target="screen-05"
@@ -255,43 +260,47 @@
 						Settle up
 					</button>
 					<button
+						type="button"
 						id="navLinkSummary"
 						class="nav-link px-3.5 py-1.5 rounded-lg font-medium hover:text-slate-900 transition"
 						data-target="screen-06"
 					>
 						Summary
 					</button>
+					<button
+						type="button"
+						id="navLinkShare"
+						class="nav-link px-3.5 py-1.5 rounded-lg font-medium hover:text-slate-900 transition"
+						data-target="screen-07"
+					>
+						Share
+					</button>
 				</nav>
 
-				<div class="flex items-center gap-3">
-					<button
-						id="headerAddExpenseBtn"
-						class="tab-btn btn-primary !px-4 !py-2"
-						data-target="screen-02"
+				<button
+					type="button"
+					id="headerAddExpenseBtn"
+					class="tab-btn btn-primary !px-4 !py-2"
+					data-target="screen-02"
+				>
+					<svg
+						width="14"
+						height="14"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="3"
+						stroke-linecap="round"
+						aria-hidden="true"
 					>
-						<svg
-							width="14"
-							height="14"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="3"
-							stroke-linecap="round"
-							aria-hidden="true"
-						>
-							<path d="M12 5v14M5 12h14" />
-						</svg>
-						Add expense
-					</button>
-					<span
-						id="headerAvatar"
-						class="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 ring-2 ring-white shadow-sm"
-					></span>
-				</div>
+						<path d="M12 5v14M5 12h14" />
+					</svg>
+					Add expense
+				</button>
 			</div>
 		</header>
 
-		<!-- ============ TRIP INFO BAR ============ -->
+		<!-- ============ TRIP INFO BAR (values filled by renderSummary) ============ -->
 		<div class="max-w-6xl mx-auto px-3 sm:px-6 mt-3">
 			<div
 				class="glass rounded-2xl px-5 py-3.5 flex items-center justify-between gap-x-6 gap-y-3 flex-wrap text-sm"
@@ -300,12 +309,12 @@
 					<span
 						id="tripNameBadge"
 						class="text-slate-900 font-semibold text-base display"
-						>Lisbon, March</span
+						>My Trip</span
 					>
 					<span
 						id="memberCountBadge"
 						class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-medium ring-1 ring-indigo-100"
-						>4 people</span
+						>0 people</span
 					>
 					<span
 						id="currencyBadge"
@@ -316,7 +325,7 @@
 				<dl class="flex items-center gap-6 text-slate-500">
 					<div>
 						<dt class="sr-only">Expenses</dt>
-						<dd id="expenseCountBadge" class="num">11 expenses</dd>
+						<dd id="expenseCountBadge" class="num">0 expenses</dd>
 					</div>
 					<div class="flex items-baseline gap-1.5">
 						<dt>Total</dt>
@@ -324,7 +333,7 @@
 							<strong
 								id="totalSpentBadge"
 								class="num text-slate-900 font-semibold"
-								>$2,104.60</strong
+								>$0.00</strong
 							>
 						</dd>
 					</div>
@@ -332,7 +341,7 @@
 						<dt>Per head</dt>
 						<dd>
 							<strong id="perHeadBadge" class="num text-slate-900 font-semibold"
-								>$526.15</strong
+								>$0.00</strong
 							>
 						</dd>
 					</div>
@@ -340,66 +349,59 @@
 			</div>
 		</div>
 
-		<!-- ============ SCREEN-REVIEW PILL STRIP ============ -->
-		<div class="max-w-6xl mx-auto px-3 sm:px-6 pt-5">
-			<div
-				class="flex items-center gap-3 overflow-x-auto pb-1"
-				aria-label="Design review screens"
-			>
-				<span class="shrink-0 text-xs font-medium text-slate-400"
-					>Review screens</span
+		<!-- ============ MOBILE NAVIGATION (below md, where the top nav is hidden) ============ -->
+		<div class="md:hidden max-w-6xl mx-auto px-3 sm:px-6 pt-5">
+			<nav class="flex gap-1.5 overflow-x-auto pb-1" aria-label="Screens">
+				<button
+					type="button"
+					class="tab-btn review-pill shrink-0 px-3 py-1.5 rounded-lg border border-white/80 bg-white/60 backdrop-blur text-[13px] text-slate-600 hover:bg-white transition"
+					data-target="screen-01"
 				>
-				<div class="flex gap-1.5">
-					<button
-						class="tab-btn review-pill shrink-0 px-3 py-1.5 rounded-lg border border-white/80 bg-white/60 backdrop-blur text-[13px] text-slate-600 hover:bg-white transition"
-						data-target="screen-01"
-					>
-						<span class="num text-slate-400 mr-1">01</span>Setup
-					</button>
-					<button
-						class="tab-btn review-pill shrink-0 px-3 py-1.5 rounded-lg border border-white/80 bg-white/60 backdrop-blur text-[13px] text-slate-600 hover:bg-white transition"
-						data-target="screen-02"
-					>
-						<span class="num text-slate-400 mr-1">02</span>Add expense
-					</button>
-					<button
-						class="tab-btn review-pill shrink-0 px-3 py-1.5 rounded-lg border border-white/80 bg-white/60 backdrop-blur text-[13px] text-slate-600 hover:bg-white transition"
-						data-target="screen-03"
-					>
-						<span class="num text-slate-400 mr-1">03</span>Expenses
-					</button>
-					<button
-						class="tab-btn review-pill shrink-0 px-3 py-1.5 rounded-lg border border-white/80 bg-white/60 backdrop-blur text-[13px] text-slate-600 hover:bg-white transition"
-						data-target="screen-04"
-					>
-						<span class="num text-slate-400 mr-1">04</span>Balances
-					</button>
-					<button
-						class="tab-btn review-pill shrink-0 px-3 py-1.5 rounded-lg border border-white/80 bg-white/60 backdrop-blur text-[13px] text-slate-600 hover:bg-white transition"
-						data-target="screen-05"
-					>
-						<span class="num text-slate-400 mr-1">05</span>Settle up
-					</button>
-					<button
-						class="tab-btn review-pill shrink-0 px-3 py-1.5 rounded-lg border border-white/80 bg-white/60 backdrop-blur text-[13px] text-slate-600 hover:bg-white transition"
-						data-target="screen-06"
-					>
-						<span class="num text-slate-400 mr-1">06</span>Summary
-					</button>
-					<button
-						class="tab-btn review-pill shrink-0 px-3 py-1.5 rounded-lg border border-white/80 bg-white/60 backdrop-blur text-[13px] text-slate-600 hover:bg-white transition"
-						data-target="screen-07"
-					>
-						<span class="num text-slate-400 mr-1">07</span>Share
-					</button>
-					<button
-						class="tab-btn review-pill shrink-0 px-3 py-1.5 rounded-lg border border-white/80 bg-white/60 backdrop-blur text-[13px] text-slate-600 hover:bg-white transition"
-						data-target="screen-08"
-					>
-						<span class="num text-slate-400 mr-1">08</span>Empty states
-					</button>
-				</div>
-			</div>
+					Setup
+				</button>
+				<button
+					type="button"
+					class="tab-btn review-pill shrink-0 px-3 py-1.5 rounded-lg border border-white/80 bg-white/60 backdrop-blur text-[13px] text-slate-600 hover:bg-white transition"
+					data-target="screen-02"
+				>
+					Add expense
+				</button>
+				<button
+					type="button"
+					class="tab-btn review-pill shrink-0 px-3 py-1.5 rounded-lg border border-white/80 bg-white/60 backdrop-blur text-[13px] text-slate-600 hover:bg-white transition"
+					data-target="screen-03"
+				>
+					Expenses
+				</button>
+				<button
+					type="button"
+					class="tab-btn review-pill shrink-0 px-3 py-1.5 rounded-lg border border-white/80 bg-white/60 backdrop-blur text-[13px] text-slate-600 hover:bg-white transition"
+					data-target="screen-04"
+				>
+					Balances
+				</button>
+				<button
+					type="button"
+					class="tab-btn review-pill shrink-0 px-3 py-1.5 rounded-lg border border-white/80 bg-white/60 backdrop-blur text-[13px] text-slate-600 hover:bg-white transition"
+					data-target="screen-05"
+				>
+					Settle up
+				</button>
+				<button
+					type="button"
+					class="tab-btn review-pill shrink-0 px-3 py-1.5 rounded-lg border border-white/80 bg-white/60 backdrop-blur text-[13px] text-slate-600 hover:bg-white transition"
+					data-target="screen-06"
+				>
+					Summary
+				</button>
+				<button
+					type="button"
+					class="tab-btn review-pill shrink-0 px-3 py-1.5 rounded-lg border border-white/80 bg-white/60 backdrop-blur text-[13px] text-slate-600 hover:bg-white transition"
+					data-target="screen-07"
+				>
+					Share
+				</button>
+			</nav>
 		</div>
 
 		<main class="max-w-6xl mx-auto px-3 sm:px-6 py-6">
@@ -426,35 +428,21 @@
 								<label for="tripNameInput" class="label block mb-1.5"
 									>Trip name</label
 								>
-								<div id="setupTripNameField">
-									<input
-										id="tripNameInput"
-										type="text"
-										value="Lisbon, March"
-										class="field"
-									/>
-								</div>
+								<!-- init() fills this from stateObj.tripName -->
+								<input
+									id="tripNameInput"
+									type="text"
+									placeholder="e.g. Lisbon, March"
+									class="field"
+								/>
 							</div>
 							<div>
 								<span class="label block mb-1.5">Currency</span>
 								<div
 									id="setupCurrencyField"
-									class="field flex justify-between items-center !bg-slate-50/80 text-slate-700"
+									class="field flex items-center !bg-slate-50/80 text-slate-700"
 								>
 									USD ($)
-									<svg
-										width="12"
-										height="12"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="#64748b"
-										stroke-width="2.5"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										aria-hidden="true"
-									>
-										<path d="m6 9 6 6 6-6" />
-									</svg>
 								</div>
 							</div>
 						</div>
@@ -466,7 +454,7 @@
 							<span
 								id="setupMemberCountLabel"
 								class="text-sm text-slate-500 num"
-								>4 added</span
+								>0 added</span
 							>
 						</div>
 						<div class="flex gap-2 mb-4">
@@ -476,17 +464,20 @@
 								aria-label="Person's name"
 								class="field flex-1"
 							/>
-							<button id="setupAddPersonBtn" class="btn-primary !px-6">
+							<button
+								type="button"
+								id="setupAddPersonBtn"
+								class="btn-primary !px-6"
+							>
 								Add
 							</button>
 						</div>
+						<!-- renderMemberChips() rebuilds this container -->
 						<div
 							id="setupMembersList"
 							class="flex flex-wrap gap-2 mb-4 min-h-[36px]"
-						>
-							<!-- renderMemberChips() rebuilds this container from `people` -->
-						</div>
-						<!-- Hidden by default. JS: set #setupMemberWarningText, then remove 'hidden' (TRIP-2/10). -->
+						></div>
+						<!-- Hidden by default. showMemberWarning() sets the text and un-hides it. -->
 						<p
 							id="setupMemberWarning"
 							class="hidden flex gap-2.5 text-sm text-indigo-800 bg-indigo-50/80 ring-1 ring-indigo-100 rounded-xl px-4 py-3 mb-7"
@@ -506,14 +497,12 @@
 								<circle cx="12" cy="12" r="9" />
 								<path d="M12 8v5M12 16h.01" />
 							</svg>
-							<span id="setupMemberWarningText"
-								>Sam appears in 3 expenses and can't be removed yet. Delete or
-								reassign those expenses first.</span
-							>
+							<span id="setupMemberWarningText"></span>
 						</p>
 
 						<div class="flex items-center gap-4 flex-wrap">
 							<button
+								type="button"
 								id="setupContinueBtn"
 								class="tab-btn btn-primary"
 								data-target="screen-02"
@@ -526,32 +515,21 @@
 						</div>
 					</div>
 
-					<div class="flex flex-col gap-5">
-						<div class="glass rounded-3xl p-6">
-							<p class="text-[15px] font-semibold mb-3">Trip at a glance</p>
-							<div
-								id="setupGlanceBox"
-								class="border border-dashed border-slate-300/80 rounded-2xl h-32 flex items-center justify-center text-center text-sm text-slate-400 px-4 bg-white/40"
-							>
-								No expenses yet.<br />Totals and balances appear here.
-							</div>
-						</div>
-						<div class="ink rounded-3xl p-6">
-							<p class="text-white font-semibold text-lg display mb-2">
-								How splitting works
-							</p>
-							<p class="text-sm leading-relaxed text-indigo-100/80">
-								Log what you paid, pick who it covers, and TripSplit keeps each
-								person's net position. At the end it suggests the fewest
-								payments that clear the trip.
-							</p>
-						</div>
+					<div class="ink rounded-3xl p-6">
+						<p class="text-white font-semibold text-lg display mb-2">
+							How splitting works
+						</p>
+						<p class="text-sm leading-relaxed text-indigo-100/80">
+							Log what you paid, pick who it covers, and TripSplit keeps each
+							person's net position. At the end it suggests the fewest payments
+							that clear the trip.
+						</p>
 					</div>
 				</div>
 			</section>
 
 			<!-- ============================================================ -->
-			<!-- SCREEN 02 — ADD EXPENSE -->
+			<!-- SCREEN 02 — ADD / EDIT EXPENSE -->
 			<!-- ============================================================ -->
 			<section id="screen-02" class="screen">
 				<div
@@ -559,20 +537,13 @@
 				>
 					<div class="glass rounded-3xl p-6 sm:p-8">
 						<div class="flex justify-between items-start mb-6">
-							<!-- JS: switch to "Edit expense" in edit mode (TRIP-4) -->
+							<!-- startEditingExpense() / resetExpenseForm() switch this text -->
 							<h2
 								id="addExpenseHeading"
 								class="text-[28px] leading-tight font-semibold display"
 							>
 								Add expense
 							</h2>
-							<span class="text-xs text-slate-400 flex items-center gap-1.5"
-								><kbd
-									class="px-1.5 py-0.5 rounded-md bg-white ring-1 ring-slate-200 font-sans text-[11px] text-slate-500"
-									>Esc</kbd
-								>
-								to cancel</span
-							>
 						</div>
 
 						<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -611,13 +582,14 @@
 										aria-describedby="addExpenseAmountError"
 									/>
 								</div>
-								<!-- Hidden by default. JS removes 'hidden' when the amount is invalid (TRIP-10). -->
+								<!-- Hidden by default. showFormErrors() un-hides it. -->
 								<p
 									id="addExpenseAmountError"
 									class="hidden text-xs text-red-600 mt-1.5"
 									role="alert"
 								>
-									Enter a number. Letters and blanks are rejected.
+									Enter a number greater than zero. Letters and blanks are
+									rejected.
 								</p>
 							</div>
 						</div>
@@ -627,12 +599,8 @@
 								<label for="addExpensePayerSelect" class="label block mb-1.5"
 									>Paid by</label
 								>
-								<select id="addExpensePayerSelect" class="field">
-									<option value="priya">Priya</option>
-									<option value="alex">Alex</option>
-									<option value="sam">Sam</option>
-									<option value="mia">Mia</option>
-								</select>
+								<!-- populatePayerDropdown() fills the options -->
+								<select id="addExpensePayerSelect" class="field"></select>
 							</div>
 							<div>
 								<label for="addExpenseCategorySelect" class="label block mb-1.5"
@@ -698,11 +666,9 @@
 								<span></span><span>Person</span><span>Amount</span
 								><span class="text-right">Share</span>
 							</div>
-							<div id="addExpenseSplitRows">
-								<!-- populateSplitCheckboxes() rebuilds this container only —
-								     the header above and the shortfall row below stay put -->
-							</div>
-							<!-- Hidden by default. JS: set #addExpenseShortfallAmount, then remove 'hidden'. -->
+							<!-- populateSplitCheckboxes() rebuilds this container only -->
+							<div id="addExpenseSplitRows"></div>
+							<!-- Hidden by default. updateSplitPreview() / showFormErrors() fill and un-hide it. -->
 							<div
 								id="addExpenseShortfallRow"
 								class="hidden flex justify-between gap-3 flex-wrap px-4 py-3 bg-red-50/90 border-t border-red-100 text-sm"
@@ -713,84 +679,59 @@
 								<span
 									id="addExpenseShortfallAmount"
 									class="font-semibold num text-red-700"
-									>520.00 of 540.00, 20.00 short</span
-								>
+								></span>
 							</div>
 						</div>
 
 						<div class="flex items-center gap-3 mt-6 flex-wrap">
-							<button id="addExpenseSaveBtn" class="btn-primary !px-6">
+							<button
+								type="button"
+								id="addExpenseSaveBtn"
+								class="btn-primary !px-6"
+							>
 								Save expense
 							</button>
 							<button
+								type="button"
 								id="addExpenseCancelBtn"
 								class="tab-btn btn-quiet"
 								data-target="screen-03"
 							>
 								Cancel
 							</button>
-							<!-- Hidden by default. JS: set #addExpenseProblemsText, then remove 'hidden'. -->
+							<!-- Hidden by default. showFormErrors() fills and un-hides it. -->
 							<span
 								id="addExpenseProblemsLabel"
 								class="hidden text-sm text-red-600 flex items-center gap-1.5"
+								aria-live="polite"
 								><span
 									class="w-1.5 h-1.5 rounded-full bg-red-500"
 									aria-hidden="true"
 								></span
-								><span id="addExpenseProblemsText"
-									>2 problems to fix</span
-								></span
-							>
+								><span id="addExpenseProblemsText"></span
+							></span>
 						</div>
 					</div>
 
 					<div class="glass rounded-3xl p-6">
-						<p class="text-[15px] font-semibold mb-4">Effect of this expense</p>
-						<div id="addExpenseEffectList" class="flex flex-col gap-3 text-sm">
-							<div
-								data-person="priya"
-								class="flex justify-between items-center"
-							>
-								<span class="flex items-center gap-2"
-									><span
-										class="w-6 h-6 rounded-full bg-indigo-600 text-white text-[11px] flex items-center justify-center font-semibold"
-										>P</span
-									>Priya</span
-								><span class="font-semibold num text-emerald-700">+340.00</span>
-							</div>
-							<div data-person="alex" class="flex justify-between items-center">
-								<span class="flex items-center gap-2"
-									><span
-										class="w-6 h-6 rounded-full bg-violet-500 text-white text-[11px] flex items-center justify-center font-semibold"
-										>A</span
-									>Alex</span
-								><span class="font-semibold num text-red-600">−200.00</span>
-							</div>
-							<div data-person="sam" class="flex justify-between items-center">
-								<span class="flex items-center gap-2"
-									><span
-										class="w-6 h-6 rounded-full bg-teal-600 text-white text-[11px] flex items-center justify-center font-semibold"
-										>S</span
-									>Sam</span
-								><span class="font-semibold num text-red-600">−120.00</span>
-							</div>
-							<div
-								data-person="mia"
-								class="flex justify-between items-center text-slate-400"
-							>
-								<span class="flex items-center gap-2"
-									><span
-										class="w-6 h-6 rounded-full bg-slate-200 text-slate-400 text-[11px] flex items-center justify-center font-semibold"
-										>M</span
-									>Mia</span
-								><span class="num">0.00</span>
-							</div>
-						</div>
-						<div class="h-px bg-slate-200/70 my-5"></div>
-						<p class="text-sm text-slate-500 leading-relaxed">
-							The preview updates as you type, so you can check the split before
-							saving.
-						</p>
+						<p class="text-[15px] font-semibold mb-3">How the split works</p>
+						<ul
+							class="flex flex-col gap-3 text-sm text-slate-500 leading-relaxed"
+						>
+							<li>
+								<span class="font-medium text-slate-700">Equal</span> divides
+								the amount between everyone ticked. Any leftover cent goes to
+								the payer.
+							</li>
+							<li>
+								<span class="font-medium text-slate-700">Custom</span> lets you
+								type each person's share. The shares must add up to the total.
+							</li>
+							<li>
+								The <span class="font-medium text-slate-700">Share</span> column
+								updates as you type, so you can check the split before saving.
+							</li>
+						</ul>
 					</div>
 				</div>
 			</section>
@@ -829,13 +770,13 @@
 										class="field !pl-10"
 									/>
 								</div>
+								<!-- populateFilterDropdowns() rebuilds the person options -->
 								<select
 									id="expensesPersonFilterSelect"
 									aria-label="Filter by person"
 									class="field min-w-0"
 								>
 									<option value="all">Person: All</option>
-									<!-- populateFilterDropdowns() adds one <option> per person here -->
 								</select>
 								<select
 									id="expensesCategoryFilterSelect"
@@ -865,14 +806,12 @@
 							<div
 								class="flex items-center gap-3 text-sm text-slate-500 flex-wrap px-1"
 							>
+								<!-- renderFilterSummary() fills and shows/hides the chip and the summary -->
 								<span
 									id="expensesActiveFilterChip"
-									class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-medium ring-1 ring-indigo-100"
-									>Sam ×</span
-								>
-								<span id="expensesFilterSummary" class="num"
-									>5 of 11 expenses · $1,240.00 shown</span
-								>
+									class="hidden px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-medium ring-1 ring-indigo-100"
+								></span>
+								<span id="expensesFilterSummary" class="num"></span>
 								<a
 									id="expensesClearAllLink"
 									href="#"
@@ -889,12 +828,8 @@
 								<span></span><span>Expense</span
 								><span class="text-right">Amount</span><span></span>
 							</div>
-							<div id="expensesRows">
-								<!-- renderExpenseList() rebuilds this container only —
-								     the header above stays static. Render either the row
-								     markup for each expense, or an empty-state message,
-								     based on expenses.length. -->
-							</div>
+							<!-- renderExpenseList() rebuilds this container only -->
+							<div id="expensesRows"></div>
 						</div>
 					</div>
 
@@ -905,15 +840,12 @@
 								id="expensesSidebarTotal"
 								class="text-[40px] leading-none font-semibold text-white num display"
 							>
-								$2,104.60
+								$0.00
 							</p>
-							<!-- JS: e.g. `${expenses.length} expenses, ${people.length} people` -->
 							<p
 								id="expensesSidebarMeta"
 								class="text-sm mt-3 text-indigo-200/70"
-							>
-								11 expenses, 4 people
-							</p>
+							></p>
 						</div>
 						<div class="glass rounded-3xl p-6">
 							<div class="flex justify-between items-baseline mb-4">
@@ -921,67 +853,15 @@
 								<span
 									id="expensesSidebarBalanceSum"
 									class="text-xs text-slate-400 num"
-									>sums to 0.00</span
-								>
+								></span>
 							</div>
+							<!-- renderBalances() rebuilds this container -->
 							<div
 								id="expensesSidebarBalanceList"
 								class="flex flex-col gap-4 text-sm"
-							>
-								<div data-person="priya">
-									<div class="flex justify-between mb-1">
-										<span>Priya</span
-										><span class="font-semibold num text-emerald-700"
-											>+412.10</span
-										>
-									</div>
-									<div class="h-2 rounded-full bg-slate-100">
-										<div
-											class="h-2 rounded-full bg-emerald-500"
-											style="width: 34%"
-										></div>
-									</div>
-								</div>
-								<div data-person="sam">
-									<div class="flex justify-between mb-1">
-										<span>Sam</span
-										><span class="font-semibold num text-emerald-700"
-											>+96.40</span
-										>
-									</div>
-									<div class="h-2 rounded-full bg-slate-100">
-										<div
-											class="h-2 rounded-full bg-emerald-500"
-											style="width: 9%"
-										></div>
-									</div>
-								</div>
-								<div data-person="mia">
-									<div class="flex justify-between mb-1">
-										<span>Mia</span
-										><span class="font-semibold num text-red-600">−162.00</span>
-									</div>
-									<div class="h-2 rounded-full bg-slate-100">
-										<div
-											class="h-2 rounded-full bg-red-500"
-											style="width: 14%"
-										></div>
-									</div>
-								</div>
-								<div data-person="alex">
-									<div class="flex justify-between mb-1">
-										<span>Alex</span
-										><span class="font-semibold num text-red-600">−346.50</span>
-									</div>
-									<div class="h-2 rounded-full bg-slate-100">
-										<div
-											class="h-2 rounded-full bg-red-500"
-											style="width: 30%"
-										></div>
-									</div>
-								</div>
-							</div>
+							></div>
 							<button
+								type="button"
 								id="expensesSidebarSettleUpBtn"
 								class="tab-btn btn-quiet w-full mt-6 !text-indigo-600 !font-semibold"
 								data-target="screen-05"
@@ -1002,260 +882,27 @@
 						<h2 class="text-[28px] leading-tight font-semibold display">
 							Balances
 						</h2>
+						<!-- TODO (JS): "Net position per person across N expenses." -->
 						<p id="balancesSubtitle" class="text-[15px] text-slate-500 mt-1">
-							Net position per person across 11 expenses.
+							Net position per person.
 						</p>
 					</div>
+					<!-- TODO (JS): "All balances sum to 0.00" -->
 					<span
 						id="balancesSumBadge"
 						class="px-3 py-1.5 rounded-lg bg-white/70 ring-1 ring-white text-slate-600 text-sm font-medium num backdrop-blur"
-						>All balances sum to 0.00</span
-					>
+					></span>
 				</div>
 
+				<!-- TODO (JS): renderBalanceCards() — one card per member:
+				     name, net balance, "is owed"/"owes", Paid out, Own share, Expenses count -->
 				<div
 					id="balancesCardsGrid"
-					class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5"
+					class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
 				>
-					<div data-person="priya" class="glass rounded-3xl p-5">
-						<div class="flex items-center gap-2.5 mb-4">
-							<span
-								class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-semibold text-sm"
-								>P</span
-							><span class="font-semibold">Priya</span>
-						</div>
-						<p
-							class="text-[32px] leading-none font-semibold num display text-emerald-700"
-						>
-							+$412.10
-						</p>
-						<p class="text-sm text-slate-500 mt-1.5 mb-4">is owed</p>
-						<dl
-							class="flex flex-col gap-1.5 text-sm border-t border-slate-200/70 pt-3"
-						>
-							<div class="flex justify-between text-slate-500">
-								<dt>Paid out</dt>
-								<dd class="text-slate-900 num">$928.00</dd>
-							</div>
-							<div class="flex justify-between text-slate-500">
-								<dt>Own share</dt>
-								<dd class="text-slate-900 num">$515.90</dd>
-							</div>
-							<div class="flex justify-between text-slate-500">
-								<dt>Expenses</dt>
-								<dd class="text-slate-900 num">4</dd>
-							</div>
-						</dl>
-					</div>
-					<div data-person="sam" class="glass rounded-3xl p-5">
-						<div class="flex items-center gap-2.5 mb-4">
-							<span
-								class="w-8 h-8 rounded-full bg-teal-600 text-white flex items-center justify-center font-semibold text-sm"
-								>S</span
-							><span class="font-semibold">Sam</span>
-						</div>
-						<p
-							class="text-[32px] leading-none font-semibold num display text-emerald-700"
-						>
-							+$96.40
-						</p>
-						<p class="text-sm text-slate-500 mt-1.5 mb-4">is owed</p>
-						<dl
-							class="flex flex-col gap-1.5 text-sm border-t border-slate-200/70 pt-3"
-						>
-							<div class="flex justify-between text-slate-500">
-								<dt>Paid out</dt>
-								<dd class="text-slate-900 num">$631.00</dd>
-							</div>
-							<div class="flex justify-between text-slate-500">
-								<dt>Own share</dt>
-								<dd class="text-slate-900 num">$534.60</dd>
-							</div>
-							<div class="flex justify-between text-slate-500">
-								<dt>Expenses</dt>
-								<dd class="text-slate-900 num">3</dd>
-							</div>
-						</dl>
-					</div>
-					<div data-person="mia" class="glass rounded-3xl p-5">
-						<div class="flex items-center gap-2.5 mb-4">
-							<span
-								class="w-8 h-8 rounded-full bg-orange-400 text-white flex items-center justify-center font-semibold text-sm"
-								>M</span
-							><span class="font-semibold">Mia</span>
-						</div>
-						<p
-							class="text-[32px] leading-none font-semibold num display text-red-600"
-						>
-							−$162.00
-						</p>
-						<p class="text-sm text-slate-500 mt-1.5 mb-4">owes</p>
-						<dl
-							class="flex flex-col gap-1.5 text-sm border-t border-slate-200/70 pt-3"
-						>
-							<div class="flex justify-between text-slate-500">
-								<dt>Paid out</dt>
-								<dd class="text-slate-900 num">$148.00</dd>
-							</div>
-							<div class="flex justify-between text-slate-500">
-								<dt>Own share</dt>
-								<dd class="text-slate-900 num">$310.00</dd>
-							</div>
-							<div class="flex justify-between text-slate-500">
-								<dt>Expenses</dt>
-								<dd class="text-slate-900 num">1</dd>
-							</div>
-						</dl>
-					</div>
-					<div
-						data-person="alex"
-						class="glass rounded-3xl p-5 !border-indigo-300 ring-4 ring-indigo-500/10"
-					>
-						<div class="flex items-center gap-2.5 mb-4">
-							<span
-								class="w-8 h-8 rounded-full bg-violet-500 text-white flex items-center justify-center font-semibold text-sm"
-								>A</span
-							><span class="font-semibold">Alex</span>
-							<span
-								class="ml-auto text-[11px] font-medium text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md"
-								>Selected</span
-							>
-						</div>
-						<p
-							class="text-[32px] leading-none font-semibold num display text-red-600"
-						>
-							−$346.50
-						</p>
-						<p class="text-sm text-slate-500 mt-1.5 mb-4">owes</p>
-						<dl
-							class="flex flex-col gap-1.5 text-sm border-t border-slate-200/70 pt-3"
-						>
-							<div class="flex justify-between text-slate-500">
-								<dt>Paid out</dt>
-								<dd class="text-slate-900 num">$397.60</dd>
-							</div>
-							<div class="flex justify-between text-slate-500">
-								<dt>Own share</dt>
-								<dd class="text-slate-900 num">$744.10</dd>
-							</div>
-							<div class="flex justify-between text-slate-500">
-								<dt>Expenses</dt>
-								<dd class="text-slate-900 num">3</dd>
-							</div>
-						</dl>
-					</div>
-				</div>
-
-				<div class="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-5">
-					<div class="glass rounded-3xl p-6 min-w-0">
-						<div class="flex justify-between items-baseline mb-4 gap-3">
-							<span
-								id="balancesDetailHeading"
-								class="font-semibold text-lg display"
-								>Every expense Alex touches</span
-							>
-						</div>
-						<div class="overflow-x-auto">
-							<div class="min-w-[480px]">
-								<div
-									id="balancesDetailTable"
-									class="grid grid-cols-[1fr_110px_110px_110px] gap-3 text-xs font-medium text-slate-500 pb-2.5 border-b border-slate-200/70"
-								>
-									<span>Expense</span><span class="text-right">Their share</span
-									><span class="text-right">They paid</span
-									><span class="text-right">Net</span>
-								</div>
-								<div
-									data-expense="airbnb"
-									class="grid grid-cols-[1fr_110px_110px_110px] gap-3 py-3 border-b border-slate-200/50 text-sm num"
-								>
-									<span>Airbnb, 3 nights</span
-									><span class="text-right">200.00</span
-									><span class="text-right text-slate-300">—</span
-									><span class="text-right text-red-600 font-medium"
-										>−200.00</span
-									>
-								</div>
-								<div
-									data-expense="dinner"
-									class="grid grid-cols-[1fr_110px_110px_110px] gap-3 py-3 border-b border-slate-200/50 text-sm num"
-								>
-									<span>Group dinner, Bairro Alto</span
-									><span class="text-right">78.10</span
-									><span class="text-right text-slate-300">—</span
-									><span class="text-right text-red-600 font-medium"
-										>−78.10</span
-									>
-								</div>
-								<div
-									data-expense="tram"
-									class="grid grid-cols-[1fr_110px_110px_110px] gap-3 py-3 border-b border-slate-200/50 text-sm num"
-								>
-									<span>Tram passes ×4</span
-									><span class="text-right">37.00</span
-									><span class="text-right text-slate-300">—</span
-									><span class="text-right text-red-600 font-medium"
-										>−37.00</span
-									>
-								</div>
-								<div
-									data-expense="untitled"
-									class="grid grid-cols-[1fr_110px_110px_110px] gap-3 py-3 text-sm num"
-								>
-									<span class="text-slate-500 italic">Untitled expense</span
-									><span class="text-right">16.00</span
-									><span class="text-right">64.00</span
-									><span class="text-right text-emerald-700 font-medium"
-										>+48.00</span
-									>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div
-						id="balancesBeforePanel"
-						class="ink rounded-3xl p-6 flex flex-col gap-3"
-					>
-						<p class="text-white font-semibold text-lg display">
-							Before simplifying
-						</p>
-						<div
-							data-pair="alex-priya"
-							class="flex justify-between border-b border-white/10 pb-2.5 text-sm"
-						>
-							<span>Alex to Priya</span
-							><span class="text-white num font-medium">268.40</span>
-						</div>
-						<div
-							data-pair="alex-sam"
-							class="flex justify-between border-b border-white/10 pb-2.5 text-sm"
-						>
-							<span>Alex to Sam</span
-							><span class="text-white num font-medium">78.10</span>
-						</div>
-						<div
-							data-pair="mia-priya"
-							class="flex justify-between border-b border-white/10 pb-2.5 text-sm"
-						>
-							<span>Mia to Priya</span
-							><span class="text-white num font-medium">143.70</span>
-						</div>
-						<div data-pair="mia-sam" class="flex justify-between text-sm">
-							<span>Mia to Sam</span
-							><span class="text-white num font-medium">18.30</span>
-						</div>
-						<p class="text-sm mt-1 text-indigo-100/75 leading-relaxed">
-							Seven pairwise debts in total. The settle-up plan moves the same
-							money in three payments.
-						</p>
-						<button
-							id="balancesSeePlanBtn"
-							class="tab-btn mt-1 py-2.5 rounded-xl bg-white text-indigo-700 font-semibold text-sm hover:bg-indigo-50 transition"
-							data-target="screen-05"
-						>
-							See the plan
-						</button>
-					</div>
+					<p class="text-sm text-slate-400 sm:col-span-2 lg:col-span-4">
+						Per-person balance cards appear here.
+					</p>
 				</div>
 			</section>
 
@@ -1271,139 +918,47 @@
 							<h2 class="text-[28px] leading-tight font-semibold display">
 								Settle up
 							</h2>
-							<!-- JS: e.g. `${payments.length} payments clear the trip.` -->
+							<!-- TODO (JS): prepend "N payments clear the trip." -->
 							<p
 								id="settleUpIntro"
 								class="text-[15px] text-slate-500 mt-1 max-w-xl"
 							>
-								Three payments clear the trip. The largest creditor is matched
-								with the largest debtor, repeatedly, until everyone is square.
+								The largest creditor is matched with the largest debtor,
+								repeatedly, until everyone is square.
 							</p>
 						</div>
 
-						<div id="settleUpList" class="glass rounded-3xl overflow-hidden">
-							<div
-								data-payment="alex-priya"
-								class="grid grid-cols-[1fr_32px_1fr_auto_auto] gap-3 items-center px-5 py-4"
-							>
-								<span class="flex items-center gap-2"
-									><span
-										class="w-8 h-8 rounded-full bg-violet-500 text-white flex items-center justify-center font-semibold text-sm"
-										>A</span
-									>Alex</span
-								>
-								<span class="text-center text-indigo-500" aria-hidden="true"
-									>→</span
-								>
-								<span class="flex items-center gap-2"
-									><span
-										class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-semibold text-sm"
-										>P</span
-									>Priya</span
-								>
-								<span class="text-right font-semibold text-xl num"
-									>$346.50</span
-								>
-								<button
-									class="settle-mark-paid-btn btn-primary !py-2 !px-4 !rounded-lg"
-								>
-									Mark paid
-								</button>
-							</div>
-							<div
-								data-payment="mia-priya"
-								class="grid grid-cols-[1fr_32px_1fr_auto_auto] gap-3 items-center px-5 py-4 border-t border-slate-100"
-							>
-								<span class="flex items-center gap-2"
-									><span
-										class="w-8 h-8 rounded-full bg-orange-400 text-white flex items-center justify-center font-semibold text-sm"
-										>M</span
-									>Mia</span
-								>
-								<span class="text-center text-indigo-500" aria-hidden="true"
-									>→</span
-								>
-								<span class="flex items-center gap-2"
-									><span
-										class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-semibold text-sm"
-										>P</span
-									>Priya</span
-								>
-								<span class="text-right font-semibold text-xl num">$65.60</span>
-								<button
-									class="settle-mark-paid-btn btn-primary !py-2 !px-4 !rounded-lg"
-								>
-									Mark paid
-								</button>
-							</div>
-							<div
-								data-payment="mia-sam"
-								class="grid grid-cols-[1fr_32px_1fr_auto_auto] gap-3 items-center px-5 py-4 border-t border-slate-100 bg-slate-50/60 text-slate-400"
-							>
-								<span class="flex items-center gap-2 line-through"
-									><span
-										class="w-8 h-8 rounded-full bg-orange-400/50 text-white flex items-center justify-center font-semibold text-sm"
-										>M</span
-									>Mia</span
-								>
-								<span class="text-center" aria-hidden="true">→</span>
-								<span class="flex items-center gap-2 line-through"
-									><span
-										class="w-8 h-8 rounded-full bg-teal-600/50 text-white flex items-center justify-center font-semibold text-sm"
-										>S</span
-									>Sam</span
-								>
-								<span class="text-right font-semibold text-xl num line-through"
-									>$96.40</span
-								>
-								<span
-									class="text-emerald-700 text-sm font-semibold text-center px-4 py-2 rounded-lg bg-emerald-50"
-									>Paid ✓</span
-								>
-							</div>
-						</div>
+						<!-- renderSettleUp() rebuilds this container -->
+						<div
+							id="settleUpList"
+							class="glass rounded-3xl overflow-hidden"
+						></div>
 
 						<div class="flex items-center gap-3 flex-wrap">
 							<button
+								type="button"
 								id="settleUpCopyBtn"
 								class="tab-btn btn-primary"
 								data-target="screen-07"
 							>
-								Copy plan to clipboard
+								Go to share summary
 							</button>
-							<button id="settleUpRecalculateBtn" class="btn-quiet">
-								Recalculate
-							</button>
-							<span class="text-sm text-slate-400"
-								>Marking a payment paid recomputes the rest in place.</span
-							>
 						</div>
 					</div>
 
-					<div class="flex flex-col gap-5">
-						<div id="settleUpPlanQualityPanel" class="glass rounded-3xl p-6">
-							<p class="text-[15px] font-semibold mb-4">Plan quality</p>
-							<!-- "Pairwise debts" and "Remaining" removed: they belong to the Mark-paid stretch goal -->
-							<dl class="flex flex-col gap-2.5 text-sm">
-								<div class="flex justify-between">
-									<dt class="text-slate-500">Payments</dt>
-									<dd id="settleUpPaymentCount" class="font-semibold num">3</dd>
-								</div>
-								<div class="flex justify-between">
-									<dt class="text-slate-500">Money moved</dt>
-									<dd id="settleUpMoneyMoved" class="font-semibold num">
-										$508.50
-									</dd>
-								</div>
-							</dl>
-						</div>
-						<div
-							class="rounded-3xl p-6 text-sm text-indigo-800 leading-relaxed bg-indigo-50/70 ring-1 ring-indigo-100 backdrop-blur"
-						>
-							Once every balance reaches zero this panel collapses to a single
-							line, "Everyone's square", and the button switches to copying the
-							final trip summary.
-						</div>
+					<div id="settleUpPlanQualityPanel" class="glass rounded-3xl p-6">
+						<p class="text-[15px] font-semibold mb-4">Plan quality</p>
+						<!-- TODO (JS): payments.length and the sum of payment amounts -->
+						<dl class="flex flex-col gap-2.5 text-sm">
+							<div class="flex justify-between">
+								<dt class="text-slate-500">Payments</dt>
+								<dd id="settleUpPaymentCount" class="font-semibold num">0</dd>
+							</div>
+							<div class="flex justify-between">
+								<dt class="text-slate-500">Money moved</dt>
+								<dd id="settleUpMoneyMoved" class="font-semibold num">$0.00</dd>
+							</div>
+						</dl>
 					</div>
 				</div>
 			</section>
@@ -1416,20 +971,9 @@
 					<h2 class="text-[28px] leading-tight font-semibold display">
 						Trip summary
 					</h2>
-					<div class="flex gap-1 p-1 rounded-xl bg-slate-900/[0.05]">
-						<span
-							id="summaryToggleWholeTripBtn"
-							class="px-4 py-1.5 rounded-lg text-sm font-medium bg-white text-slate-900 shadow-sm"
-							>Whole trip</span
-						>
-						<span
-							id="summaryTogglePerPersonBtn"
-							class="px-4 py-1.5 rounded-lg text-sm font-medium text-slate-500"
-							>Per person</span
-						>
-					</div>
 				</div>
 
+				<!-- renderSummary() fills these four stat cards -->
 				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
 					<div class="ink rounded-3xl p-5">
 						<p class="text-sm text-indigo-200/80 mb-2">Total spent</p>
@@ -1437,7 +981,7 @@
 							id="summaryTotalSpent"
 							class="text-[32px] leading-none font-semibold text-white num display"
 						>
-							$2,104.60
+							$0.00
 						</p>
 					</div>
 					<div class="glass rounded-3xl p-5">
@@ -1446,7 +990,7 @@
 							id="summaryAverageExpense"
 							class="text-[32px] leading-none font-semibold num display"
 						>
-							$191.33
+							$0.00
 						</p>
 					</div>
 					<div class="glass rounded-3xl p-5">
@@ -1455,14 +999,12 @@
 							id="summaryTopSpender"
 							class="text-[32px] leading-none font-semibold display"
 						>
-							Priya
+							—
 						</p>
 						<p
 							id="summaryTopSpenderDetail"
 							class="text-sm text-slate-500 mt-1.5 num"
-						>
-							$928.00 across 4 expenses
-						</p>
+						></p>
 					</div>
 					<div class="glass rounded-3xl p-5">
 						<p class="text-sm text-slate-500 mb-2">Per head</p>
@@ -1470,7 +1012,7 @@
 							id="summaryPerHead"
 							class="text-[32px] leading-none font-semibold num display"
 						>
-							$526.15
+							$0.00
 						</p>
 					</div>
 				</div>
@@ -1478,56 +1020,8 @@
 				<div class="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-5">
 					<div class="glass rounded-3xl p-6">
 						<p class="font-semibold text-lg display mb-5">By category</p>
-						<div id="summaryCategoryBreakdown">
-							<div data-category="lodging" class="mb-5">
-								<div class="flex justify-between text-sm mb-1.5">
-									<span class="font-medium">Lodging</span
-									><span class="text-slate-500 num">$1,080.00 · 51%</span>
-								</div>
-								<div class="h-3 rounded-full bg-slate-900/[0.06]">
-									<div
-										class="h-3 rounded-full bg-gradient-to-r from-indigo-600 to-indigo-500"
-										style="width: 51%"
-									></div>
-								</div>
-							</div>
-							<div data-category="food" class="mb-5">
-								<div class="flex justify-between text-sm mb-1.5">
-									<span class="font-medium">Food</span
-									><span class="text-slate-500 num">$611.00 · 29%</span>
-								</div>
-								<div class="h-3 rounded-full bg-slate-900/[0.06]">
-									<div
-										class="h-3 rounded-full bg-gradient-to-r from-violet-500 to-violet-400"
-										style="width: 29%"
-									></div>
-								</div>
-							</div>
-							<div data-category="transport" class="mb-5">
-								<div class="flex justify-between text-sm mb-1.5">
-									<span class="font-medium">Transport</span
-									><span class="text-slate-500 num">$275.60 · 13%</span>
-								</div>
-								<div class="h-3 rounded-full bg-slate-900/[0.06]">
-									<div
-										class="h-3 rounded-full bg-gradient-to-r from-teal-500 to-emerald-400"
-										style="width: 13%"
-									></div>
-								</div>
-							</div>
-							<div data-category="general">
-								<div class="flex justify-between text-sm mb-1.5">
-									<span class="font-medium">General</span
-									><span class="text-slate-500 num">$138.00 · 7%</span>
-								</div>
-								<div class="h-3 rounded-full bg-slate-900/[0.06]">
-									<div
-										class="h-3 rounded-full bg-gradient-to-r from-sky-500 to-sky-400"
-										style="width: 7%"
-									></div>
-								</div>
-							</div>
-						</div>
+						<!-- renderCategoryBars() rebuilds this container -->
+						<div id="summaryCategoryBreakdown"></div>
 					</div>
 					<div class="glass rounded-3xl p-6 min-w-0">
 						<p class="font-semibold text-lg display mb-4">Spend vs. share</p>
@@ -1540,48 +1034,12 @@
 									><span class="text-right">Share</span
 									><span class="text-right">Net</span>
 								</div>
-								<!-- Rows container: render into THIS so the header above survives innerHTML -->
+								<!-- TODO (JS): renderSpendVsShare() — one row per member (Paid, Share, Net).
+								     Render into THIS container so the header above survives innerHTML. -->
 								<div id="summarySpendVsShareRows">
-									<div
-										data-person="priya"
-										class="grid grid-cols-[1fr_80px_80px_70px] gap-2 py-2.5 border-b border-slate-200/50 text-sm num"
-									>
-										<span>Priya</span><span class="text-right">928.00</span
-										><span class="text-right">515.90</span
-										><span class="text-right text-emerald-700 font-semibold"
-											>+412</span
-										>
-									</div>
-									<div
-										data-person="sam"
-										class="grid grid-cols-[1fr_80px_80px_70px] gap-2 py-2.5 border-b border-slate-200/50 text-sm num"
-									>
-										<span>Sam</span><span class="text-right">631.00</span
-										><span class="text-right">534.60</span
-										><span class="text-right text-emerald-700 font-semibold"
-											>+96</span
-										>
-									</div>
-									<div
-										data-person="mia"
-										class="grid grid-cols-[1fr_80px_80px_70px] gap-2 py-2.5 border-b border-slate-200/50 text-sm num"
-									>
-										<span>Mia</span><span class="text-right">148.00</span
-										><span class="text-right">310.00</span
-										><span class="text-right text-red-600 font-semibold"
-											>−162</span
-										>
-									</div>
-									<div
-										data-person="alex"
-										class="grid grid-cols-[1fr_80px_80px_70px] gap-2 py-2.5 text-sm num"
-									>
-										<span>Alex</span><span class="text-right">397.60</span
-										><span class="text-right">744.10</span
-										><span class="text-right text-red-600 font-semibold"
-											>−347</span
-										>
-									</div>
+									<p class="text-sm text-slate-400 py-3">
+										Per-person rows appear here.
+									</p>
 								</div>
 							</div>
 						</div>
@@ -1603,296 +1061,64 @@
 						<p class="text-[15px] text-slate-500 mt-1 mb-6">
 							Plain text, ready to paste into the group chat.
 						</p>
+						<!-- renderSharePreview() fills this from buildShareText() -->
 						<pre
 							id="shareSummaryText"
 							class="ink rounded-2xl p-5 sm:p-6 text-[13px] leading-relaxed whitespace-pre-wrap mb-5 font-mono text-indigo-50 overflow-x-auto"
-						>
-LISBON, MARCH — 11 expenses, 4 people
-Total $2,104.60 · $526.15 per head
-
-PAID
-  Priya   928.00
-  Sam     631.00
-  Alex    397.60
-  Mia     148.00
-
-SETTLE UP
-  Alex → Priya   346.50
-  Mia  → Priya    65.60
-  Mia  → Sam      96.40  (paid)</pre
-						>
+						></pre>
 						<div class="flex items-center gap-3 flex-wrap mb-4">
-							<button id="shareCopyBtn" class="btn-primary">
+							<button type="button" id="shareCopyBtn" class="btn-primary">
 								Copy summary
 							</button>
-							<!-- Hidden by default. JS removes 'hidden' after a successful copy (TRIP-11). -->
+							<!-- Hidden by default. handleCopySummary() shows it after a successful copy. -->
 							<span
 								id="shareCopiedBadge"
 								class="hidden px-4 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 font-semibold text-sm"
 								role="status"
 								>Copied ✓</span
 							>
-							<button id="sharePrintBtn" class="btn-quiet">Print view</button>
 						</div>
-						<!-- Hidden by default. JS removes 'hidden' if the Clipboard API fails (TRIP-11). -->
+						<!-- Hidden by default. handleCopySummary() shows it if the Clipboard API fails. -->
 						<p
 							id="shareFallbackWarning"
 							class="hidden text-sm text-red-700 bg-red-50/90 ring-1 ring-red-100 rounded-xl px-4 py-3"
 							role="alert"
 						>
-							Clipboard isn't available in this browser. Select the text above
-							and copy it manually.
+							Couldn't copy automatically. Select the text above and copy it
+							manually.
 						</p>
 					</div>
 
 					<div class="glass rounded-3xl p-6">
-						<p class="text-[15px] font-semibold mb-4">Include</p>
-						<div
-							id="shareIncludeChecklist"
-							class="flex flex-col gap-3 text-sm mb-5"
-						>
-							<span data-field="totals" class="flex items-center gap-3"
-								><span
-									class="w-[18px] h-[18px] rounded-md bg-indigo-600 flex items-center justify-center"
-									><svg
-										width="11"
-										height="11"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="white"
-										stroke-width="3.5"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										aria-hidden="true"
-									>
-										<path d="m5 12 5 5 9-10" /></svg></span
-								>Trip totals</span
-							>
-							<span data-field="paid" class="flex items-center gap-3"
-								><span
-									class="w-[18px] h-[18px] rounded-md bg-indigo-600 flex items-center justify-center"
-									><svg
-										width="11"
-										height="11"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="white"
-										stroke-width="3.5"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										aria-hidden="true"
-									>
-										<path d="m5 12 5 5 9-10" /></svg></span
-								>Who paid what</span
-							>
-							<span data-field="settleup" class="flex items-center gap-3"
-								><span
-									class="w-[18px] h-[18px] rounded-md bg-indigo-600 flex items-center justify-center"
-									><svg
-										width="11"
-										height="11"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="white"
-										stroke-width="3.5"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										aria-hidden="true"
-									>
-										<path d="m5 12 5 5 9-10" /></svg></span
-								>Settle-up plan</span
-							>
-							<span
-								data-field="fullList"
-								class="flex items-center gap-3 text-slate-400"
-								><span
-									class="w-[18px] h-[18px] rounded-md border border-slate-300 bg-white/60"
-								></span
-								>Full expense list</span
-							>
-							<span
-								data-field="categoryBreakdown"
-								class="flex items-center gap-3 text-slate-400"
-								><span
-									class="w-[18px] h-[18px] rounded-md border border-slate-300 bg-white/60"
-								></span
-								>Category breakdown</span
-							>
-						</div>
-						<div class="h-px bg-slate-200/70 mb-4"></div>
+						<p class="text-[15px] font-semibold mb-3">What's included</p>
+						<ul class="flex flex-col gap-2 text-sm text-slate-500">
+							<li>Trip totals and per-head cost</li>
+							<li>Who paid what</li>
+							<li>The settle-up plan</li>
+						</ul>
+						<div class="h-px bg-slate-200/70 my-4"></div>
 						<p class="text-sm text-slate-500 leading-relaxed">
-							The text regenerates whenever these change, so what you copy is
-							always what you see.
+							The text regenerates whenever an expense or person changes, so
+							what you copy is always current.
 						</p>
-					</div>
-				</div>
-			</section>
-
-			<!-- ============================================================ -->
-			<!-- SCREEN 08 — EMPTY STATES -->
-			<!-- ============================================================ -->
-			<section id="screen-08" class="screen">
-				<h2 class="text-[28px] leading-tight font-semibold display">
-					Empty and edge states
-				</h2>
-				<p class="text-[15px] text-slate-500 mt-1 mb-6">
-					Each one says what happened, why, and offers the single next action.
-				</p>
-
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-					<div
-						id="emptyStateNoExpenses"
-						class="glass rounded-3xl p-9 flex flex-col items-center text-center gap-3 min-h-[240px] justify-center"
-					>
-						<span
-							class="w-12 h-12 rounded-2xl bg-indigo-50 ring-1 ring-indigo-100 flex items-center justify-center text-indigo-500"
-							><svg
-								width="22"
-								height="22"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								aria-hidden="true"
-							>
-								<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z" />
-								<path d="M9 8h6M9 12h6" /></svg
-						></span>
-						<p class="text-xl font-semibold display">No expenses yet</p>
-						<p class="text-sm text-slate-500 max-w-xs">
-							Log the first thing someone paid for and balances start filling
-							in.
-						</p>
-						<button
-							id="emptyNoExpensesAddBtn"
-							class="tab-btn btn-primary mt-1"
-							data-target="screen-02"
-						>
-							Add expense
-						</button>
-					</div>
-					<div
-						id="emptyStateNoFilterMatch"
-						class="glass rounded-3xl p-9 flex flex-col items-center text-center gap-3 min-h-[240px] justify-center"
-					>
-						<span
-							class="w-12 h-12 rounded-2xl bg-slate-100 ring-1 ring-slate-200 flex items-center justify-center text-slate-500"
-							><svg
-								width="22"
-								height="22"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								aria-hidden="true"
-							>
-								<path d="M3 5h18l-7 8v6l-4-2v-4z" /></svg
-						></span>
-						<p class="text-xl font-semibold display">
-							Nothing matches these filters
-						</p>
-						<p class="text-sm text-slate-500 max-w-xs">
-							Person: Mia, Category: Lodging. 0 of 11 expenses.
-						</p>
-						<button id="emptyNoFilterClearBtn" class="btn-quiet mt-1">
-							Clear filters
-						</button>
-					</div>
-					<div
-						id="emptyStateAllSettled"
-						class="ink rounded-3xl p-9 flex flex-col items-center text-center gap-3 min-h-[240px] justify-center"
-					>
-						<span
-							class="w-12 h-12 rounded-2xl bg-white/10 ring-1 ring-white/20 flex items-center justify-center text-emerald-300"
-							><svg
-								width="22"
-								height="22"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2.5"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								aria-hidden="true"
-							>
-								<path d="m5 12 5 5 9-10" /></svg
-						></span>
-						<p class="text-xl font-semibold text-white display">
-							Everyone's square
-						</p>
-						<p class="text-sm text-indigo-100/75 max-w-xs">
-							All balances are 0.00. Nothing left to settle for this trip.
-						</p>
-						<button
-							id="emptyAllSettledCopyBtn"
-							class="tab-btn mt-1 px-5 py-2.5 rounded-xl bg-white text-indigo-700 text-sm font-semibold hover:bg-indigo-50 transition"
-							data-target="screen-07"
-						>
-							Copy final summary
-						</button>
-					</div>
-					<div
-						id="emptyStateNoPeople"
-						class="glass rounded-3xl p-9 flex flex-col items-center text-center gap-3 min-h-[240px] justify-center"
-					>
-						<span
-							class="w-12 h-12 rounded-2xl bg-indigo-50 ring-1 ring-indigo-100 flex items-center justify-center text-indigo-500"
-							><svg
-								width="22"
-								height="22"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								aria-hidden="true"
-							>
-								<circle cx="9" cy="8" r="3.5" />
-								<path d="M2.5 20a6.5 6.5 0 0 1 13 0M19 8v6M16 11h6" /></svg
-						></span>
-						<p class="text-xl font-semibold display">No one on the trip yet</p>
-						<p class="text-sm text-slate-500 max-w-xs">
-							Expenses need at least one person. Add names to unlock the form.
-						</p>
-						<button
-							id="emptyNoPeopleAddBtn"
-							class="tab-btn btn-primary mt-1"
-							data-target="screen-01"
-						>
-							Add people
-						</button>
 					</div>
 				</div>
 			</section>
 		</main>
 
 		<footer class="max-w-6xl mx-auto px-3 sm:px-6 pb-6 mt-2">
-			<div
-				class="glass rounded-2xl px-5 py-5 flex justify-between items-center flex-wrap gap-3 text-sm text-slate-500"
-			>
-				<span>TripSplit. Group expenses, settled in one sitting.</span>
-				<div class="flex gap-6">
-					<a href="#" class="hover:text-slate-900 transition"
-						>How splitting works</a
-					><a href="#" class="hover:text-slate-900 transition">Privacy</a
-					><a href="#" class="hover:text-slate-900 transition">Support</a>
-				</div>
+			<div class="glass rounded-2xl px-5 py-5 text-sm text-slate-500">
+				TripSplit. Group expenses, settled in one sitting.
 			</div>
 		</footer>
 
 		<script>
-			// Screen switching (mockup scaffolding).
+			// Screen switching.
 			// ONE delegated listener on the document instead of one per button, so it
-			// also works for the top nav links AND for buttons injected later by
+			// also works for the nav buttons AND for buttons injected later by
 			// script.js (e.g. the "Add expense" button inside the empty state).
-			// Active styling now comes from aria-current (see .nav-link / .review-pill
-			// rules in the <style> block), so action buttons like "Add expense" in the
-			// header keep their own look no matter which screen is showing.
+			// Active styling comes from aria-current (see .nav-link / .review-pill
+			// rules in the <style> block).
 			function showScreen(targetId) {
 				document
 					.querySelectorAll('.screen')
