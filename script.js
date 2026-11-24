@@ -993,20 +993,31 @@ function renderCategoryBars(totalPerCategory, total) {
 
 function buildShareText() {
 	const summary = computeSummary();
+	const balances = computeBalances();
 	const payments = computeSettlements(computeBalances());
 	const memberCount = stateObj.members.length;
 	const expenseCount = stateObj.expenses.length;
 
 	const lines = [];
 
+	console.log(balances);
+
 	//Header Lines
 	lines.push(
-		`${stateObj.tripName.toUpperCase()} - ${expenseCount} ${pluralize(expenseCount, 'expense', 'expenses')}, ${memberCount} ${pluralize(memberCount, 'person', 'people')}`
+		`${stateObj.tripName.toUpperCase() || 'Untitled Trip'} - ${expenseCount}`
 	);
+
+	lines.push(
+		`${pluralize(expenseCount, 'expense', 'expenses')}, ${memberCount}`
+	);
+
+	lines.push(`${pluralize(memberCount, 'person', 'people')}`);
+
 	lines.push(
 		`Total ${formatMoney(summary.total)} · ${formatMoney(summary.perHead)} per head`
 	);
 	lines.push(``);
+
 	lines.push('PAID');
 
 	stateObj.members
